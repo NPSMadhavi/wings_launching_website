@@ -323,34 +323,21 @@ function Modal({ member, onSave, onClose }) {
     setUploading(true);
     setUploadError(null);
     try {
-      let currentRawUrl = rawPhotoUrl;
-
-      if (rawSrc.startsWith("data:")) {
-        const fetchRes = await fetch(rawSrc);
-        const rawBlob = await fetchRes.blob();
-        const rawFile = new File([rawBlob], `raw-member-photo-${Date.now()}.jpg`, {
-          type: rawBlob.type || "image/jpeg",
-        });
-        const { urls: rawUrls } = await api.uploadFiles([rawFile]);
-        if (rawUrls && rawUrls[0]) {
-          currentRawUrl = rawUrls[0];
-        }
-      }
-
-      const croppedFile = new File([croppedBlob], `cropped-member-photo-${Date.now()}.jpg`, {
-        type: "image/jpeg",
+      const reader = new FileReader();
+      const base64Url = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(croppedBlob);
       });
-      const { urls: croppedUrls } = await api.uploadFiles([croppedFile]);
 
-      if (croppedUrls && croppedUrls[0]) {
-        const uploadedCroppedUrl = croppedUrls[0];
-        const finalRawUrl = currentRawUrl || uploadedCroppedUrl;
+      const uploadedCroppedUrl = base64Url;
+      const finalRawUrl = rawSrc;
 
-        set("photoUrl", uploadedCroppedUrl);
-        setForm((prev) => ({ ...prev, photoUrl: uploadedCroppedUrl, rawPhotoUrl: finalRawUrl }));
-        setRawPhotoUrl(finalRawUrl);
-        setPreviewUrl(resolveImageUrl(uploadedCroppedUrl));
-      }
+      set("photoUrl", uploadedCroppedUrl);
+      setForm((prev) => ({ ...prev, photoUrl: uploadedCroppedUrl, rawPhotoUrl: finalRawUrl }));
+      setRawPhotoUrl(finalRawUrl);
+      setPreviewUrl(uploadedCroppedUrl);
+
       setMemberCropOpen(false);
       setMemberCropSrc(null);
     } catch (err: any) {
@@ -764,31 +751,22 @@ export default function TeamAdmin() {
   async function handleCroppedSave(croppedBlob: Blob, rawSrc: string) {
     setGroupPhotoUploading(true);
     try {
-      let currentRawUrl = rawGroupPhotoUrl;
+      const reader = new FileReader();
+      const base64Url = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(croppedBlob);
+      });
 
-      if (rawSrc.startsWith("data:")) {
-        const fetchRes = await fetch(rawSrc);
-        const rawBlob = await fetchRes.blob();
-        const rawFile = new File([rawBlob], `raw-team-group-photo-${Date.now()}.jpg`, { type: rawBlob.type || "image/jpeg" });
-        const { urls: rawUrls } = await api.uploadFiles([rawFile], "group");
-        if (rawUrls && rawUrls[0]) {
-          currentRawUrl = rawUrls[0];
-        }
-      }
+      const uploadedCroppedUrl = base64Url;
+      const finalRawUrl = rawSrc;
 
-      const croppedFile = new File([croppedBlob], `cropped-team-group-photo-${Date.now()}.jpg`, { type: "image/jpeg" });
-      const { urls: croppedUrls } = await api.uploadFiles([croppedFile], "group");
+      await api.updateTeamGroupPhoto(uploadedCroppedUrl, finalRawUrl);
+      setGroupPhotoUrl(uploadedCroppedUrl);
+      setRawGroupPhotoUrl(finalRawUrl);
+      localStorage.setItem("wings_team_group_photo", uploadedCroppedUrl);
+      localStorage.setItem("wings_team_raw_group_photo", finalRawUrl);
 
-      if (croppedUrls && croppedUrls[0]) {
-        const uploadedCroppedUrl = croppedUrls[0];
-        const finalRawUrl = currentRawUrl || uploadedCroppedUrl;
-
-        await api.updateTeamGroupPhoto(uploadedCroppedUrl, finalRawUrl);
-        setGroupPhotoUrl(uploadedCroppedUrl);
-        setRawGroupPhotoUrl(finalRawUrl);
-        localStorage.setItem("wings_team_group_photo", uploadedCroppedUrl);
-        localStorage.setItem("wings_team_raw_group_photo", finalRawUrl);
-      }
       setCropModalOpen(false);
       setCropImageSrc(null);
     } catch (err: any) {

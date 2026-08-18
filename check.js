@@ -1,0 +1,1 @@
+import("./apps/api/src/config/db.js").then(m => m.db.query("SELECT table_name FROM information_schema.tables WHERE table_schema = $$public$$".replace(/\$\$/g, \"\x27\")).then(res => console.log(res[0].map(r => r.table_name).join(", ")))).catch(console.error)
