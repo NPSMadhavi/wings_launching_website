@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 export function resolveImageUrl(url) {
   if (!url) return "/assets/placeholder-image.jpg";
   if (url.startsWith("http")) return url;
+  if (url.startsWith("data:")) return url;
   if (url.startsWith("/")) return url;
   return `/${url}`;
 }

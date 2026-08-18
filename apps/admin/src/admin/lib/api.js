@@ -7,7 +7,7 @@ function buildApiUrl(path) {
 
 export function resolveAssetUrl(url) {
   if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url;
   return API_ROOT ? `${API_ROOT}${url}` : url;
 }
 
