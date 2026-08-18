@@ -621,12 +621,94 @@ export async function sendAppointmentConfirmationEmail(appointment) {
   }
 }
 
+export async function sendVolunteerAcknowledgementEmail(volunteer) {
+  if (!isGraphMailConfigured()) return false;
+  if (!volunteer.email) return false;
+
+  const firstName = (volunteer.name || "").trim().split(/\s+/)[0] || "there";
+  const subject = `Application Received - Volunteer | WINGS Counselling`;
+
+  const content = `
+    <h2 style="color: #1a3a5c; font-size: 24px; margin: 0 0 10px 0;">
+      Thank You for Your Interest!
+    </h2>
+    <p style="color: #4a6a7f; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+      Dear <strong style="color: #2c5f8a;">${escapeHtml(firstName)}</strong>,
+    </p>
+    <p style="color: #4a6a7f; font-size: 16px; line-height: 1.6;">
+      We have successfully received your volunteer application at WINGS Counselling Centre.
+    </p>
+    <p style="color: #4a6a7f; font-size: 16px; line-height: 1.6;">
+      Our team will review your application and get back to you soon. We truly appreciate your willingness to contribute your time and skills.
+    </p>
+    <p style="color: #4a6a7f; font-size: 16px; line-height: 1.6;">
+      With gratitude,<br>
+      <strong style="color: #2c5f8a;">WINGS Counselling Centre</strong>
+    </p>
+  `;
+
+  try {
+    await sendWithFallback({
+      from: getFromAddress(),
+      to: volunteer.email,
+      subject,
+      html: getMentalHealthEmailWrapper(content, "Application Received"),
+    });
+    console.log("[Email] Volunteer acknowledgement sent to:", volunteer.email);
+    return true;
+  } catch (err) {
+    console.error("[Email] Volunteer acknowledgement send failed:", err?.message || err);
+    return false;
+  }
+}
+
+export async function sendVolunteerStatusUpdateEmail(volunteer) {
+  if (!isGraphMailConfigured()) return false;
+  if (!volunteer.email) return false;
+
+  const firstName = (volunteer.name || "").trim().split(/\s+/)[0] || "there";
+  const subject = `Application Update: ${volunteer.status} - Volunteer | WINGS Counselling`;
+
+  const content = `
+    <h2 style="color: #1a3a5c; font-size: 24px; margin: 0 0 10px 0;">
+      Volunteer Application Update
+    </h2>
+    <p style="color: #4a6a7f; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+      Dear <strong style="color: #2c5f8a;">${escapeHtml(firstName)}</strong>,
+    </p>
+    <p style="color: #4a6a7f; font-size: 16px; line-height: 1.6;">
+      Your volunteer application status has been updated to: <strong style="color: #0D4A7A; text-transform: capitalize;">${escapeHtml(volunteer.status)}</strong>.
+    </p>
+    ${volunteer.admin_notes ? `
+    <div style="background: #fffbeb; border: 1px solid #fbbf24; border-radius: 12px; padding: 18px 20px; margin: 24px 0;">
+      <p style="color: #92400e; font-weight: 700; margin: 0 0 8px 0; font-size: 14px;">Note from Admin:</p>
+      <p style="color: #78350f; margin: 0; line-height: 1.6; font-size: 14px;">${escapeHtml(volunteer.admin_notes)}</p>
+    </div>` : ''}
+    <p style="color: #4a6a7f; font-size: 16px; line-height: 1.6;">
+      Thank you for your continued interest in supporting WINGS Counselling Centre.
+    </p>
+  `;
+
+  try {
+    await sendWithFallback({
+      from: getFromAddress(),
+      to: volunteer.email,
+      subject,
+      html: getMentalHealthEmailWrapper(content, "Application Status Update"),
+    });
+    console.log("[Email] Volunteer status update sent to:", volunteer.email);
+    return true;
+  } catch (err) {
+    console.error("[Email] Volunteer status update send failed:", err?.message || err);
+    return false;
+  }
+}
+
 export async function sendVolunteerApplicationEmail(volunteer) {
   const recipientEmail = getOrgNotificationEmail();
 
   if (!recipientEmail) {
     console.error("[Email] MAIL_TO is not configured for volunteer notifications");
-    return false;
   }
 
   if (!isGraphMailConfigured()) {
@@ -634,23 +716,28 @@ export async function sendVolunteerApplicationEmail(volunteer) {
     return false;
   }
 
+  // Send acknowledgement to the volunteer
+  await sendVolunteerAcknowledgementEmail(volunteer);
+
+  if (!recipientEmail) return false;
+
   const firstName =
     (volunteer.name || "").trim().split(/\s+/)[0] || "there";
 
   const content = `
     <p><strong>New volunteer application received</strong></p>
-    <p><strong>Name:</strong> ${volunteer.name || "—"}</p>
-    <p><strong>Email:</strong> ${volunteer.email || "—"}</p>
-    <p><strong>Phone:</strong> ${volunteer.phone_hp || "—"}</p>
-    <p><strong>Address:</strong> ${volunteer.address || "—"}</p>
-    <p><strong>Skills:</strong> ${volunteer.skills_hobbies || "—"}</p>
-    <p><strong>Interest Areas:</strong> ${volunteer.interest_areas || "—"}</p>
-    <p><strong>Preferred Days:</strong> ${volunteer.preferred_days || "—"}</p>
-    <p><strong>Availability:</strong> ${volunteer.time_from || "—"} - ${volunteer.time_to || "—"}</p>
-    <p><strong>Commitment:</strong> ${volunteer.commitment_duration || "—"} ${volunteer.commitment_unit || ""}</p>
+    <p><strong>Name:</strong> ${escapeHtml(volunteer.name || "-")}</p>
+    <p><strong>Email:</strong> ${escapeHtml(volunteer.email || "-")}</p>
+    <p><strong>Phone:</strong> ${escapeHtml(volunteer.phone_hp || "-")}</p>
+    <p><strong>Address:</strong> ${escapeHtml(volunteer.address || "-")}</p>
+    <p><strong>Skills:</strong> ${escapeHtml(volunteer.skills_hobbies || "-")}</p>
+    <p><strong>Interest Areas:</strong> ${escapeHtml(volunteer.interest_areas || "-")}</p>
+    <p><strong>Preferred Days:</strong> ${escapeHtml(volunteer.preferred_days || "-")}</p>
+    <p><strong>Availability:</strong> ${escapeHtml(volunteer.time_from || "-")} - ${escapeHtml(volunteer.time_to || "-")}</p>
+    <p><strong>Commitment:</strong> ${escapeHtml(volunteer.commitment_duration || "-")} ${escapeHtml(volunteer.commitment_unit || "")}</p>
   `;
 
-  const subject = `New Volunteer Application — ${firstName} | WINGS Counselling`;
+  const subject = `New Volunteer Application - ${firstName} | WINGS Counselling`;
 
   try {
     await sendWithFallback({

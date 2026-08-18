@@ -44,10 +44,10 @@ function ImageCropModal({
   onCancel: () => void;
   saving: boolean;
 }) {
-  const [box, setBox] = useState({ x: 10, y: 10, width: 80, height: 80 });
+  const [box, setBox] = useState({ x: 0, y: 0, width: 100, height: 100 });
   const [dragMode, setDragMode] = useState<'move' | 'nw' | 'ne' | 'sw' | 'se' | null>(null);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [startBox, setStartBox] = useState({ x: 10, y: 10, width: 80, height: 80 });
+  const [startBox, setStartBox] = useState({ x: 0, y: 0, width: 100, height: 100 });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -134,6 +134,7 @@ function ImageCropModal({
     }
   };
 
+
   return (
     <div
       className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm select-none"
@@ -149,7 +150,7 @@ function ImageCropModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-[#0D4A7A]">Crop Team Image</h3>
-              <p className="text-xs text-gray-500">Drag corner handles to manually resize crop frame</p>
+              <p className="text-xs text-gray-500">Full image shown — drag corner handles to crop, then click Apply Crop</p>
             </div>
           </div>
           <button
@@ -228,10 +229,10 @@ function ImageCropModal({
         <div className="p-5 bg-white border-t border-gray-100 flex items-center justify-between gap-4">
           <button
             type="button"
-            onClick={() => setBox({ x: 10, y: 10, width: 80, height: 80 })}
+            onClick={() => setBox({ x: 0, y: 0, width: 100, height: 100 })}
             className="px-3.5 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-xl border border-gray-200 cursor-pointer"
           >
-            Reset Selection
+            Reset to Full
           </button>
 
           <div className="flex items-center gap-3">
@@ -256,8 +257,7 @@ function ImageCropModal({
                 </>
               ) : (
                 <>
-                  {/* <Crop size={16} /> */}
-                  Done
+                  Apply
                 </>
               )}
             </button>
@@ -287,7 +287,7 @@ function Modal({ member, onSave, onClose }) {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 

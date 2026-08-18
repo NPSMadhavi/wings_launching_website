@@ -143,7 +143,7 @@ export function About() {
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => navigate("/about-us")}
-                className="hidden lg:inline-flex items-center mt-8 gap-2 self-start h-[48px] px-8 rounded-full bg-[#1B4585] text-white text-[16px] font-medium font-['DM_Sans']"
+                className="hidden lg:inline-flex items-center mt-8 gap-2 self-start h-[48px] px-8 rounded-full bg-[#1B4585] text-white text-[15px] md:text-[18px] font-['DM_Sans']"
               >
                 {t("about.readMore")} <ArrowIcon />
               </motion.button>

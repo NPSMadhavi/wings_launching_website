@@ -226,7 +226,7 @@ export default function ServicePage() {
                         <div
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`rounded-[22px] sm:rounded-[30px] flex items-center justify-center text-center font-['DM_Sans'] font-medium text-[9px] min-[360px]:text-[10px] min-[390px]:text-[11px] sm:text-[clamp(12px,2vw,16px)] leading-[1.15] sm:leading-normal px-1 min-[360px]:px-1.5 sm:px-3 md:px-4 py-2 sm:py-0 sm:flex-1 sm:min-w-0 sm:h-[clamp(38px,5vw,52px)] cursor-pointer transition-all duration-300 sm:whitespace-nowrap ${
+                            className={`rounded-[22px] sm:rounded-[30px] flex items-center justify-center text-center font-['DM_Sans' text-[clamp(14px,2vw,18px)] leading-[1.15] sm:leading-normal px-1 min-[360px]:px-1.5 sm:px-3 md:px-4 py-2 sm:py-0 sm:flex-1 sm:min-w-0 sm:h-[clamp(38px,5vw,52px)] cursor-pointer transition-all duration-300 sm:whitespace-nowrap ${
                                 activeTab === tab
                                     ? "bg-white text-[#0D4A7A] shadow-sm"
                                     : "bg-transparent text-white"
@@ -276,7 +276,7 @@ export default function ServicePage() {
                                     backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%), url(${card.image})`,
                                 }}
                             >
-                                <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 font-['Outfit'] font-medium text-[clamp(14px,2vw,18px)] leading-[1.3] text-white line-clamp-2">
+                                <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 font-['Outfit'] font-medium text-[clamp(15px,2vw,20px)] leading-[1.3] text-white line-clamp-2">
                                     {card.title}
                                 </div>
                             </div>
@@ -314,7 +314,7 @@ export default function ServicePage() {
                                 {/* Book an Appointment Button */}
                                 <button
                                         onClick={() => openModal(card.appointmentSelection || card.title)}
-                                        className={`flex items-center justify-center gap-2 mt-auto w-full cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] py-3 px-4 sm:py-3 sm:px-5 rounded-full border border-[#1B4585] font-['DM_Sans'] font-semibold text-[13px] sm:text-[14px] ${
+                                        className={`flex items-center justify-center gap-2 mt-auto w-full cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] py-3 px-4 sm:py-3 sm:px-5 rounded-full border border-[#1B4585] font-['DM_Sans'] font-semibold text-[13px] md:text-[16px] ${
                                             hoveredButton === `${activeTab}-${index}`
                                                 ? "bg-[#1B4585] text-white"
                                                 : "bg-white text-[#1B4585]"

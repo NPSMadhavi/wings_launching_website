@@ -312,19 +312,11 @@ export default function ArticlePage() {
 
                                             {/* AUTHOR + DATE */}
                                             <div className="flex justify-between items-start gap-2 mb-3 sm:mb-4 min-w-0">
-                                                <span className="text-[#1E3A8A] text-[12px] sm:text-[13px] font-medium line-clamp-1 min-w-0">
-                                                    {article.author}
+                                                <span className="text-[#1E3A8A] text-[12px] md:text-[13px] font-medium line-clamp-1 min-w-0">
+                                                  Article sourced by {article.author}
                                                 </span>
 
-                                                <span className="text-[#1E3A8A] text-[12px] sm:text-[13px] font-medium shrink-0">
-                                                    {article.publishedAt
-                                                        ? new Date(article.publishedAt).toLocaleDateString("en-US", {
-                                                            day: "numeric",
-                                                            month: "long",
-                                                            year: "numeric",
-                                                        })
-                                                        : ""}
-                                                </span>
+                                              
                                             </div>
 
                                             {/* TITLE */}

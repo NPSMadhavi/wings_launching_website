@@ -405,7 +405,7 @@ export function Upcoming() {
                         style={{
                             height: "46px",
                             padding: "0 24px",
-                            fontSize: "clamp(13px,0.9vw,15px)",
+                            fontSize: "clamp(15px,0.9vw,18px)",
                         }}
                     >
                         {t("upcoming.viewAll")}

@@ -177,7 +177,7 @@ export function OurTeam() {
         >
             {/* Background Motion */}
             <motion.div
-                className="absolute inset-0 pointer-events-none opacity-20"
+                className="absolute inset-0 pointer-events-none opacity-10"
                 style={{ y: bgY }}
             />
 
@@ -234,7 +234,7 @@ export function OurTeam() {
                                 >
                                     {/* CARD */}
                                     <div
-                                        className="relative w-full h-[320px] md:h-[420px] rounded-[10px] shadow-sm overflow-hidden bg-white bg-cover bg-center bg-no-repeat"
+                                        className="relative w-full h-[320px] md:h-[420px] rounded-[10px] shadow-sm overflow-hidden bg-white bg-no-repeat bg-contain bg-bottom"
                                         style={{
                                             backgroundImage: `url('${member.photoUrl}')`
                                         }}

@@ -23,11 +23,11 @@ export default function PractitionerCard({ practitioner }) {
       transition={{ duration: 0.45 }}
       className="bg-white rounded-[12px] border border-[#E8E8E8] shadow-sm text-left flex flex-col h-full hover:-translate-y-1 hover:shadow-md transition-all duration-300 p-3"
     >
-      <div className="w-full aspect-square overflow-hidden rounded-[12px] bg-[#E8EEF5]">
+      <div className="w-full h-[260px] sm:h-[300px] md:h-[340px] overflow-hidden rounded-[12px] bg-[#E8EEF5] flex items-center justify-center">
         <img
           src={resolveImageUrl(practitioner.photoUrl)}
           alt={practitioner.name}
-          className="w-full h-full object-cover object-top rounded-[12px]"
+          className="w-full h-full object-contain object-center rounded-[12px]"
           style={{ imageRendering: "-webkit-optimize-contrast" }}
           decoding="async"
           onError={(e) => {

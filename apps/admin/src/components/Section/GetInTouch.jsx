@@ -265,7 +265,7 @@ export function GetInTouch() {
                             rounded-full
                             font-['DM_Sans']
                             font-semibold
-                            text-[17px]
+                            text-[clamp(15px,0.9vw,18px)]
                             w-fit
                             items-center
                             gap-3
@@ -403,7 +403,7 @@ export function GetInTouch() {
                         rounded-full
                         font-['DM_Sans']
                         font-semibold
-                        text-[17px]
+                        text-[clamp(13px,0.9vw,16px)]
                         w-fit
                         shadow-lg
                         transition-all

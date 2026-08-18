@@ -100,27 +100,13 @@ function ArticleCard({ article, index }) {
                 {/* Author & Date */}
                 <div className="flex justify-between items-center mb-4">
                     <span
-                        className="font-['DM_Sans'] font-medium text-[12px] leading-[1]"
+                        className="font-['DM_Sans'] font-medium text-[12px] md:text-[13px] leading-[1]"
                         style={{ color: "#1E3A8A" }}
                     >
-                        {article.author || t("recentArticles.wingsTeam")}
+                       Article sourced by {article.author || t("recentArticles.wingsTeam")}
                     </span>
 
-                    <span
-                        className="font-['DM_Sans'] font-medium text-[12px] leading-[1]"
-                        style={{ color: "#1E3A8A" }}
-                    >
-                        {article.publishedAt
-                            ? new Date(article.publishedAt).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                      day: "numeric", 
-                                      month: "long",
-                                      year: "numeric",
-                                  }
-                              )
-                            : t("recentArticles.recent")}
-                    </span>
+                   
                 </div>
 
                 {/* Title */}
@@ -382,7 +368,7 @@ export function RecentArticles() {
                     style={{
                         height: "46px",
                         padding: "0 24px",
-                        fontSize: "clamp(13px,0.9vw,15px)",
+                        fontSize: "clamp(14px,0.9vw,18px)",
                     }}
                 >
                     {t("recentArticles.viewAll")}

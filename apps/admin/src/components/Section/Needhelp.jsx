@@ -60,7 +60,7 @@ export function Needhelp() {
 
         {/* Heading */}
         <h2
-          className="text-[18px]  md:text-[40px] text-center mb-4 text-white font-['Outfit'] font-medium leading-[1.1] max-w-[850px]"
+          className="text-[18px]  md:text-[35px] text-center mb-4 text-white font-['Outfit'] font-medium leading-[1.1] max-w-[850px]"
         >
           {t("needHelp.title")}
         </h2>
@@ -91,7 +91,7 @@ export function Needhelp() {
                 px-5 sm:px-8 h-[52px] sm:h-[60px]
                 w-auto sm:min-w-[220px]
                 rounded-full font-semibold
-                text-[14px] min-[375px]:text-[15px] sm:text-[17px]
+                text-[14px] min-[375px]:text-[13px] md:text-[18px]
                 font-['Plus_Jakarta_Sans'] no-underline cursor-pointer
                 ${
                   btn.id === "call"

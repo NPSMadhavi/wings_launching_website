@@ -157,12 +157,12 @@ const PartnerPage = () => {
                         </p>
                       )}
                       {partner.name && (
-                        <h3 className="text-[#0D4A7A]  text-[17px] md:text-[19px] lg:text-[21px] font-semibold font-['Outfit'] mt-1 mb-4">
+                        <h3 className="text-[#0D4A7A]  text-[18px] md:text-[20px] lg:text-[22px] font-semibold font-['Outfit'] mt-1 mb-4">
                           {partner.name}
                         </h3>
                       )}
                       {partner.description && (
-                        <p className="text-[#4B5563] text-[16px] md:text-[17px] lg:text-[18px] font-normal font-['DM_Sans'] leading-[150%] mb-5 flex-grow">
+                        <p className="text-[#4B5563] text-[15px] md:text-[16px] lg:text-[17px] font-normal font-['DM_Sans'] leading-[150%] mb-5 flex-grow">
                           {partner.description}
                         </p>
                       )}

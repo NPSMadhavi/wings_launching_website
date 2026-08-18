@@ -486,7 +486,7 @@ export default function AboutUs() {
             >
               {/* Title */}
               <h2
-                className="font-medium text-center max-w-[90%] md:max-w-[823px] text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight md:leading-[100%] px-4"
+                className="font-medium text-center max-w-[90%] md:max-w-[823px] text-[30px] md:text-[35px] lg:text-[45px] leading-tight md:leading-[100%] px-4"
                 style={{ fontFamily: "'Outfit', sans-serif", color: "#FFFFFF" }}
               >
                 {t("aboutUs.cta.title")}
@@ -494,7 +494,7 @@ export default function AboutUs() {
 
               {/* Description */}
               <p
-                className="font-medium text-center mt-6 md:mt-[35px] max-w-[90%] md:max-w-[940px] text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed md:leading-[34px] px-4"
+                className="font-medium text-center mt-6 md:mt-[35px] max-w-[90%] md:max-w-[940px] text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-relaxed md:leading-[34px] px-4"
                 style={{ fontFamily: "'DM Sans', sans-serif", color: "#FFFFFF" }}
               >
                 {t("aboutUs.cta.description")}
@@ -507,7 +507,7 @@ export default function AboutUs() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => openModal()}
-                  className="flex w-full sm:w-auto items-center justify-center cursor-pointer px-5 sm:px-6 md:px-8 py-3 md:py-4 gap-2 rounded-full bg-[#1B4585] text-white font-semibold text-[14px] min-[375px]:text-[15px] sm:text-base md:text-lg transition-all whitespace-nowrap"
+                  className="flex w-full sm:w-auto items-center justify-center cursor-pointer px-5 sm:px-6 md:px-8 py-3 md:py-4 gap-2 rounded-full bg-[#1B4585] text-white font-semibold text-[clamp(15px,0.9vw,18px)] transition-all whitespace-nowrap"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
                   <span className="whitespace-nowrap">{t("aboutUs.cta.bookAppointment")}</span>
@@ -534,7 +534,7 @@ export default function AboutUs() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => navigate("/team")}
-                  className="flex w-full sm:w-auto items-center justify-center cursor-pointer px-5 sm:px-6 md:px-8 py-3 md:py-4 rounded-full bg-transparent text-white border border-white font-semibold text-[14px] min-[375px]:text-[15px] sm:text-base md:text-lg transition-all whitespace-nowrap"
+                  className="flex w-full sm:w-auto items-center justify-center cursor-pointer px-5 sm:px-6 md:px-8 py-3 md:py-4 rounded-full bg-transparent text-white border border-white font-semibold md:text-[clamp(15px,0.9vw,18px)] transition-all whitespace-nowrap"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
                   {t("aboutUs.cta.meetTeam")}

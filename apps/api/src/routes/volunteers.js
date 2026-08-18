@@ -1,6 +1,6 @@
 import express from "express";
 import { db } from "../config/db.js";
-import { sendVolunteerApplicationEmail } from "../lib/email.js";
+import { sendVolunteerApplicationEmail, sendVolunteerStatusUpdateEmail } from "../lib/email.js";
 import { broadcastToAdmin } from "../lib/sse.js";
 
 const router = express.Router();
@@ -312,6 +312,18 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const body = req.body || {};
+    
+    const [existingRows] = await db.execute(
+      `SELECT * FROM volunteer_applications WHERE id = ? LIMIT 1`,
+      [req.params.id]
+    );
+
+    if (!existingRows.length) {
+      return res.status(404).json({ success: false, message: "Volunteer not found" });
+    }
+
+    const previousStatus = existingRows[0].status;
+
     const fields = [
       "title",
       "name",
@@ -364,11 +376,32 @@ router.put("/:id", async (req, res) => {
       `SELECT * FROM volunteer_applications WHERE id = ? LIMIT 1`,
       [req.params.id]
     );
+    
+    const updatedVolunteer = mapVolunteerRow(rows[0]);
+
+    if (body.status && body.status !== previousStatus) {
+      const emailSent = await sendVolunteerStatusUpdateEmail(updatedVolunteer);
+      if (!emailSent) {
+        broadcastToAdmin("email_failed", {
+          context: "volunteer_status_update",
+          volunteerId: updatedVolunteer.id,
+          email: updatedVolunteer.email,
+          reason: "Failed to send volunteer status update email",
+        });
+      } else {
+        broadcastToAdmin("email_sent", {
+          context: "volunteer_status_update",
+          volunteerId: updatedVolunteer.id,
+          email: updatedVolunteer.email,
+          subject: "Volunteer status update delivered",
+        });
+      }
+    }
 
     res.status(200).json({
       success: true,
       message: "Volunteer updated successfully",
-      volunteer: mapVolunteerRow(rows[0]),
+      volunteer: updatedVolunteer,
     });
   } catch (error) {
     console.error("[Volunteers] Update failed:", error);
