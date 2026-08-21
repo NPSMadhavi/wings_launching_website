@@ -61,6 +61,7 @@ import TermsAndConditions from "@/Pages/TermsAndConditions";
 import { scrollToPageContentSection } from "@/lib/scrollToSection";
 import { CandidateAuthModal } from "@/components/modals/CandidateAuthModal";
 
+import ContentProtection from "@/components/ContentProtection";
 
 
 /* ---------------- Scroll To Top ---------------- */
@@ -216,6 +217,8 @@ export default function App() {
             <AppointmentProvider>
 
               <div className="page-wrapper">
+                <ContentProtection />
+
               <ScrollToTop />
               <SharedNavbar />
               <Router />
