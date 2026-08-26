@@ -6,6 +6,7 @@ import { Footer } from "../components/Layout/Footer.jsx";
 import { useLocation } from "wouter";
 import { useAppointment } from "@/context/AppointmentContext";
 import { getArticleDetailPath } from "@/lib/articlePageContent";
+import SEO from "@/components/SEO";
 
 export default function ArticlePage() {
     const { t, i18n } = useTranslation();
@@ -111,6 +112,12 @@ export default function ArticlePage() {
 
     return (
         <div className="w-full flex flex-col min-h-screen bg-[#FAFAF5]">
+            <SEO
+                title="Mental Health Articles & Insights | WINGS Counselling Centre"
+                description="Read evidence-based articles, coping strategies, grounding techniques, and clinical insights on mental health, parenting, and relationships from WINGS."
+                path="/articles"
+                ogImage="/assets/articlesection.jpeg"
+            />
 
             {/* HERO SECTION */}
             <div

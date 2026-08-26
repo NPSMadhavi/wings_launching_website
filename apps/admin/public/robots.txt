@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Exclude private, admin, authentication, and candidate management routes
+Disallow: /admin/
+Disallow: /auth
+Disallow: /profile
+Disallow: /candidate/
+Disallow: /candidate-portal
+Disallow: /unsubscribe/
+Disallow: /volunteerform
+
+Sitemap: https://wingscc.netopsys.in/sitemap.xml

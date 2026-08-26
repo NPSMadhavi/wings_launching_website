@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAppointment } from "@/context/AppointmentContext";
 import { scrollToArticleDetailsWithRetry } from "@/lib/scrollToSection";
+import SEO from "@/components/SEO";
 
 const heroImg = "/assets/ihero1.jpeg";
 const introImg = "/assets/img4.jpg";
@@ -118,6 +119,13 @@ export default function ParentingArticlePage() {
       className="w-full bg-white text-[#111111]"
       style={styles.body}
     >
+      <SEO
+        title="Parenting Challenges & Guidance | WINGS Counselling Centre"
+        description="Discover practical parenting strategies, understand emotional and behavioral changes in children, and foster healthier family relationships."
+        path="/ParentingArticlePage"
+        ogImage="/assets/ihero1.jpeg"
+        ogType="article"
+      />
       {/* GOOGLE FONTS */}
       <style>
         {`

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "node apps/api/scripts/free-port.js && concurrently -n api,admin -c blue,green \"npm run dev --prefix apps/api\" \"npx --yes wait-on http://localhost:5001/api/health -t 120000 && npm run dev --prefix apps/admin\"",
-    "free-port": "node apps/api/scripts/free-port.js"
+    "free-port": "node apps/api/scripts/free-port.js",
+    "install:all": "npm install --prefix apps/api && npm install --prefix apps/admin",
+    "build": "npm run build --prefix apps/admin"
   },
   "dependencies": {
     "@radix-ui/react-toast": "^1.2.15",

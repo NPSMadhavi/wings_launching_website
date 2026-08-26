@@ -13,6 +13,7 @@ import { Footer } from "@/components/Layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useCandidateAuth, candidateLogin, candidateRegister } from "@/context/CandidateAuthContext";
+import SEO from "@/components/SEO";
 
 export default function Auth() {
   const [, navigate] = useLocation();
@@ -90,6 +91,12 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF5] overflow-x-hidden font-sans">
+      <SEO
+        title="Authentication | WINGS Counselling Centre"
+        description="Sign in or create an account at WINGS Counselling Centre."
+        path="/auth"
+        noindex={true}
+      />
       <Navbar />
       {authLoading && (
         <div className="fixed top-24 right-6 z-[60] rounded-full border border-[#0D4A7A2E] bg-white px-4 py-2 text-sm text-[#0D4A7A] shadow-md font-semibold font-['DM_Sans']">

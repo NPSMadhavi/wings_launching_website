@@ -12,8 +12,8 @@ import {
     SITE_ICON_SIZE_SM,
 } from "@/components/ui/SiteIcons";
 import { useTranslation } from "react-i18next";
-
 import { Footer } from "../components/Layout/Footer.jsx";
+import SEO from "@/components/SEO";
 
 function Events() {
     const { t, i18n } = useTranslation();
@@ -471,6 +471,12 @@ export default function EventsPage() {
     };
     return (
         <div className="w-full flex flex-col min-h-screen items-center bg-[#FAFAF5]">
+            <SEO
+                title="Events & Workshops | WINGS Counselling Centre"
+                description="Discover upcoming mental health events, community workshops, parenting talks, and clinical training sessions hosted by WINGS Counselling Centre."
+                path="/events"
+                ogImage="/assets/EventsHeroImage.jpg"
+            />
             {/* HERO SECTION */}
             <div
                 className="relative flex w-full shrink-0 overflow-hidden"

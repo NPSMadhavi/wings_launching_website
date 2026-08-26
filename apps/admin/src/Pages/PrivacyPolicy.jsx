@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Footer } from "@/components/Layout/Footer";
+import SEO from "@/components/SEO";
 
 const cardClass =
   "bg-white rounded-[20px] p-7 md:p-10 border border-gray-200 flex flex-col gap-4 md:gap-6";
@@ -37,6 +38,11 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="w-full flex flex-col min-h-screen bg-[#F9F9F9] font-sans overflow-x-hidden">
+      <SEO
+        title="Privacy Policy | WINGS Counselling Centre"
+        description="Read WINGS Counselling Centre's Privacy Policy regarding data protection, confidentiality, personal information collection, and client privacy."
+        path="/privacy-policy"
+      />
       <div className="w-full h-[400px] bg-[#0D4A7A] pt-[120px] sm:pt-[140px] md:pt-[160px] pb-12 sm:pb-16 md:pb-20 text-center relative shrink-0">
         <div className="navbar-align-outer">
           <div className="navbar-align-inner">

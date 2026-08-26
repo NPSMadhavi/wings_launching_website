@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Footer } from "@/components/Layout/Footer";
+import SEO from "@/components/SEO";
 import {
   HeartHandshake,
   Mic,
@@ -54,6 +55,12 @@ const Volunteer = () => {
 
   return (
     <>
+      <SEO
+        title="Volunteer With Us | WINGS Counselling Centre"
+        description="Join WINGS Counselling Centre as a volunteer and help empower individuals, families, and communities through mental health awareness and community support."
+        path="/volunteer"
+        ogImage="/assets/volunteer.png"
+      />
       <main className="bg-[#F9F9F9]">
         {/* Hero */}
         <section

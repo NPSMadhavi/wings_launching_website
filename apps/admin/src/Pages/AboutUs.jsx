@@ -6,6 +6,7 @@ import { useAppointment } from "@/context/AppointmentContext";
 import { useLocation } from "wouter";
 import { Footer } from "@/components/Layout/Footer";
 import { SiteCheckBadge } from "@/components/ui/SiteIcons";
+import SEO from "@/components/SEO";
 
 export default function AboutUs() {
   const { t } = useTranslation();
@@ -45,6 +46,12 @@ export default function AboutUs() {
 
   return (
     <div className="w-full flex flex-col min-h-screen">
+      <SEO
+        title="About Us | WINGS Counselling Centre"
+        description="Learn about WINGS Counselling Centre, our mission, vision, clinical history, and commitment to providing accessible mental health care and therapy in Singapore."
+        path="/about-us"
+        ogImage="/assets/aboutusimage.png"
+      />
       {/* Hero Section - CENTERED */}
       <div
         className="w-full flex justify-center items-center overflow-hidden relative shrink-0"

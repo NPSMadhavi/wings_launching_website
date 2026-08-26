@@ -16,6 +16,7 @@ import {
 } from "@/lib/articlePageContent";
 import { resolveAssetUrl } from "@/admin/lib/api";
 import { scrollToArticleDetailsWithRetry } from "@/lib/scrollToSection";
+import SEO from "@/components/SEO";
 
 const heroImg = "/assets/articlesection.jpeg";
 const introImg = "/assets/img4.jpg";
@@ -253,11 +254,40 @@ export default function AnxietyArticlePage() {
 
 
 
+  const articlePath = isArticleRoute ? `/article/${urlSlug}` : "/GroundingTechniques";
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": displayTitle || "Grounding Techniques for Anxiety",
+    "description": (displayExcerpt || "").slice(0, 300),
+    "image": displayCoverImage ? [displayCoverImage] : [],
+    "author": {
+      "@type": "Person",
+      "name": displayAuthor || "WINGS Team"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "WINGS Counselling Centre",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://wingscc.netopsys.in/assets/wingsLogo.png"
+      }
+    }
+  };
+
   return (
     <div
       className="w-full bg-white text-[#111111]"
       style={styles.body}
     >
+      <SEO
+        title={`${displayTitle || "Grounding Techniques for Anxiety"} | WINGS Counselling Centre`}
+        description={(displayExcerpt || "Learn practical grounding techniques to manage anxiety, panic, and distress from WINGS Counselling Centre.").slice(0, 160)}
+        path={articlePath}
+        ogImage={displayCoverImage}
+        ogType="article"
+        jsonLd={articleJsonLd}
+      />
       {/* GOOGLE FONTS */}
       <style>
         {`

@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import type { CandidateApplication } from "@/lib/careers-types";
+import SEO from "@/components/SEO";
 
 export default function Profile() {
   const { toast } = useToast();
@@ -101,6 +102,12 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF5] overflow-x-hidden font-sans">
+      <SEO
+        title="Candidate Profile | WINGS Counselling Centre"
+        description="Candidate Profile management"
+        path="/profile"
+        noindex={true}
+      />
       <Navbar />
 
       {/* Profile Overview */}

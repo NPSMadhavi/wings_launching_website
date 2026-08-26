@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { Footer } from "@/components/Layout/Footer";
 import { useAppointment } from "@/context/AppointmentContext";
+import SEO from "@/components/SEO";
 import {
   Ear,
   ShieldCheck,
@@ -253,6 +254,12 @@ export default function SupportTopicPage() {
 
   return (
     <div className="bg-[#F5F5F5] text-black overflow-x-hidden">
+      <SEO
+        title={`${topic.label} Support & Counselling | WINGS Counselling Centre`}
+        description={(topic.heroDescription || topic.understandingDescription || "").slice(0, 160)}
+        path={`/support/${topic.slug}`}
+        ogImage={img1}
+      />
       {/* Fonts */}
       <style>
         {`

@@ -6,7 +6,7 @@ import { Footer } from "../components/Layout/Footer.jsx";
 import { useAppointment } from "@/context/AppointmentContext";
 import { useLocation } from "wouter";
 import { buildServiceCardsByTab } from "@/lib/serviceTabs";
-
+import SEO from "@/components/SEO";
 
 export default function ServicePage() {
     const { t, i18n } = useTranslation();
@@ -155,6 +155,12 @@ export default function ServicePage() {
 
     return (
         <div className="w-full flex flex-col min-h-screen items-center bg-[#FAFAF5]">
+            <SEO
+                title="Counselling & Therapy Services | WINGS Counselling Centre"
+                description="Explore our comprehensive counselling services including individual therapy, couples & marital therapy, family support, youth counselling, and clinical supervision."
+                path="/services"
+                ogImage="/assets/indvidualservice.png"
+            />
             {/* ── Hero Section ── CENTERED */}
             <div
                 className="relative flex w-full shrink-0 overflow-hidden items-center justify-center"

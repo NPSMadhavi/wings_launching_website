@@ -7,6 +7,7 @@ import { SiteCheckBadge } from "@/components/ui/SiteIcons";
 import PractitionerCard from "@/components/ui/PractitionerCard";
 import { useAppointment } from "@/context/AppointmentContext";
 import { scrollToServiceDetailsWithRetry } from "@/lib/scrollToSection";
+import SEO from "@/components/SEO";
 
 const heroImg = "/assets/card1.jpg.jpeg";
 
@@ -92,8 +93,34 @@ export default function SubServiceLayout({
     return pickTeamMembers(teamMembers, teamKeywords, 3);
   }, [hasPresetTeam, assignedTeamMembers, teamMembers, teamKeywords]);
 
+  const [location] = useLocation();
+
+  const cleanDescription = (description || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
+
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": serviceLabel,
+    "provider": {
+      "@type": "CounselingService",
+      "name": "WINGS Counselling Centre",
+      "url": "https://wingscc.netopsys.in/"
+    },
+    "description": (description || "").trim().slice(0, 300)
+  };
+
   return (
     <div className="w-full flex flex-col min-h-screen items-center bg-[#FAFAF5] overflow-x-hidden">
+      <SEO
+        title={`${serviceLabel} | WINGS Counselling Centre`}
+        description={cleanDescription || `${serviceLabel} services at WINGS Counselling Centre.`}
+        path={location}
+        ogImage={therapyImage}
+        jsonLd={serviceJsonLd}
+      />
       <section
         className="relative flex w-full shrink-0 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{

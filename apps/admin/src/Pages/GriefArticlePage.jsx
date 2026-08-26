@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAppointment } from "@/context/AppointmentContext";
 import { scrollToArticleDetailsWithRetry } from "@/lib/scrollToSection";
+import SEO from "@/components/SEO";
 
 const heroImg = "/assets/ihero1.jpeg";
 const introImg = "/assets/img4.jpg";
@@ -117,6 +118,13 @@ export default function AnxietyArticlePage() {
       className="w-full bg-white text-[#111111]"
       style={styles.body}
     >
+      <SEO
+        title="Navigating Grief & Loss | WINGS Counselling Centre"
+        description="Understand the emotional stages of grief and loss, learn coping mechanisms, and find compassionate counselling support during difficult times."
+        path="/GriefArticlePage"
+        ogImage="/assets/ihero1.jpeg"
+        ogType="article"
+      />
       {/* GOOGLE FONTS */}
       <style>
         {`

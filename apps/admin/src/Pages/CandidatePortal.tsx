@@ -19,6 +19,7 @@ import { FaLinkedin } from "react-icons/fa";
 import { useCandidateAuth, candidateLogin, candidateRegister } from "../context/CandidateAuthContext";
 import { parseInterviewBookingApplicationId } from "@/lib/candidate-portal-routes";
 import { Footer } from "@/components/Layout/Footer";
+import SEO from "@/components/SEO";
 
 const BASE = "/api";
 
@@ -1878,5 +1879,10 @@ export default function CandidatePortal() {
   const applyJobId = params.get("apply");
   const defaultTab = applyJobId ? "jobs" : "jobs";
 
-  return <Dashboard defaultTab={defaultTab} />;
+  return (
+    <>
+      <SEO title="Candidate Portal | WINGS Counselling Centre" noindex={true} />
+      <Dashboard defaultTab={defaultTab} />
+    </>
+  );
 }

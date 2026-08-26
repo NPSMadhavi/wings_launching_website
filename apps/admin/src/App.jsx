@@ -1,6 +1,7 @@
 import { Switch, Route, Router as WouterRouter, useLocation, Redirect } from "wouter";
 import { useLayoutEffect, useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -210,29 +211,31 @@ function ModalContainer() {
 /* ---------------- App Root ---------------- */
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <CandidateAuthProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <AppointmentProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <CandidateAuthProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <AppointmentProvider>
 
-              <div className="page-wrapper">
-                <ContentProtection />
+                <div className="page-wrapper">
+                  <ContentProtection />
 
-              <ScrollToTop />
-              <SharedNavbar />
-              <Router />
-              </div>
+                <ScrollToTop />
+                <SharedNavbar />
+                <Router />
+                </div>
 
-              <ModalContainer />
-              <CandidateAuthModal />
+                <ModalContainer />
+                <CandidateAuthModal />
 
-            </AppointmentProvider>
-          </WouterRouter>
+              </AppointmentProvider>
+            </WouterRouter>
 
-            <Toaster />
-        </CandidateAuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+              <Toaster />
+          </CandidateAuthProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }

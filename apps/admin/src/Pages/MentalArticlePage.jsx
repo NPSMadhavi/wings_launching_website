@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAppointment } from "@/context/AppointmentContext";
 import { scrollToArticleDetailsWithRetry } from "@/lib/scrollToSection";
+import SEO from "@/components/SEO";
 
 const heroImg = "/assets/ihero1.jpeg";
 const introImg = "/assets/img4.jpg";
@@ -118,6 +119,13 @@ export default function MentalArticlePage() {
       className="w-full bg-white text-[#111111]"
       style={styles.body}
     >
+      <SEO
+        title="Mental Health & Financial Stress | WINGS Counselling Centre"
+        description="Explore the impact of financial strain on emotional well-being and mental health, and discover effective coping strategies and professional support."
+        path="/MentalArticlePage"
+        ogImage="/assets/ihero1.jpeg"
+        ogType="article"
+      />
       {/* GOOGLE FONTS */}
       <style>
         {`

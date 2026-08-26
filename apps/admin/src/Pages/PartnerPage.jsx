@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Footer } from "@/components/Layout/Footer";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import SEO from "@/components/SEO";
 
 const PAGE_SIZE = 3;
 
@@ -63,6 +64,12 @@ const PartnerPage = () => {
 
   return (
     <div className="w-full bg-[#F5F9FF]">
+      <SEO
+        title="Our Partners & Collaborators | WINGS Counselling Centre"
+        description="Discover our esteemed partners, schools, voluntary welfare organisations, and community collaborators working together with WINGS Counselling Centre."
+        path="/partners"
+        ogImage="/assets/partners-hero.jpg"
+      />
       {/* Hero Section */}
       <section
         className="relative w-full min-h-[520px] md:min-h-[650px] lg:min-h-[790px] flex items-center justify-center bg-cover bg-center"

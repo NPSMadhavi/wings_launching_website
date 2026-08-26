@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import type { JobPosting } from "@/lib/careers-types";
 import { useAuth } from "@/hooks/use-auth";
 import { useCandidateAuth } from "@/context/CandidateAuthContext";
+import SEO from "@/components/SEO";
 
 function parseTextToList(text: string): string[] {
   return text
@@ -183,8 +184,40 @@ export default function JobDetail() {
 
   const requirementSections = parseSectionedRequirements(job.requirements || "");
 
+  const jobPostingJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": job.title,
+    "description": (job.description || job.requirements || job.title).slice(0, 300),
+    "identifier": {
+      "@type": "PropertyValue",
+      "name": "WINGS Counselling Centre",
+      "value": String(job.id)
+    },
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": "WINGS Counselling Centre",
+      "sameAs": "https://wingscc.netopsys.in/",
+      "logo": "https://wingscc.netopsys.in/assets/wingsLogo.png"
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "SG"
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F9F9F9] overflow-x-hidden font-sans">
+      <SEO
+        title={`${job.title} - Careers | WINGS Counselling Centre`}
+        description={(job.description || job.requirements || `Apply for ${job.title} position at WINGS Counselling Centre.`).slice(0, 160)}
+        path={`/career/${job.id}`}
+        ogImage="/assets/career1.png"
+        jsonLd={jobPostingJsonLd}
+      />
       {/* ═══════════════════════════════════════════
           HERO SECTION
       ═══════════════════════════════════════════ */}

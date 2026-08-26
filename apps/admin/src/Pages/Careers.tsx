@@ -12,6 +12,7 @@ import type { JobPosting } from "@/lib/careers-types";
 import { useAuth } from "@/hooks/use-auth";
 import { useCandidateAuth } from "@/context/CandidateAuthContext";
 import { scrollToPageContentSection } from "@/lib/scrollToSection";
+import SEO from "@/components/SEO";
 
 const whyWorkIcons = [
   <svg key="purpose" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -75,6 +76,12 @@ export default function Careers() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF5] overflow-x-hidden font-sans">
+      <SEO
+        title="Careers & Opportunities | WINGS Counselling Centre"
+        description="Explore career opportunities at WINGS Counselling Centre and join our dedicated team of counsellors, therapists, and mental health professionals."
+        path="/career"
+        ogImage="/assets/careersection.png"
+      />
       <Navbar />
 
       {/* Hero */}

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import SEO from "@/components/SEO";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -75,6 +76,7 @@ export default function AdminApp() {
   return (
     <AuthProvider>
       <>
+        <SEO title="Admin Dashboard | WINGS Counselling Centre" noindex={true} />
         <AdminRoutes />
 
         {/* 🔥 TOAST CONTAINER ADDED HERE */}

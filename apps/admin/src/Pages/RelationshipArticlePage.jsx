@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAppointment } from "@/context/AppointmentContext";
 import { scrollToArticleDetailsWithRetry } from "@/lib/scrollToSection";
+import SEO from "@/components/SEO";
 
 
 const heroImg = "/assets/ihero1.jpeg";
@@ -119,6 +120,13 @@ export default function RelationshipArticlePage() {
       className="w-full bg-white text-[#111111]"
       style={styles.body}
     >
+      <SEO
+        title="Relationship & Marital Support Guide | WINGS Counselling Centre"
+        description="Navigate relationship challenges, improve communication, rebuild trust, and explore couples counselling with guidance from WINGS Counselling Centre."
+        path="/RelationshipArticlePage"
+        ogImage="/assets/ihero1.jpeg"
+        ogType="article"
+      />
       {/* GOOGLE FONTS */}
       <style>
         {`

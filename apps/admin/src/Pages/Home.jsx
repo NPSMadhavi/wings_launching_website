@@ -13,6 +13,7 @@ import { useState, useLayoutEffect } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { scrollToContactWithRetry, scrollToPartnersWithRetry } from "@/lib/scrollToSection";
 import { Partners } from "../components/Section/Partner";
+import SEO from "@/components/SEO";
 
 export default function Home() {
   // Skip intro if arriving via hash link (e.g., /#contact) or when
@@ -107,6 +108,12 @@ export default function Home() {
 
   return (
     <>
+      <SEO
+        title="WINGS Counselling Centre | Professional Counselling & Therapy Services"
+        description="WINGS Counselling Centre provides compassionate, professional counselling, individual & family therapy, youth support, and clinical supervision in Singapore."
+        path="/"
+        ogImage="/assets/wingsLogo.png"
+      />
       {showIntro && <LogoIntro onComplete={handleIntroComplete} />}
 
       <motion.div

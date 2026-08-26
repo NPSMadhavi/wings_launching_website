@@ -3,6 +3,7 @@ import PractitionerCard from "@/components/ui/PractitionerCard";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import SEO from "@/components/SEO";
 
 const TeamPage = () => {
     const { t } = useTranslation();
@@ -86,6 +87,12 @@ const TeamPage = () => {
 
     return (
         <div className="w-full bg-white font-sans overflow-x-hidden">
+            <SEO
+                title="Our Clinical Team | WINGS Counselling Centre"
+                description="Meet our dedicated team of experienced counsellors, therapists, clinical supervisors, and mental health professionals at WINGS Counselling Centre."
+                path="/team"
+                ogImage="/assets/team_hero_bg.png"
+            />
             {/* Hero Section */}
             {groupPhotoUrl ? (
                 <>
