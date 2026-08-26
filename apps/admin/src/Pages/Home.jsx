@@ -106,6 +106,29 @@ export default function Home() {
     restDelta: 0.001
   });
 
+  const homeJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CounselingService",
+        "@id": "https://wingscc.netopsys.in/#organization",
+        "name": "WINGS Counselling Centre",
+        "url": "https://wingscc.netopsys.in/",
+        "logo": "https://wingscc.netopsys.in/assets/wingsLogo.png",
+        "description": "Professional counselling, therapy, youth support, and clinical supervision centre serving individuals, couples, and families."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://wingscc.netopsys.in/#website",
+        "url": "https://wingscc.netopsys.in/",
+        "name": "WINGS Counselling Centre",
+        "publisher": {
+          "@id": "https://wingscc.netopsys.in/#organization"
+        }
+      }
+    ]
+  };
+
   return (
     <>
       <SEO
@@ -113,6 +136,7 @@ export default function Home() {
         description="WINGS Counselling Centre provides compassionate, professional counselling, individual & family therapy, youth support, and clinical supervision in Singapore."
         path="/"
         ogImage="/assets/wingsLogo.png"
+        jsonLd={homeJsonLd}
       />
       {showIntro && <LogoIntro onComplete={handleIntroComplete} />}
 
