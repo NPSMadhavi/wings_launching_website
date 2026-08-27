@@ -306,14 +306,13 @@ export default function AboutUs() {
               {t("aboutUs.vision.title")}
             </h2>
 
-            <div className="relative shrink-0 w-full lg:w-[435px] h-[470px] order-2 lg:order-1">
-              <div
-                className="absolute inset-0 rounded-[20px] bg-cover bg-center"
-                style={{
-                  backgroundImage: 'url("/assets/foundingvision.jpeg")',
-                }}
-              />
-            </div>
+           <div className="relative shrink-0 w-full lg:w-[435px] order-2 lg:order-1 flex justify-center">
+  <img
+    src="/assets/foundingvision.jpeg"
+    alt="Founding Vision"
+    className="w-full h-auto max-h-[455px] object-contain rounded-[20px]"
+  />
+</div>
 
             <div className="flex flex-col flex-1 order-3 lg:order-2">
               <h2
