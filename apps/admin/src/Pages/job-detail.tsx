@@ -197,8 +197,8 @@ export default function JobDetail() {
     "hiringOrganization": {
       "@type": "Organization",
       "name": "WINGS Counselling Centre",
-      "sameAs": "https://wingscc.netopsys.in/",
-      "logo": "https://wingscc.netopsys.in/assets/wingsLogo.png"
+      "sameAs": "https://wingscounselling.org.sg/",
+      "logo": "https://wingscounselling.org.sg/assets/wingsLogo.png"
     },
     "jobLocation": {
       "@type": "Place",

@@ -10,4 +10,4 @@ Disallow: /candidate-portal
 Disallow: /unsubscribe/
 Disallow: /volunteerform
 
-Sitemap: https://wingscc.netopsys.in/sitemap.xml
+Sitemap: https://wingscounselling.org.sg/sitemap.xml

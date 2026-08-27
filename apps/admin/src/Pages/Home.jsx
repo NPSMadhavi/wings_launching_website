@@ -111,19 +111,19 @@ export default function Home() {
     "@graph": [
       {
         "@type": "CounselingService",
-        "@id": "https://wingscc.netopsys.in/#organization",
+        "@id": "https://wingscounselling.org.sg/#organization",
         "name": "WINGS Counselling Centre",
-        "url": "https://wingscc.netopsys.in/",
-        "logo": "https://wingscc.netopsys.in/assets/wingsLogo.png",
+        "url": "https://wingscounselling.org.sg/",
+        "logo": "https://wingscounselling.org.sg/assets/wingsLogo.png",
         "description": "Professional counselling, therapy, youth support, and clinical supervision centre serving individuals, couples, and families."
       },
       {
         "@type": "WebSite",
-        "@id": "https://wingscc.netopsys.in/#website",
-        "url": "https://wingscc.netopsys.in/",
+        "@id": "https://wingscounselling.org.sg/#website",
+        "url": "https://wingscounselling.org.sg/",
         "name": "WINGS Counselling Centre",
         "publisher": {
-          "@id": "https://wingscc.netopsys.in/#organization"
+          "@id": "https://wingscounselling.org.sg/#organization"
         }
       }
     ]

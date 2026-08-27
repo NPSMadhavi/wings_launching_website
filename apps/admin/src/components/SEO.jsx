@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 
-const DOMAIN = "https://wingscc.netopsys.in";
+const DOMAIN = "https://wingscounselling.org.sg";
 const DEFAULT_IMAGE = "/assets/wingsLogo.png";
 const SITE_NAME = "WINGS Counselling Centre";
 

@@ -107,7 +107,7 @@ export default function SubServiceLayout({
     "provider": {
       "@type": "CounselingService",
       "name": "WINGS Counselling Centre",
-      "url": "https://wingscc.netopsys.in/"
+      "url": "https://wingscounselling.org.sg/"
     },
     "description": (description || "").trim().slice(0, 300)
   };

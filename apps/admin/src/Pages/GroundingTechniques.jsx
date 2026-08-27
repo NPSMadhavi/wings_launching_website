@@ -270,7 +270,7 @@ export default function AnxietyArticlePage() {
       "name": "WINGS Counselling Centre",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://wingscc.netopsys.in/assets/wingsLogo.png"
+        "url": "https://wingscounselling.org.sg/assets/wingsLogo.png"
       }
     }
   };
