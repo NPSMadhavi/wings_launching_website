@@ -487,12 +487,12 @@ export function Footer() {
               {t("footer.poweredBy")}{" "}
               <span className="text-[#FF543E]">
                 <a
-                  href="https://netopsys.in/"
+                  href="https://netopsys.net"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline break-words"
                 >
-                  Netopsys AI Private Limited.
+                  Netopsys Pte. Ltd, Singapore.
                 </a>
               </span>
             </p>
