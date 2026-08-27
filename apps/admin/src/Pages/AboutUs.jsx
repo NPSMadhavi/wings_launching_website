@@ -306,7 +306,7 @@ export default function AboutUs() {
               {t("aboutUs.vision.title")}
             </h2>
 
-            <div className="relative shrink-0 w-full lg:w-[435px] h-[440px] order-2 lg:order-1">
+            <div className="relative shrink-0 w-full lg:w-[435px] h-[470px] order-2 lg:order-1">
               <div
                 className="absolute inset-0 rounded-[20px] bg-cover bg-center"
                 style={{

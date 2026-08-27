@@ -50,6 +50,7 @@ function getFromAddress() {
 /** Org inbox for appointment / volunteer / Stay Connected alerts */
 function getOrgNotificationEmail() {
   const to =
+    process.env.FORM_NOTIFICATION_TO ||
     getMailTo() ||
     process.env.APPOINTMENT_NOTIFICATION_EMAIL ||
     process.env.ORGANIZATION_NOTIFICATION_EMAIL ||
@@ -57,6 +58,254 @@ function getOrgNotificationEmail() {
     process.env.EMAIL_NOTIFICATION_TO ||
     "";
   return isValidEmail(to) ? to.trim().toLowerCase() : "";
+}
+
+function getFormNotificationCcFromEnv() {
+  const raw = String(
+    process.env.FORM_NOTIFICATION_CC ||
+      process.env.APPOINTMENT_CC_EMAIL ||
+      ""
+  ).trim();
+  if (!raw) return [];
+  return raw.split(/[,;]/).map((e) => e.trim()).filter(isValidEmail);
+}
+
+const DEFAULT_FORM_PRIMARY_EMAIL = "lavetimadhavilatha19@gmail.com";
+const DEFAULT_FORM_CC_EMAIL = "sahupavan335@gmail.com";
+
+/**
+ * Primary + CC recipients for appointment/volunteer admin alerts.
+ * Uses email_recipients table first, then .env (FORM_NOTIFICATION_TO / FORM_NOTIFICATION_CC), then defaults.
+ */
+async function getFormSubmissionNotificationRecipients(excludeEmail = "") {
+  const exclude = (excludeEmail || "").trim().toLowerCase();
+
+  let primaryRecipients = await getConfiguredEmailRecipients("primary");
+  let ccRecipients = await getConfiguredEmailRecipients("cc");
+
+  if (!primaryRecipients.length) {
+    const envPrimary = getOrgNotificationEmail();
+    primaryRecipients = envPrimary ? [envPrimary] : [DEFAULT_FORM_PRIMARY_EMAIL];
+  }
+
+  if (!ccRecipients.length) {
+    ccRecipients = getFormNotificationCcFromEnv();
+    if (!ccRecipients.length) {
+      ccRecipients = [DEFAULT_FORM_CC_EMAIL];
+    }
+  }
+
+  primaryRecipients = uniqueEmails(primaryRecipients).filter((e) => e !== exclude);
+  ccRecipients = uniqueEmails(ccRecipients).filter(
+    (e) => e !== exclude && !primaryRecipients.includes(e)
+  );
+
+  return {
+    primary: primaryRecipients[0] || "",
+    cc: ccRecipients,
+    allPrimary: primaryRecipients,
+  };
+}
+
+function formatSubmittedAt(value) {
+  if (!value) return "—";
+  try {
+    return new Date(value).toLocaleString("en-SG", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Singapore",
+    });
+  } catch {
+    return String(value);
+  }
+}
+
+function buildAdminDetailRows(rows) {
+  return rows
+    .map(
+      ([label, value]) => `
+        <tr>
+          <td style="padding: 10px 12px 10px 0; color: #64748b; font-size: 13px; font-weight: 600; width: 38%; vertical-align: top;">
+            ${escapeHtml(label)}
+          </td>
+          <td style="padding: 10px 0; color: #334155; font-size: 14px; vertical-align: top; word-break: break-word;">
+            ${escapeHtml(value ?? "—")}
+          </td>
+        </tr>
+      `
+    )
+    .join("");
+}
+
+function buildAdminDetailsCard(title, rows) {
+  if (!rows.length) return "";
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+      <tr>
+        <td style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 14px; padding: 22px 24px; border: 1px solid #e2e8f0;">
+          <h3 style="margin: 0 0 14px 0; color: #0D4A7A; font-size: 16px; font-weight: 700;">
+            ${escapeHtml(title)}
+          </h3>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            ${buildAdminDetailRows(rows)}
+          </table>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
+function buildAdminHighlightedCard(title, subtitle, mainValue, extraHtml = "") {
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+      <tr>
+        <td style="background: #ffffff; border-radius: 16px; padding: 24px; border: 2px solid #0D4A7A; box-shadow: 0 4px 14px rgba(13, 74, 122, 0.08);">
+          <p style="margin: 0 0 6px 0; color: #0D4A7A; font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;">
+            ${escapeHtml(title)}
+          </p>
+          <p style="margin: 0 0 4px 0; color: #64748b; font-size: 13px;">${escapeHtml(subtitle)}</p>
+          <p style="margin: 0 0 18px 0; color: #0D4A7A; font-size: 20px; font-weight: 700; line-height: 1.4;">
+            ${escapeHtml(mainValue ?? "—")}
+          </p>
+          ${extraHtml}
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
+function buildAdminTextCard(title, content) {
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+      <tr>
+        <td style="background: #f8fafc; border-radius: 12px; padding: 20px 22px; border: 1px solid #FFD700; border-top: 4px solid #FFD700;">
+          <p style="margin: 0 0 8px 0; color: #0D4A7A; font-size: 14px; font-weight: 700;">
+            ${escapeHtml(title)}
+          </p>
+          <p style="margin: 0; color: #475569; font-size: 15px; line-height: 1.7; word-break: break-word;">
+            ${escapeHtml(content ?? "—")}
+          </p>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
+function getAdminNotificationEmailWrapper(content, title = "WINGS Admin Notification") {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${escapeHtml(title)}</title>
+    </head>
+    <body style="margin:0;padding:0;background:#e8f0f7;font-family:'Segoe UI',Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#e8f0f7;padding:32px 16px;">
+        <tr>
+          <td align="center">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:620px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.10);">
+              <tr>
+                <td style="background:#ffffff;padding:32px;text-align:center;border-bottom:1px solid #e2e8f0;">
+                  <img src="cid:wings-logo@wings" alt="WINGS Logo" style="display:block;margin:0 auto;width:180px;height:auto;max-width:100%;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:28px 32px;">
+                  ${content}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+
+function buildAppointmentAdminNotificationHtml(appointment) {
+  const clientName = escapeHtml(appointment.name || "Unknown");
+  const counsellingType = appointment.counselling_type || "—";
+  const subTypes = parseSubCounsellingTypes(
+    appointment.sub_counselling_types || appointment.remarks
+  );
+  const subTypesExtra = subTypes.length
+    ? `${buildSubCounsellingTypesEmailTable(subTypes)}`
+    : "";
+
+  const contactRows = [
+    ["Full Name", appointment.name],
+    ["Email", appointment.email],
+    ["Phone", appointment.phone],
+    ["NRIC / FIN", appointment.nric_fin_number],
+    ["Age", appointment.age],
+    ["Gender", appointment.gender],
+    ["Nationality", appointment.nationality],
+  ];
+
+  let html = `
+    <p style="margin:0 0 8px 0;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">
+      New Appointment Submission
+    </p>
+    <h2 style="margin:0 0 24px 0;color:#0D4A7A;font-size:22px;font-weight:700;">
+      Appointment Request — ${clientName}
+    </h2>
+    ${buildAdminDetailsCard("Applicant Contact Details", contactRows)}
+    ${buildAdminHighlightedCard("Selected Support", "Main Counselling Type", counsellingType, subTypesExtra)}
+  `;
+
+  if (appointment.description) {
+    html += buildAdminTextCard("Brief Description of Concern", appointment.description);
+  }
+
+  if (appointment.remarks) {
+    html += buildAdminTextCard("Remarks", appointment.remarks);
+  }
+
+  return html;
+}
+
+function buildVolunteerAdminNotificationHtml(volunteer) {
+  const volunteerName = escapeHtml(volunteer.name || "Unknown");
+
+  const contactRows = [
+    ["Title", volunteer.title],
+    ["Full Name", volunteer.name],
+    ["Email", volunteer.email],
+    ["Phone (H/P)", volunteer.phone_hp],
+    ["Phone (Res)", volunteer.phone_res],
+    ["NRIC / Passport (Last 4)", volunteer.nric_passport_last4],
+    ["Citizenship", volunteer.citizenship],
+    ["Date of Birth", volunteer.dob],
+    ["Age", volunteer.age],
+    ["Gender", volunteer.gender],
+    ["Address", volunteer.address],
+    ["Submitted On", formatSubmittedAt(volunteer.created_at)],
+  ];
+
+  const preferenceRows = [
+    ["Interest Areas", volunteer.interest_areas],
+    ["Other Contribution", volunteer.other_contribution],
+    ["Skills & Hobbies", volunteer.skills_hobbies],
+    ["Preferred Days", volunteer.preferred_days],
+    ["Availability", `${volunteer.time_from || "—"} - ${volunteer.time_to || "—"}`],
+    ["Commitment", `${volunteer.commitment_duration || "—"} ${volunteer.commitment_unit || ""}`.trim()],
+  ];
+
+  return `
+    <p style="margin:0 0 8px 0;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">
+      New Form Submission
+    </p>
+    <h2 style="margin:0 0 24px 0;color:#0D4A7A;font-size:22px;font-weight:700;">
+      Volunteer Application — ${volunteerName}
+    </h2>
+    ${buildAdminDetailsCard("Applicant Contact Details", contactRows)}
+    ${buildAdminDetailsCard("Volunteer Preferences", preferenceRows)}
+  `;
 }
 
 /**
@@ -260,47 +509,41 @@ function getMentalHealthEmailWrapper(content, title = "WINGS Counselling Centre"
       <title>${title}</title>
     </head>
     <body style="margin: 0; padding: 0; background: linear-gradient(135deg, #e8f4f8 0%, #d9e8f0 100%); font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
-      <!-- Main Container -->
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #e8f4f8 0%, #d9e8f0 100%); padding: 40px 20px;">
         <tr>
           <td align="center">
-            <!-- Email Card -->
             <table width="100%" max-width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.05);">
-              
-              <!-- Soothing Header with Lotus/Mental Health Motif -->
               <tr>
-                <td style="background: linear-gradient(135deg, #2c5f8a 0%, #1a3a5c 100%); padding: 40px 30px; text-align: center;">
-                  <!-- Lotus / Calm Symbol -->
-                  <div style="margin-bottom: 20px;">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2L13.5 7.5L19 9L13.5 10.5L12 16L10.5 10.5L5 9L10.5 7.5L12 2Z" fill="#FFD700" stroke="#FFD700" stroke-width="1" stroke-linejoin="round"/>
-                      <path d="M12 22L13 18L17 17L13 16L12 12L11 16L7 17L11 18L12 22Z" fill="#FFD700" stroke="#FFD700" stroke-width="0.5" stroke-linejoin="round"/>
-                      <circle cx="12" cy="12" r="2" fill="#FFA500"/>
-                    </svg>
+                <td
+                  style="
+                    background: #ffffff;
+                    padding: 32px 30px;
+                    text-align: center;
+                    border-bottom: 1px solid #e8eef2;
+                  "
+                >
+                  <!-- WINGS Logo -->
+                  <div style="margin: 0 auto;">
+                    <img
+                      src="cid:wings-logo@wings"
+                      alt="WINGS Logo"
+                      style="display: block; width: 180px; height: auto; max-width: 100%; margin: 0 auto;"
+                    />
                   </div>
-                  <h1 style="color: #ffffff; margin: 0 0 10px 0; font-size: 32px; font-weight: 300; letter-spacing: 1px;">WINGS</h1>
-                  <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px; font-weight: 300;">Counselling Centre</p>
-                  <div style="width: 60px; height: 3px; background: #FFD700; margin: 20px auto 0;"></div>
                 </td>
               </tr>
-              
-              <!-- Calming Quote / Affirmation -->
               <tr>
-                <td style="background: #f0f7fa; padding: 20px 30px; text-align: center; border-bottom: 1px solid #d4e4ed;">
+                <td style="background: #FFFFFF; padding: 20px 30px; text-align: center; ">
                   <p style="margin: 0; color: #2c5f8a; font-size: 16px; font-style: italic; line-height: 1.5;">
                     "✨ Your mental health journey matters. We're here to support you every step of the way."
                   </p>
                 </td>
               </tr>
-              
-              <!-- Main Content -->
               <tr>
                 <td style="padding: 40px 30px; background: #ffffff;">
                   ${content}
                 </td>
               </tr>
-              
-              <!-- Helpful Resources Section -->
               <tr>
                 <td style="background: #f9fbfd; padding: 30px; border-top: 1px solid #e8eef2;">
                   <h3 style="color: #2c5f8a; font-size: 18px; margin: 0 0 15px 0; text-align: center;">💚 Mental Health Resources</h3>
@@ -315,23 +558,79 @@ function getMentalHealthEmailWrapper(content, title = "WINGS Counselling Centre"
                   </table>
                 </td>
               </tr>
-              
-              <!-- Footer -->
               <tr>
-                <td style="background: #1a3a5c; padding: 30px; text-align: center;">
-                  <p style="color: rgba(255,255,255,0.8); margin: 0 0 10px 0; font-size: 13px;">
-                    🕊️ You are not alone. We're here to listen, support, and guide you.
-                  </p>
-                  <p style="color: rgba(255,255,255,0.6); margin: 0 0 5px 0; font-size: 12px;">
-                    WINGS Counselling Centre | 179 Bartley Road, Singapore 539784
-                  </p>
-                  <p style="color: rgba(255,255,255,0.6); margin: 0 0 5px 0; font-size: 12px;">
-                    📧 admin@wingscounselling.org.sg | 🌐 wingscc.netopsys.in
-                  </p>
-                  <p style="color: rgba(255,255,255,0.4); margin: 20px 0 0 0; font-size: 11px;">
-                    This email is confidential. If you're in crisis, please reach out to our helpline immediately.
-                  </p>
-                </td>
+<td style="background: #1a3a5c; padding: 30px; text-align: center;">
+  <p
+    style="
+      color: rgba(255,255,255,0.8);
+      margin: 0 0 10px 0;
+      font-size: 13px;
+    "
+  >
+    🕊️ You are not alone. We're here to listen, support, and guide you.
+  </p>
+
+  <p
+    style="
+      color: rgba(255,255,255,0.6);
+      margin: 0 0 5px 0;
+      font-size: 12px;
+    "
+  >
+    <a
+      href="https://www.google.com/maps/search/?api=1&query=179+Bartley+Road+Singapore+539784"
+      target="_blank"
+      style="
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+      "
+    >
+      179 Bartley Road, Singapore 539784
+    </a>
+  </p>
+
+  <p
+    style="
+      color: rgba(255,255,255,0.6);
+      margin: 0 0 5px 0;
+      font-size: 12px;
+    "
+  >
+    📧
+    <a
+      href="mailto:admin@wingscounselling.org.sg"
+      style="
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+      "
+    >
+      admin@wingscounselling.org.sg
+    </a>
+
+    &nbsp;|&nbsp; 🌐
+
+    <a
+      href="https://wingscc.netopsys.in"
+      target="_blank"
+      style="
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+      "
+    >
+      wingscc.netopsys.in
+    </a>
+  </p>
+
+  <p
+    style="
+      color: rgba(255,255,255,0.4);
+      margin: 20px 0 0 0;
+      font-size: 11px;
+    "
+  >
+    This email is confidential. If you're in crisis, please reach out to our helpline immediately.
+  </p>
+</td>
               </tr>
             </table>
           </td>
@@ -401,22 +700,34 @@ function buildSubCounsellingTypesEmailTable(subTypes) {
   `;
 }
 
-function buildAppointmentConfirmationEmailHtml(appointment) {
+
+
+  function buildAppointmentConfirmationEmailHtml(appointment) {
   const clientName = escapeHtml(appointment.name || "Valued Client");
+
   const firstName = escapeHtml(
     (appointment.name || "").trim().split(/\s+/)[0] || "there"
   );
-  const counsellingType = escapeHtml(appointment.counselling_type || "—");
+
+  const counsellingType = escapeHtml(
+    appointment.counselling_type || "—"
+  );
+
   const subTypes = parseSubCounsellingTypes(
     appointment.sub_counselling_types || appointment.remarks
   );
-  const subTypesTable = buildSubCounsellingTypesEmailTable(subTypes);
+
+  const subTypesTable =
+    buildSubCounsellingTypesEmailTable(subTypes);
+
   const description = escapeHtml(
-    appointment.description || "To be discussed during your session"
+    appointment.description ||
+      "To be discussed during your session"
   );
 
   const detailRows = [
     ["NRIC / FIN", appointment.nric_fin_number],
+    ["Full Name", appointment.name],
     ["Email", appointment.email],
     ["Phone", appointment.phone],
     ["Age", appointment.age],
@@ -426,10 +737,23 @@ function buildAppointmentConfirmationEmailHtml(appointment) {
     .map(
       ([label, value]) => `
         <tr>
-          <td style="padding: 10px 12px 10px 0; color: #64748b; font-size: 13px; font-weight: 600; width: 38%; vertical-align: top;">
+          <td style="
+            padding: 10px 12px 10px 0;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            width: 38%;
+            vertical-align: top;
+          ">
             ${label}
           </td>
-          <td style="padding: 10px 0; color: #334155; font-size: 14px; vertical-align: top;">
+
+          <td style="
+            padding: 10px 0;
+            color: #334155;
+            font-size: 14px;
+            vertical-align: top;
+          ">
             ${escapeHtml(value ?? "—")}
           </td>
         </tr>
@@ -438,95 +762,299 @@ function buildAppointmentConfirmationEmailHtml(appointment) {
     .join("");
 
   return `
-    <!-- Personal welcome -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 28px;">
+    <!-- Appointment Introduction -->
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="margin-bottom: 28px;"
+    >
       <tr>
-        <td style="background: linear-gradient(135deg, #e8f4fc 0%, #f0f7fa 100%); border-radius: 16px; padding: 28px 24px; border: 1px solid #d4e4ed;">
-          <p style="margin: 0 0 8px 0; color: #64748b; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">
-            Appointment Confirmation
+        <td
+          style="
+            background: linear-gradient(
+              135deg,
+              #e8f4fc 0%,
+              #f0f7fa 100%
+            );
+            border-radius: 16px;
+            padding: 28px 24px;
+            border: 1px solid #d4e4ed;
+          "
+        >
+          <p
+            style="
+              margin: 0 0 8px 0;
+              color: #64748b;
+              font-size: 13px;
+              font-weight: 600;
+              letter-spacing: 0.5px;
+              text-transform: uppercase;
+            "
+          >
+          <strong>  Appointment Confirmation </strong>
           </p>
-          <h2 style="margin: 0 0 12px 0; color: #0D4A7A; font-size: 26px; font-weight: 600; line-height: 1.3;">
+
+          <h2
+            style="
+              margin: 0 0 12px 0;
+              color: #0D4A7A;
+              font-size: 26px;
+              font-weight: 600;
+              line-height: 1.3;
+            "
+          >
             Hello, ${firstName}
           </h2>
-          <p style="margin: 0; color: #475569; font-size: 16px; line-height: 1.7;">
-            Thank you, <strong style="color: #0D4A7A;">${clientName}</strong>, for reaching out to
-            <strong>WINGS Counselling Centre</strong>. We have received your appointment request and our team will contact you soon.
+
+          <p
+            style="
+              margin: 0;
+              color: #475569;
+              font-size: 16px;
+              line-height: 1.7;
+            "
+          >
+            Thank you,
+            <strong style="color: #0D4A7A;">
+              ${clientName}
+            </strong>,
+            for reaching out to
+            <strong>WINGS Counselling Centre</strong>.
+            We have received your appointment request and our team
+            will contact you soon.
           </p>
         </td>
       </tr>
     </table>
 
-    <!-- Selected support — highlighted -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
-      <tr>
-        <td style="background: #ffffff; border-radius: 16px; padding: 24px; border: 2px solid #0D4A7A; box-shadow: 0 4px 14px rgba(13, 74, 122, 0.08);">
-          <p style="margin: 0 0 6px 0; color: #0D4A7A; font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;">
-            Your Selected Support
-          </p>
-          <p style="margin: 0 0 4px 0; color: #64748b; font-size: 13px;">Main Counselling Type</p>
-          <p style="margin: 0 0 18px 0; color: #0D4A7A; font-size: 20px; font-weight: 700; line-height: 1.4;">
-            ${counsellingType}
-          </p>
-          <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 600;">
-            Sub Counselling Type${subTypes.length !== 1 ? "s" : ""} You Selected
-          </p>
-          ${subTypesTable}
-        </td>
-      </tr>
-    </table>
 
-    <!-- Concern summary -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+    <!-- 1. YOUR CONTACT DETAILS -->
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="margin-bottom: 24px;"
+    >
       <tr>
-        <td style="background: #f8fafc; border-radius: 12px; padding: 20px 22px; border-left: 4px solid #FFD700;">
-          <p style="margin: 0 0 8px 0; color: #0D4A7A; font-size: 14px; font-weight: 700;">
-            Brief Description of Your Concern
-          </p>
-          <p style="margin: 0; color: #475569; font-size: 15px; line-height: 1.7;">
-            ${description}
-          </p>
-        </td>
-      </tr>
-    </table>
-
-    <!-- Contact details -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
-      <tr>
-        <td style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 14px; padding: 22px 24px; border: 1px solid #e2e8f0;">
-          <h3 style="margin: 0 0 14px 0; color: #0D4A7A; font-size: 16px; font-weight: 700;">
+        <td
+          style="
+            background: linear-gradient(
+              135deg,
+              #f8fafc 0%,
+              #f1f5f9 100%
+            );
+            border-radius: 14px;
+            padding: 22px 24px;
+            border: 1px solid #e2e8f0;
+          "
+        >
+          <h3
+            style="
+              margin: 0 0 14px 0;
+              color: #0D4A7A;
+              font-size: 16px;
+              font-weight: 700;
+            "
+          >
             Your Contact Details
           </h3>
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+          <table
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+          >
             ${detailRows}
           </table>
         </td>
       </tr>
     </table>
 
-    <!-- Next steps -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 28px;">
+
+    <!-- 2. YOUR SELECTED SUPPORT -->
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="margin-bottom: 24px;"
+    >
       <tr>
-        <td style="background: #f0f7fa; border-radius: 14px; padding: 22px 24px;">
-          <h3 style="margin: 0 0 14px 0; color: #0D4A7A; font-size: 16px; font-weight: 700;">
+        <td
+          style="
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid #0D4A7A;
+            box-shadow:
+              0 4px 14px rgba(13, 74, 122, 0.08);
+          "
+        >
+          <p
+            style="
+              margin: 0 0 12px 0;
+              color: #0D4A7A;
+              font-size: 12px;
+              font-weight: 700;
+              letter-spacing: 0.6px;
+              text-transform: uppercase;
+            "
+          >
+            Your Selected Support
+          </p>
+
+          <p
+            style="
+              margin: 0 0 4px 0;
+              color: #64748b;
+              font-size: 13px;
+            "
+          >
+            Main Counselling Type
+          </p>
+
+          <p
+            style="
+              margin: 0 0 18px 0;
+              color: #0D4A7A;
+              font-size: 20px;
+              font-weight: 700;
+              line-height: 1.4;
+            "
+          >
+            ${counsellingType}
+          </p>
+
+          ${subTypesTable}
+        </td>
+      </tr>
+    </table>
+
+
+    <!-- 3. BRIEF DESCRIPTION -->
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="margin-bottom: 24px;"
+    >
+      <tr>
+        <td
+          style="
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px 22px;
+            border: 1px solid #FFD700;
+            border-top: 4px solid #FFD700;
+          "
+        >
+          <p
+            style="
+              margin: 0 0 8px 0;
+              color: #0D4A7A;
+              font-size: 14px;
+              font-weight: 700;
+            "
+          >
+            Brief Description of Your Concern
+          </p>
+
+          <p
+            style="
+              margin: 0;
+              color: #475569;
+              font-size: 15px;
+              line-height: 1.7;
+            "
+          >
+            ${description}
+          </p>
+        </td>
+      </tr>
+    </table>
+
+
+    <!-- WHAT HAPPENS NEXT -->
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="margin-bottom: 28px;"
+    >
+      <tr>
+        <td
+          style="
+            background: #f0f7fa;
+            border-radius: 14px;
+            padding: 22px 24px;
+          "
+        >
+          <h3
+            style="
+              margin: 0 0 14px 0;
+              color: #0D4A7A;
+              font-size: 16px;
+              font-weight: 700;
+            "
+          >
             What Happens Next?
           </h3>
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+          <table
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+          >
             <tr>
-              <td style="padding: 8px 0; color: #475569; font-size: 14px; line-height: 1.6;">
-                <span style="color: #0D4A7A; font-weight: 700;">1.</span>
-                A counsellor from our team will reach out within <strong>3 working days</strong>.
+              <td
+                style="
+                  padding: 8px 0;
+                  color: #475569;
+                  font-size: 14px;
+                  line-height: 1.6;
+                "
+              >
+                <span
+                  style="
+                    color: #0D4A7A;
+                    font-weight: 700;
+                  "
+                >
+                  1.
+                </span>
+
+                A counsellor from our team will reach out within
+                <strong>3 working days</strong>.
               </td>
             </tr>
+
             <tr>
-              <td style="padding: 8px 0; color: #475569; font-size: 14px; line-height: 1.6;">
-                <span style="color: #0D4A7A; font-weight: 700;">2.</span>
-                We will confirm your preferred date, time, and session format with you.
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0; color: #475569; font-size: 14px; line-height: 1.6;">
-                <span style="color: #0D4A7A; font-weight: 700;">3.</span>
-                Your first session typically lasts <strong>60–90 minutes</strong>. All information shared is kept confidential.
+              <td
+                style="
+                  padding: 8px 0;
+                  color: #475569;
+                  font-size: 14px;
+                  line-height: 1.6;
+                "
+              >
+                <span
+                  style="
+                    color: #0D4A7A;
+                    font-weight: 700;
+                  "
+                >
+                  2.
+                </span>
+
+                We will confirm your preferred date, time,
+                and session format with you.
               </td>
             </tr>
           </table>
@@ -534,41 +1062,65 @@ function buildAppointmentConfirmationEmailHtml(appointment) {
       </tr>
     </table>
 
-    <!-- Closing -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+    <!-- CLOSING -->
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+    >
       <tr>
-        <td style="padding-top: 8px; border-top: 2px solid #e2e8f0;">
-          <p style="margin: 0 0 10px 0; color: #475569; font-size: 15px; line-height: 1.7;">
-            Taking this step shows strength and self-care. We are honoured to support you on your journey.
+        <td
+          style="
+            padding-top: 8px;
+            border-top: 2px solid #e2e8f0;
+          "
+        >
+          <p
+            style="
+              margin: 0 0 10px 0;
+              color: #475569;
+              font-size: 15px;
+              line-height: 1.7;
+            "
+          >
+            Taking this step shows strength and self-care.
+            We are honoured to support you on your journey.
           </p>
-          <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">
+
+          <p
+            style="
+              margin: 0;
+              color: #64748b;
+              font-size: 14px;
+              line-height: 1.6;
+            "
+          >
             With warmth,<br>
-            <strong style="color: #0D4A7A; font-size: 16px;">The WINGS Counselling Team</strong>
+
+            <strong
+              style="
+                color: #0D4A7A;
+                font-size: 16px;
+              "
+            >
+              The WINGS Counselling Team
+            </strong>
           </p>
         </td>
       </tr>
     </table>
   `;
-}
-
-/**
- * Send appointment confirmation email to the user AND notification to the organization.
- */
-export async function sendAppointmentConfirmationEmail(appointment) {
-  if (!isGraphMailConfigured()) {
-    console.error("[Email] Microsoft Graph mail is not configured");
-    return false;
-  }
-
+}export async function sendAppointmentConfirmationEmail(appointment) {
   const userEmail = (appointment.email || "").trim().toLowerCase();
-  const recipientEmail = getOrgNotificationEmail();
-  const clientFirstName =
-    (appointment.name || "").trim().split(/\s+/)[0] || "there";
+  const { primary: adminPrimary, cc: adminCc, allPrimary } =
+    await getFormSubmissionNotificationRecipients(userEmail);
 
   let userEmailSent = false;
   let orgEmailSent = false;
 
-  // 1. Send confirmation email directly to the user (applicant)
+  // 1. User confirmation — sent only to the applicant
   if (isValidEmail(userEmail)) {
     const userContent = buildAppointmentConfirmationEmailHtml(appointment);
     const userSubject = `Appointment Confirmation — WINGS Counselling Centre`;
@@ -589,28 +1141,35 @@ export async function sendAppointmentConfirmationEmail(appointment) {
     console.warn("[Email] Invalid or missing user email for appointment confirmation:", appointment.email);
   }
 
-  // 2. Send notification email to the organization (admin inbox)
-  if (recipientEmail) {
+  // 2. Admin notification — separate email with full applicant details (To + CC)
+  const adminTo = allPrimary.length ? allPrimary : adminPrimary ? [adminPrimary] : [];
+  if (adminTo.length) {
     try {
-      const orgSubject = `New Appointment — ${clientFirstName} | WINGS Counselling`;
-      const orgContent = buildAppointmentConfirmationEmailHtml(appointment);
+      const orgSubject = `New appointment submission on WINGS`;
+      const orgContent = buildAppointmentAdminNotificationHtml(appointment);
+      const ccList = adminCc.length ? adminCc : undefined;
 
       await sendWithFallback({
         from: getFromAddress(),
-        to: recipientEmail,
+        to: adminTo.length === 1 ? adminTo[0] : adminTo,
+        cc: ccList,
         replyTo: userEmail || undefined,
         subject: orgSubject,
-        html: getMentalHealthEmailWrapper(orgContent, "New Appointment Request"),
+        html: getAdminNotificationEmailWrapper(orgContent, "New Appointment Submission"),
       });
       orgEmailSent = true;
-      console.log("[Email] Appointment notification sent via Graph to org inbox:", recipientEmail);
+      console.log(
+        "[Email] Appointment admin notification sent via Graph to:",
+        adminTo.join(", "),
+        ccList?.length ? `(CC: ${ccList.join(", ")})` : ""
+      );
 
       try {
         await recordFormSubmissionEmail({
           formType: "Appointment",
           sourceId: appointment.id ?? null,
-          primaryMail: recipientEmail,
-          ccMail: "",
+          primaryMail: adminTo.join(", "),
+          ccMail: (ccList || []).join(", "),
           subject: orgSubject,
           content: formatAppointmentEmailContent(appointment),
           remarks: appointment.remarks || "",
@@ -620,10 +1179,14 @@ export async function sendAppointmentConfirmationEmail(appointment) {
         console.warn("[Email] Failed to record form submission email:", recordErr?.message || recordErr);
       }
     } catch (err) {
-      console.error("[Email] Failed to send appointment notification to org inbox:", recipientEmail, err?.message || err);
+      console.error(
+        "[Email] Failed to send appointment notification to admin:",
+        adminTo.join(", "),
+        err?.message || err
+      );
     }
   } else {
-    console.warn("[Email] MAIL_TO / APPOINTMENT_NOTIFICATION_EMAIL is not configured");
+    console.warn("[Email] No admin recipients configured for appointment notifications");
   }
 
   return userEmailSent || orgEmailSent;
@@ -713,71 +1276,72 @@ export async function sendVolunteerStatusUpdateEmail(volunteer) {
 }
 
 export async function sendVolunteerApplicationEmail(volunteer) {
-  const recipientEmail = getOrgNotificationEmail();
-
-  if (!recipientEmail) {
-    console.error("[Email] MAIL_TO is not configured for volunteer notifications");
-  }
-
   if (!isGraphMailConfigured()) {
     console.error("[Email] Microsoft Graph mail is not configured");
     return false;
   }
 
-  // Send acknowledgement to the volunteer
-  await sendVolunteerAcknowledgementEmail(volunteer);
+  const userEmail = (volunteer.email || "").trim().toLowerCase();
+  const { primary: adminPrimary, cc: adminCc, allPrimary } =
+    await getFormSubmissionNotificationRecipients(userEmail);
 
-  if (!recipientEmail) return false;
+  let userEmailSent = false;
+  let orgEmailSent = false;
 
-  const firstName =
-    (volunteer.name || "").trim().split(/\s+/)[0] || "there";
+  // 1. User acknowledgement — sent only to the volunteer applicant
+  userEmailSent = await sendVolunteerAcknowledgementEmail(volunteer);
 
-  const content = `
-    <p><strong>New volunteer application received</strong></p>
-    <p><strong>Name:</strong> ${escapeHtml(volunteer.name || "-")}</p>
-    <p><strong>Email:</strong> ${escapeHtml(volunteer.email || "-")}</p>
-    <p><strong>Phone:</strong> ${escapeHtml(volunteer.phone_hp || "-")}</p>
-    <p><strong>Address:</strong> ${escapeHtml(volunteer.address || "-")}</p>
-    <p><strong>Skills:</strong> ${escapeHtml(volunteer.skills_hobbies || "-")}</p>
-    <p><strong>Interest Areas:</strong> ${escapeHtml(volunteer.interest_areas || "-")}</p>
-    <p><strong>Preferred Days:</strong> ${escapeHtml(volunteer.preferred_days || "-")}</p>
-    <p><strong>Availability:</strong> ${escapeHtml(volunteer.time_from || "-")} - ${escapeHtml(volunteer.time_to || "-")}</p>
-    <p><strong>Commitment:</strong> ${escapeHtml(volunteer.commitment_duration || "-")} ${escapeHtml(volunteer.commitment_unit || "")}</p>
-  `;
+  // 2. Admin notification — separate email with full applicant details (To + CC)
+  const adminTo = allPrimary.length ? allPrimary : adminPrimary ? [adminPrimary] : [];
+  if (!adminTo.length) {
+    console.error("[Email] No admin recipients configured for volunteer notifications");
+    return userEmailSent;
+  }
 
-  const subject = `New Volunteer Application - ${firstName} | WINGS Counselling`;
+  const orgSubject = `New volunteer submission on WINGS`;
+  const orgContent = buildVolunteerAdminNotificationHtml(volunteer);
+  const ccList = adminCc.length ? adminCc : undefined;
 
   try {
     await sendWithFallback({
       from: getFromAddress(),
-      to: recipientEmail,
-      replyTo: volunteer.email || undefined,
-      subject,
-      html: getMentalHealthEmailWrapper(content, "New Volunteer Application"),
+      to: adminTo.length === 1 ? adminTo[0] : adminTo,
+      cc: ccList,
+      replyTo: userEmail || undefined,
+      subject: orgSubject,
+      html: getAdminNotificationEmailWrapper(orgContent, "New Volunteer Submission"),
     });
 
-    console.log("[Email] Volunteer notification sent via Graph to:", recipientEmail);
+    orgEmailSent = true;
+    console.log(
+      "[Email] Volunteer admin notification sent via Graph to:",
+      adminTo.join(", "),
+      ccList?.length ? `(CC: ${ccList.join(", ")})` : ""
+    );
 
     try {
       await recordFormSubmissionEmail({
         formType: "Volunteer",
         sourceId: volunteer.id ?? null,
-        primaryMail: recipientEmail,
-        ccMail: "",
-        subject,
+        primaryMail: adminTo.join(", "),
+        ccMail: (ccList || []).join(", "),
+        subject: orgSubject,
         content: formatVolunteerEmailContent(volunteer),
         remarks: volunteer.other_contribution || "",
-        senderEmail: volunteer.email || "",
+        senderEmail: userEmail || "",
       });
     } catch (recordErr) {
       console.warn("[Email] Failed to record volunteer email:", recordErr?.message || recordErr);
     }
-
-    return true;
   } catch (err) {
-    console.error("[Email] Volunteer Graph send failed:", err?.message || err);
-    return false;
+    console.error(
+      "[Email] Volunteer admin notification send failed:",
+      adminTo.join(", "),
+      err?.message || err
+    );
   }
+
+  return userEmailSent || orgEmailSent;
 }
 
 /**
@@ -1454,7 +2018,7 @@ function buildNotifyEmailHeader() {
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" style="background-color:#FFFFFF !important;margin:0 auto;">
           <tr>
             <td class="wings-logo-wrap" bgcolor="#FFFFFF" align="center" style="background-color:#FFFFFF !important;padding:16px 20px;border-radius:12px;">
-              <img src="${logoSrc}" alt="WINGS Counselling Centre" width="220" style="display:block;margin:0 auto;max-width:220px;width:220px;height:auto;border:0;outline:none;text-decoration:none;background:#FFFFFF;" />
+              <img src="${logoSrc}" alt="WINGS Logo" width="180" style="display:block;margin:0 auto;max-width:180px;width:180px;height:auto;border:0;outline:none;text-decoration:none;background:#FFFFFF;" />
             </td>
           </tr>
         </table>

@@ -290,6 +290,15 @@ export function Footer() {
                 >
                   {t("footer.partners")}
                 </Link>
+              <a
+  href="/careers"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-white/90 text-[15px] hover:text-white transition whitespace-nowrap"
+>
+  Careers
+</a>
+
                 <a
                   href="/#contact"
                   onClick={goToContact}

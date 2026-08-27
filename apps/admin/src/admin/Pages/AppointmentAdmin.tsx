@@ -785,59 +785,61 @@ export default function AppointmentsPage() {
                             {modalMode === "view" ? (
                                 // View Mode
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">NRIC/FIN Number</label>
-                                            <p className="text-gray-900 font-medium mt-1">{selectedAppointment?.nric_fin_number || '-'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Name</label>
-                                            <p className="text-gray-900 font-medium mt-1">{selectedAppointment?.name}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Age</label>
-                                            <p className="text-gray-900 font-medium mt-1">{selectedAppointment?.age || '-'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Gender</label>
-                                            <p className="text-gray-900 font-medium mt-1">{selectedAppointment?.gender}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Nationality</label>
-                                            <p className="text-gray-900 font-medium mt-1">{selectedAppointment?.nationality || '-'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Email</label>
-                                            <p className="text-gray-900 font-medium mt-1">{selectedAppointment?.email}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Phone</label>
-                                            <p className="text-gray-900 font-medium mt-1">{selectedAppointment?.phone}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Counselling Type</label>
-                                            <p className="text-gray-900 text-left font-medium mt-1">{selectedAppointment?.counselling_type}</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                       <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">
-  Sub Counselling Types
-</label>
-                                     <div className="flex flex-wrap gap-2">
-  <SubCounsellingTypesTable
-    value={selectedAppointment?.sub_counselling_types}
-    fallback={selectedAppointment?.remarks}
-  />
-</div>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Description</label>
-                                        <p className="text-gray-900 mt-1">{selectedAppointment?.description || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Remarks</label>
-                                        <p className="text-gray-900 mt-1">{selectedAppointment?.remarks || '-'}</p>
-                                    </div>
+                                    <table className="w-full text-left border-collapse">
+                                        <tbody>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase w-1/3">NRIC/FIN Number</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.nric_fin_number || '-'}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Name</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.name}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Age</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.age || '-'}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Gender</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.gender}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Nationality</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.nationality || '-'}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Email</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.email}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Phone</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.phone}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Counselling Type</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.counselling_type}</td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase align-top">Sub Counselling Types</th>
+                                                <td className="py-3">
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <SubCounsellingTypesTable
+                                                            value={selectedAppointment?.sub_counselling_types}
+                                                            fallback={selectedAppointment?.remarks}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase align-top">Description</th>
+                                                <td className="py-3 text-gray-900 whitespace-pre-wrap">{selectedAppointment?.description || '-'}</td>
+                                            </tr>
+                                            <tr>
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase align-top">Remarks</th>
+                                                <td className="py-3 text-gray-900 whitespace-pre-wrap">{selectedAppointment?.remarks || '-'}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </>
                             ) : (
                                 // Edit Mode

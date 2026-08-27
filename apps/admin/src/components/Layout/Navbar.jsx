@@ -1,8 +1,20 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, Heart, Globe, Home as HomeIcon, Users, HandHeart, FileText, Briefcase, Handshake } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Heart,
+  Globe,
+  Home as HomeIcon,
+  Users,
+  HandHeart,
+  FileText,
+  Briefcase,
+  Handshake,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useLocation, Link } from "wouter";
 import { scrollToContactWithRetry, scrollToPartnersWithRetry } from "@/lib/scrollToSection";
 
@@ -78,12 +90,14 @@ const navLinks = [
     route: false,
 
     dropdown: [
-      {
-        id: "events",
-        labelKey: "navbar.events",
-        href: "/events",
-        route: true,
-      },
+     {
+
+    id: "careers",
+    labelKey: "navbar.careers",
+    href: "/career",
+    route: true,
+    newTab: true,
+},
 
       {
         id: "articles",
@@ -108,13 +122,12 @@ const navLinks = [
     route: true,
   },
 
-  {
-    id: "careers",
-    labelKey: "navbar.careers",
-    href: "/career",
-    route: true,
-    newTab: true,
-  },
+{
+        id: "events",
+        labelKey: "navbar.events",
+        href: "/events",
+        route: true,
+      },
 ];
 
 const navIcons = {
@@ -949,20 +962,14 @@ onMouseLeave={() => {
                                   "
                                 >
                                   <div className="py-2">
-                                    {link.dropdown.map(
-                                      (
-                                        subItem
-                                      ) =>
-                                        subItem.route ? (
-                                          <Link
-                                            key={
-                                              subItem.id
-                                            }
-
-                                            href={
-                                              subItem.href
-                                            }
-
+                                    {link.dropdown.map((subItem) =>
+                                      subItem.route ? (
+                                        subItem.newTab ? (
+                                          <a
+                                            key={subItem.id}
+                                            href={subItem.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                             className="
                                               block
                                               px-5
@@ -975,101 +982,91 @@ onMouseLeave={() => {
                                               rounded-lg
                                               mx-2
                                             "
-
                                             style={{
-                                              fontFamily:
-                                                "'DM Sans', sans-serif",
-
-                                              fontWeight:
-                                                "500",
-
-                                              fontSize:
-                                                "clamp(13px,0.95vw,16px)",
-
-                                              textDecoration:
-                                                "none",
-
+                                              fontFamily: "'DM Sans', sans-serif",
+                                              fontWeight: "500",
+                                              fontSize: "clamp(13px,0.95vw,16px)",
+                                              textDecoration: "none",
+                                              color: "#333",
+                                              backgroundColor: "transparent",
+                                            }}
+                                            onClick={() => {
+                                              setActiveDropdown(null);
+                                              setMobileOpen(false);
+                                            }}
+                                          >
+                                            {t(subItem.labelKey)}
+                                          </a>
+                                        ) : (
+                                          <Link
+                                            key={subItem.id}
+                                            href={subItem.href}
+                                            className="
+                                              block
+                                              px-5
+                                              lg:px-5
+                                              xl:px-6
+                                              py-3
+                                              transition-all
+                                              duration-200
+                                              dropdown-item
+                                              rounded-lg
+                                              mx-2
+                                            "
+                                            style={{
+                                              fontFamily: "'DM Sans', sans-serif",
+                                              fontWeight: "500",
+                                              fontSize: "clamp(13px,0.95vw,16px)",
+                                              textDecoration: "none",
                                               color:
-                                                location ===
-                                                subItem.href
+                                                location === subItem.href
                                                   ? "#1B4585"
                                                   : "#333",
-
                                               backgroundColor:
-                                                location ===
-                                                subItem.href
+                                                location === subItem.href
                                                   ? "#EAF3FF"
                                                   : "transparent",
                                             }}
-
                                             onClick={() => {
-                                              setActiveDropdown(
-                                                null
-                                              );
-
-                                              setMobileOpen(
-                                                false
-                                              );
+                                              setActiveDropdown(null);
+                                              setMobileOpen(false);
                                             }}
                                           >
-                                            {
-                                              t(subItem.labelKey)
-                                            }
+                                            {t(subItem.labelKey)}
                                           </Link>
-                                        ) : (
-                                          <a
-                                            key={
-                                              subItem.id
-                                            }
-
-                                            href={
-                                              subItem.href
-                                            }
-
-                                            onClick={(
-                                              e
-                                            ) =>
-                                              handleNavClick(
-                                                e,
-                                                subItem
-                                              )
-                                            }
-
-                                            className="
-                                              block
-                                              px-5
-                                              lg:px-5
-                                              xl:px-6
-                                              py-3
-                                              transition-all
-                                              duration-200
-                                              dropdown-item
-                                              rounded-lg
-                                              mx-2
-                                            "
-
-                                            style={{
-                                              fontFamily:
-                                                "'DM Sans', sans-serif",
-
-                                              fontWeight:
-                                                "500",
-
-                                              fontSize:
-                                                "clamp(13px,0.95vw,16px)",
-
-                                              textDecoration:
-                                                "none",
-
-                                              color:
-                                                "#333",
-                                            }}
-                                          >
-                                            {
-                                              t(subItem.labelKey)
-                                            }
-                                          </a>
                                         )
+                                      ) : (
+                                        <a
+                                          key={subItem.id}
+                                          href={subItem.href}
+                                          onClick={(e) =>
+                                            handleNavClick(e, subItem)
+                                          }
+                                          className="
+                                            block
+                                            px-5
+                                            lg:px-5
+                                            xl:px-6
+                                            py-3
+                                            transition-all
+                                            duration-200
+                                            dropdown-item
+                                            rounded-lg
+                                            mx-2
+                                          "
+                                          style={{
+                                            fontFamily:
+                                              "'DM Sans', sans-serif",
+                                            fontWeight: "500",
+                                            fontSize:
+                                              "clamp(13px,0.95vw,16px)",
+                                            textDecoration: "none",
+                                            color: "#333",
+                                          }}
+                                        >
+                                          {t(subItem.labelKey)}
+                                        </a>
+                                      )
                                     )}
                                   </div>
                                 </motion.div>

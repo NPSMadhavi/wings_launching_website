@@ -222,12 +222,12 @@ export default function SubServiceLayout({
               {t("subService.team.description")}
             </p>
 
-            <div className="mt-14 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 w-full items-stretch text-left">
+            <div className="mt-14 flex flex-wrap justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8 w-full items-stretch text-left">
               {teamLoading &&
                 [0, 1, 2].map((i) => (
                   <div
                     key={`skeleton-${i}`}
-                    className="bg-white rounded-[12px] border border-[#E8E8E8] shadow-sm p-3 animate-pulse"
+                    className="bg-white rounded-[12px] border border-[#E8E8E8] shadow-sm p-3 animate-pulse w-full sm:w-[calc(50%-10px)] lg:w-[calc(25%-18px)] max-w-[300px]"
                   >
                     <div className="w-full aspect-square rounded-[12px] bg-[#E8EEF5]" />
                     <div className="pt-3 space-y-2">
@@ -238,7 +238,7 @@ export default function SubServiceLayout({
                 ))}
 
               {!teamLoading && counsellors.length === 0 && (
-                <p className="col-span-full text-center font-['DM_Sans'] text-[#666] text-[16px]">
+                <p className="w-full text-center font-['DM_Sans'] text-[#666] text-[16px]">
                   {t("subService.team.updating")}{" "}
                   <button
                     type="button"
@@ -252,7 +252,9 @@ export default function SubServiceLayout({
 
               {!teamLoading &&
                 counsellors.map((person) => (
-                  <PractitionerCard key={person.id ?? person.name} practitioner={person} />
+                  <div key={person.id ?? person.name} className="w-full sm:w-[calc(50%-10px)] lg:w-[calc(25%-18px)] max-w-[300px]">
+                    <PractitionerCard practitioner={person} />
+                  </div>
                 ))}
             </div>
 
