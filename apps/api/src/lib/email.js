@@ -528,7 +528,7 @@ function buildAppointmentConfirmationEmailHtml(appointment) {
             <tr>
               <td style="padding: 8px 0; color: #475569; font-size: 14px; line-height: 1.6;">
                 <span style="color: #0D4A7A; font-weight: 700;">1.</span>
-                A counsellor from our team will reach out within <strong>24–48 hours</strong>.
+                A counsellor from our team will reach out within <strong>3 working days</strong>.
               </td>
             </tr>
             <tr>
@@ -566,59 +566,81 @@ function buildAppointmentConfirmationEmailHtml(appointment) {
 }
 
 /**
- * Appointment notification — Microsoft Graph only.
- * From: MAIL_FROM → To: MAIL_TO (org inbox). Customer email is Reply-To only.
+ * Send appointment confirmation email to the user AND notification to the organization.
  */
 export async function sendAppointmentConfirmationEmail(appointment) {
-  const recipientEmail = getOrgNotificationEmail();
-
-  if (!recipientEmail) {
-    console.error("[Email] MAIL_TO / APPOINTMENT_NOTIFICATION_EMAIL is not configured");
-    return false;
-  }
-
   if (!isGraphMailConfigured()) {
     console.error("[Email] Microsoft Graph mail is not configured");
     return false;
   }
 
+  const userEmail = (appointment.email || "").trim().toLowerCase();
+  const recipientEmail = getOrgNotificationEmail();
   const clientFirstName =
     (appointment.name || "").trim().split(/\s+/)[0] || "there";
 
-  const content = buildAppointmentConfirmationEmailHtml(appointment);
-  const subject = `New Appointment — ${clientFirstName} | WINGS Counselling`;
+  let userEmailSent = false;
+  let orgEmailSent = false;
 
-  try {
-    await sendWithFallback({
-      from: getFromAddress(),
-      to: recipientEmail,
-      replyTo: appointment.email || undefined,
-      subject,
-      html: getMentalHealthEmailWrapper(content, "New Appointment Request"),
-    });
-
-    console.log("[Email] Appointment notification sent via Graph to:", recipientEmail);
+  // 1. Send confirmation email directly to the user (applicant)
+  if (isValidEmail(userEmail)) {
+    const userContent = buildAppointmentConfirmationEmailHtml(appointment);
+    const userSubject = `Appointment Confirmation — WINGS Counselling Centre`;
 
     try {
-      await recordFormSubmissionEmail({
-        formType: "Appointment",
-        sourceId: appointment.id ?? null,
-        primaryMail: recipientEmail,
-        ccMail: "",
-        subject,
-        content: formatAppointmentEmailContent(appointment),
-        remarks: appointment.remarks || "",
-        senderEmail: appointment.email || "",
+      await sendWithFallback({
+        from: getFromAddress(),
+        to: userEmail,
+        subject: userSubject,
+        html: getMentalHealthEmailWrapper(userContent, "Appointment Confirmation"),
       });
-    } catch (recordErr) {
-      console.warn("[Email] Failed to record form submission email:", recordErr?.message || recordErr);
+      userEmailSent = true;
+      console.log("[Email] Appointment confirmation sent via Graph to user:", userEmail);
+    } catch (err) {
+      console.error("[Email] Failed to send appointment confirmation to user:", userEmail, err?.message || err);
     }
-
-    return true;
-  } catch (err) {
-    console.error("[Email] Appointment Graph send failed:", err?.message || err);
-    return false;
+  } else {
+    console.warn("[Email] Invalid or missing user email for appointment confirmation:", appointment.email);
   }
+
+  // 2. Send notification email to the organization (admin inbox)
+  if (recipientEmail) {
+    try {
+      const orgSubject = `New Appointment — ${clientFirstName} | WINGS Counselling`;
+      const orgContent = buildAppointmentConfirmationEmailHtml(appointment);
+
+      await sendWithFallback({
+        from: getFromAddress(),
+        to: recipientEmail,
+        replyTo: userEmail || undefined,
+        subject: orgSubject,
+        html: getMentalHealthEmailWrapper(orgContent, "New Appointment Request"),
+      });
+      orgEmailSent = true;
+      console.log("[Email] Appointment notification sent via Graph to org inbox:", recipientEmail);
+
+      try {
+        await recordFormSubmissionEmail({
+          formType: "Appointment",
+          sourceId: appointment.id ?? null,
+          primaryMail: recipientEmail,
+          ccMail: "",
+          subject: orgSubject,
+          content: formatAppointmentEmailContent(appointment),
+          remarks: appointment.remarks || "",
+          senderEmail: userEmail || "",
+        });
+      } catch (recordErr) {
+        console.warn("[Email] Failed to record form submission email:", recordErr?.message || recordErr);
+      }
+    } catch (err) {
+      console.error("[Email] Failed to send appointment notification to org inbox:", recipientEmail, err?.message || err);
+    }
+  } else {
+    console.warn("[Email] MAIL_TO / APPOINTMENT_NOTIFICATION_EMAIL is not configured");
+  }
+
+  return userEmailSent || orgEmailSent;
 }
 
 export async function sendVolunteerAcknowledgementEmail(volunteer) {
