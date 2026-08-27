@@ -610,14 +610,14 @@ function getMentalHealthEmailWrapper(content, title = "WINGS Counselling Centre"
     &nbsp;|&nbsp; 🌐
 
     <a
-      href="https://wingscc.netopsys.in"
+      href="https://wingscounselling.org.sg/"
       target="_blank"
       style="
         color: rgba(255,255,255,0.6);
         text-decoration: none;
       "
     >
-      wingscc.netopsys.in
+      wingscounselling.org.sg
     </a>
   </p>
 
