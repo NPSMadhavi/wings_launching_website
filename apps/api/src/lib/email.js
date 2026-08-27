@@ -279,7 +279,7 @@ function getMentalHealthEmailWrapper(content, title = "WINGS Counselling Centre"
                     </svg>
                   </div>
                   <h1 style="color: #ffffff; margin: 0 0 10px 0; font-size: 32px; font-weight: 300; letter-spacing: 1px;">WINGS</h1>
-                  <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px; font-weight: 300;">Counselling & Wellness Centre</p>
+                  <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px; font-weight: 300;">Counselling Centre</p>
                   <div style="width: 60px; height: 3px; background: #FFD700; margin: 20px auto 0;"></div>
                 </td>
               </tr>
@@ -308,21 +308,7 @@ function getMentalHealthEmailWrapper(content, title = "WINGS Counselling Centre"
                     <tr>
                       <td style="padding: 8px 0;">
                         <p style="margin: 0; color: #4a6a7f; font-size: 14px; text-align: center;">
-                          📞 24/7 Crisis Helpline: <strong style="color: #2c5f8a;">1800-123-4567</strong>
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding: 8px 0;">
-                        <p style="margin: 0; color: #4a6a7f; font-size: 14px; text-align: center;">
-                          💬 WhatsApp Support: <strong style="color: #2c5f8a;">+65 9123 4567</strong>
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding: 8px 0;">
-                        <p style="margin: 0; color: #4a6a7f; font-size: 14px; text-align: center;">
-                          🌙 Self-Care Tips: <a href="#" style="color: #FFD700; text-decoration: none;">Visit Our Blog</a>
+                          📞 24/7 Crisis Helpline: <strong style="color: #2c5f8a;">(+65) 6383 5745</strong>
                         </p>
                       </td>
                     </tr>
@@ -337,10 +323,10 @@ function getMentalHealthEmailWrapper(content, title = "WINGS Counselling Centre"
                     🕊️ You are not alone. We're here to listen, support, and guide you.
                   </p>
                   <p style="color: rgba(255,255,255,0.6); margin: 0 0 5px 0; font-size: 12px;">
-                    WINGS Counselling Centre | 123 Serenity Lane, Singapore 123456
+                    WINGS Counselling Centre | 179 Bartley Road, Singapore 539784
                   </p>
                   <p style="color: rgba(255,255,255,0.6); margin: 0 0 5px 0; font-size: 12px;">
-                    📧 counselling@wings.org | 🌐 www.wingscounselling.org
+                    📧 admin@wingscounselling.org.sg | 🌐 wingscc.netopsys.in
                   </p>
                   <p style="color: rgba(255,255,255,0.4); margin: 20px 0 0 0; font-size: 11px;">
                     This email is confidential. If you're in crisis, please reach out to our helpline immediately.
