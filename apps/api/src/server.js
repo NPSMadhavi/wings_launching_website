@@ -883,6 +883,21 @@ app.delete("/api/categories/:id", requireAdmin, async (req, res) => {
   }
 });
 
+// ── Serve React/Vite frontend ────────────────────────────────────────────────
+const frontendDistPath = path.resolve(__dirname, "../../admin/dist");
+
+app.use(express.static(frontendDistPath));
+
+// React Router SPA fallback
+// Express 5 requires the named wildcard syntax.
+app.get("/{*splat}", (req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    return next();
+  }
+
+  res.sendFile(path.join(frontendDistPath, "index.html"));
+});
+
 // Global error handler - catches unhandled errors so browser never gets ERR_EMPTY_RESPONSE
 app.use((err, _req, res, _next) => {
   console.error("[Server] Unhandled error:", err?.message, err?.stack);
