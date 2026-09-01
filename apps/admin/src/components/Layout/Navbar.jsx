@@ -13,6 +13,7 @@ import {
   FileText,
   Briefcase,
   Handshake,
+  Calendar,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation, Link } from "wouter";
@@ -137,6 +138,7 @@ const navIcons = {
   resources: FileText,
   partners: Handshake,
   careers: Briefcase,
+  events: Calendar,
 };
 
 const languages = [
@@ -1097,9 +1099,9 @@ onMouseLeave={() => {
                 >
 
                   {/* =====================================================
-                     LANGUAGE
+                     LANGUAGE - COMMENTED OUT
                   ===================================================== */}
-
+                  {/* 
                   <div
                     className="
                       relative
@@ -1286,6 +1288,7 @@ onMouseLeave={() => {
                       )}
                     </AnimatePresence>
                   </div>
+                  */}
 
                   {/* DONATE */}
                   <a
@@ -1643,7 +1646,7 @@ onMouseLeave={() => {
                 </div>
 
                 {/* MOBILE LANGUAGE */}
-                <div
+                {/* <div
                   style={{
                     marginTop: "12px",
                     paddingTop: "12px",
@@ -1743,7 +1746,7 @@ onMouseLeave={() => {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </div> */}
 
                 {/* ACTION BUTTONS */}
                 <div

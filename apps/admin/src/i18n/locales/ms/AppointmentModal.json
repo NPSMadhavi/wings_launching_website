@@ -11,9 +11,9 @@
       "title": "Mulakan Perjalanan Pemulihan Anda",
       "subtitle": "Kami sedia membantu anda. Sila berikan maklumat hubungan asas supaya kami dapat menghubungi anda.",
       "fields": {
-        "nric": "Nombor NRIC/FIN",
-        "nricPlaceholder": "Contoh: S1234567D",
-        "name": "Nama (Seperti dalam NRIC/FIN)",
+        "nric": "Nombor NRIC",
+        "nricPlaceholder": "Masukkan nombor NRIC anda",
+        "name": "Nama (Seperti dalam NRIC)",
         "namePlaceholder": "Masukkan nama anda",
         "email": "Alamat E-mel",
         "emailPlaceholder": "Masukkan alamat e-mel anda",
@@ -63,8 +63,8 @@
     },
     "validation": {
       "required": "Medan ini wajib diisi",
-      "nricRequired": "Nombor NRIC/FIN diperlukan",
-      "nricInvalid": "Mesti mengandungi 9 aksara: huruf di awal dan akhir, 7 nombor di tengah",
+      "nricRequired": "Hanya Warga Singapura dan PR",
+      
       "nameRequired": "Nama diperlukan.",
       "nameInvalid": "Nama hanya boleh mengandungi huruf.",
       "emailRequired": "Alamat e-mel diperlukan",

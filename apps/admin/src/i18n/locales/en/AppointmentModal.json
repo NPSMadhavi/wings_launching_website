@@ -13,10 +13,10 @@
       "subtitle": "We're here to support you. Please share your basic contact details so we can reach out personally.",
 
       "fields": {
-        "nric": "NRIC/FIN Number",
-        "nricPlaceholder": "Example: S1234567D",
+        "nric": "NRIC Number",
+        "nricPlaceholder": "Enter your NRIC",
 
-        "name": "Name (As per NRIC/FIN Number)",
+        "name": "Name (As per NRIC Number)",
         "namePlaceholder": "Enter your name",
 
         "email": "Email Address",
@@ -87,9 +87,7 @@
 
     "validation": {
       "required": "This field is required",
-
-      "nricRequired": "NRIC/FIN Number is required",
-      "nricInvalid": "9 characters only: first & last must be alphabets, middle 7 must be numbers",
+      "nricRequired": "This program is only eligible for Singapore Citizens and Singapore PRs.",
 
       "nameRequired": "Name is required.",
       "nameInvalid": "Name should contain only letters.",

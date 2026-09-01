@@ -576,7 +576,11 @@ const createNotification = (title, body) => {
       const result = await response.json();
       
       if (result.success) {
-        setCounsellingData(result.data);
+        // Filter to only show Counselling & Therapy type
+        const filteredData = result.data.filter(item => 
+          item.name && item.name.toLowerCase().includes('counselling')
+        );
+        setCounsellingData(filteredData);
       } else {
         setCounsellingTypesError(result.message || "Failed to load counselling types.");
         console.error("Failed to fetch counselling types:", result.message);
@@ -599,19 +603,6 @@ const createNotification = (title, body) => {
 
   // ========== VALIDATION FUNCTIONS ==========
 const validateNRIC = (nric) => {
-  if (!nric || nric.length === 0) {
-    return t("appointmentModal.validation.nricRequired");
-  }
-
-  const cleanedNRIC = nric.replace(/\s/g, "").toUpperCase();
-
-  // First and last must be alphabets, middle 7 must be numbers
-  const nricRegex = /^[A-Z]\d{7}[A-Z]$/;
-
-  if (!nricRegex.test(cleanedNRIC)) {
-    return t("appointmentModal.validation.nricInvalid");
-  }
-
   return "";
 };
 
@@ -732,9 +723,7 @@ const validatePhone = (phone, pCountry) => {
     const { name, value } = e.target;
     let processedValue = value;
 
-    if (name === "nric_fin_number") {
-      processedValue = value.replace(/\D/g, '').slice(0, 9);
-    }
+
     if (name === "name") {
       processedValue = value.replace(/[^A-Za-z\s'-]/g, "");
     }
@@ -842,7 +831,6 @@ const validatePhone = (phone, pCountry) => {
 
   const validateStep1 = () => {
     const newErrors = {
-      nric_fin_number: validateNRIC(formData.nric_fin_number),
       name: validateName(formData.name),
       email: validateEmail(formData.email),
       phone: validatePhone(formData.phone, phoneCountry),
@@ -1130,30 +1118,18 @@ const handleSubmit = async (e) => {
   type="text"
   name="nric_fin_number"
   value={formData.nric_fin_number}
-  onChange={(e) => {
-    let value = e.target.value.toUpperCase();
-
-    // Allow only letters and numbers
-    value = value.replace(/[^A-Z0-9]/g, "");
-
-    // Max 9 characters
-    if (value.length <= 9) {
-      setFormData({
-        ...formData,
-        nric_fin_number: value,
-      });
-    }
-  }}
+  onChange={handleChange}
   onBlur={handleBlur}
   placeholder={t("appointmentModal.step1.fields.nricPlaceholder")}
-  maxLength={9}
   className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${
     errors.nric_fin_number
       ? "border-red-500"
       : "border-[#E3E1E1]"
   } focus:border-[#0D4A7A]`}
 />
-                          <ErrorMessage message={errors.nric_fin_number} />
+                          <div className="h-5 mt-1">
+                            <p className="text-black text-xs font-medium">{t("appointmentModal.validation.nricRequired")}</p>
+                          </div>
                         </div>
 
                         <div>
@@ -1326,7 +1302,11 @@ const handleSubmit = async (e) => {
               {t("appointmentModal.step2.counsellingType")} <span className="text-red-500">*</span>
             </label>
             <div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+              className={`grid gap-3 sm:gap-4 ${
+                counsellingData.length === 1 
+                  ? 'grid-cols-1 max-w-xs mx-auto' 
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+              }`}
               role="radiogroup"
               aria-label="Select counselling type"
             >

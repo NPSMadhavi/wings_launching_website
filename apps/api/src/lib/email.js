@@ -70,12 +70,9 @@ function getFormNotificationCcFromEnv() {
   return raw.split(/[,;]/).map((e) => e.trim()).filter(isValidEmail);
 }
 
-const DEFAULT_FORM_PRIMARY_EMAIL = "lavetimadhavilatha19@gmail.com";
-const DEFAULT_FORM_CC_EMAIL = "sahupavan335@gmail.com";
-
 /**
  * Primary + CC recipients for appointment/volunteer admin alerts.
- * Uses email_recipients table first, then .env (FORM_NOTIFICATION_TO / FORM_NOTIFICATION_CC), then defaults.
+ * Use .env TO address as the only real fallback. No hardcoded mail addresses.
  */
 async function getFormSubmissionNotificationRecipients(excludeEmail = "") {
   const exclude = (excludeEmail || "").trim().toLowerCase();
@@ -85,14 +82,11 @@ async function getFormSubmissionNotificationRecipients(excludeEmail = "") {
 
   if (!primaryRecipients.length) {
     const envPrimary = getOrgNotificationEmail();
-    primaryRecipients = envPrimary ? [envPrimary] : [DEFAULT_FORM_PRIMARY_EMAIL];
+    primaryRecipients = envPrimary ? [envPrimary] : [];
   }
 
   if (!ccRecipients.length) {
     ccRecipients = getFormNotificationCcFromEnv();
-    if (!ccRecipients.length) {
-      ccRecipients = [DEFAULT_FORM_CC_EMAIL];
-    }
   }
 
   primaryRecipients = uniqueEmails(primaryRecipients).filter((e) => e !== exclude);

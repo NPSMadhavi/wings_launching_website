@@ -11,9 +11,9 @@
       "title": "开启您的疗愈之旅",
       "subtitle": "我们随时为您提供支持。请填写您的基本联系资料，以便我们与您联系。",
       "fields": {
-        "nric": "NRIC/FIN号码",
-        "nricPlaceholder": "例如：S1234567D",
-        "name": "姓名（与NRIC/FIN一致）",
+        "nric": "NRIC 号码",
+        "nricPlaceholder": "请输入您的NRIC号码",
+        "name": "姓名（与NRIC一致）",
         "namePlaceholder": "请输入您的姓名",
         "email": "电子邮箱",
         "emailPlaceholder": "请输入您的电子邮箱",
@@ -63,8 +63,8 @@
     },
     "validation": {
       "required": "此字段为必填项",
-      "nricRequired": "请输入NRIC/FIN号码",
-      "nricInvalid": "必须为9个字符：首尾为字母，中间7位为数字",
+      "nricRequired": "仅限新加坡公民和永久居民",
+      
       "nameRequired": "请输入姓名。",
       "nameInvalid": "姓名只能包含字母。",
       "emailRequired": "请输入电子邮箱",
