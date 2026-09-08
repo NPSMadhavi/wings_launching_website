@@ -49,7 +49,14 @@
     "privacyError": "Please accept the privacy policy to continue.",
     "copyright": "© 2026 WINGS Counselling Centre. All rights reserved.",
     "poweredBy": "Powered by",
-    "privacyPolicy": "Privacy policy"
+    "privacyPolicy": "Privacy policy",
+    "visitors": "Visitors",
+    "liveVisitors": "Live Visitors",
+    "totalVisitors": "Total Visitors",
+    "today": "today",
+    "loadingVisitors": "Loading...",
+    "visitorsUnavailable": "Unavailable",
+    "careers": "Careers"
   },
   "hero": {
     "slides": [

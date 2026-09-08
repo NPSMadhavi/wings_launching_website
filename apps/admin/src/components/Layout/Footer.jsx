@@ -322,7 +322,7 @@ export function Footer() {
   rel="noopener noreferrer"
   className="text-white/90 text-[15px] hover:text-white transition whitespace-nowrap"
 >
-  Careers
+  {t("footer.careers")}
 </a>
 
                 <a
@@ -506,7 +506,7 @@ export function Footer() {
           <div className="mb-6 text-left">
             <div className="inline-flex items-center gap-4 sm:gap-6 px-6 py-3.5 rounded-2xl border border-white bg-transparent shadow-sm">
               <span className="text-white/70 text-xs sm:text-sm font-bold tracking-widest">
-                Visitors
+                {t("footer.visitors")}
               </span>
 
               <span className="text-white text-2xl sm:text-3xl font-semibold tracking-wider">
@@ -520,7 +520,7 @@ export function Footer() {
                   +{todayVisitors}
                 </span>
                 <span className="text-white/70">
-                  today
+                  {t("footer.today")}
                 </span>
               </div>
             </div>

@@ -27,14 +27,63 @@
         "nationality": "Kewarganegaraan",
         "nationalityPlaceholder": "Pilih Kewarganegaraan",
         "searchCountry": "Cari negara...",
-        "noCountries": "Tiada negara dijumpai"
+        "noCountries": "Tiada negara dijumpai",
+        "typeOfConcern": "Jenis Kebimbangan",
+        "typeOfConcernPlaceholder": "Pilih Jenis Kebimbangan",
+        "typeOfConcernOther": "Penerangan Ringkas Mengenai Kebimbangan",
+        "typeOfConcernOtherPlaceholder": "Sila terangkan kebimbangan anda secara ringkas",
+        "enquirerType": "Jenis Pertanyaan",
+        "enquirerTypePlaceholder": "Pilih Jenis Pertanyaan",
+        "enquirerName": "Nama",
+        "enquirerNamePlaceholder": "Masukkan nama",
+        "enquirerRelationship": "Hubungan",
+        "enquirerRelationshipPlaceholder": "Masukkan hubungan",
+        "enquirerContactNumber": "Nombor Hubungan",
+        "enquirerContactNumberPlaceholder": "Masukkan nombor hubungan",
+        "enquirerEmail": "Alamat E-mel",
+        "enquirerEmailPlaceholder": "Masukkan alamat e-mel",
+        "referralAgencyName": "Nama Agensi Rujukan",
+        "referralAgencyNamePlaceholder": "Pilih Nama Agensi Rujukan",
+        "referralAgencyNameOther": "Nama Agensi Rujukan (Lain-lain)",
+        "referralAgencyNameOtherPlaceholder": "Masukkan nama agensi rujukan",
+        "referralAgencyContactPerson": "Pegawai Hubungan Agensi Rujukan",
+        "referralAgencyContactPersonPlaceholder": "Masukkan pegawai hubungan",
+        "referralAgencyContactEmail": "E-mel Hubungan Agensi Rujukan",
+        "referralAgencyContactEmailPlaceholder": "Masukkan alamat e-mel",
+        "referralAgencyAttachment1": "Lampiran 1 Daripada Agensi Rujukan",
+        "referralAgencyAttachment2": "Lampiran 2 Daripada Agensi Rujukan",
+        "chooseFile": "Pilih Fail",
+        "noFileChosen": "Tiada fail dipilih",
+        "referralAgencyPassword": "Kata Laluan",
+        "referralAgencyPasswordPlaceholder": "Masukkan kata laluan"
       },
       "genderOptions": {
         "male": "Lelaki",
         "female": "Perempuan",
         "other": "Lain-lain"
       },
-      "privacyNotice": "Semua maklumat yang anda kongsi akan dikendalikan dengan selamat dan sulit mengikut garis panduan PDPA Singapura."
+      "privacyNotice": "Semua maklumat yang anda kongsi akan dikendalikan dengan selamat dan sulit mengikut garis panduan PDPA Singapura.",
+      "nationalityOptions": {
+        "singaporeCitizen": "Warganegara Singapura",
+        "singaporePR": "PR Singapura"
+      },
+      "typeOfConcernOptions": {
+        "individual": "Individu",
+        "couple": "Pasangan",
+        "marital": "Perkahwinan",
+        "familyChildren": "Keluarga/Kanak-kanak",
+        "others": "Lain-lain"
+      },
+      "enquirerTypeOptions": {
+        "referralAgency": "Agensi Rujukan",
+        "enquirer": "Penanya",
+        "self": "Diri Sendiri"
+      },
+      "referralAgencyOptions": {
+        "imhChat": "IMH Chat",
+        "allkinFsc": "Allkin FSC",
+        "others": "Lain-lain"
+      }
     },
     "step2": {
       "title": "Pilih Sokongan Yang Anda Perlukan",
@@ -65,7 +114,6 @@
     "validation": {
       "required": "Medan ini wajib diisi",
       "nricRequired": "Hanya Warga Singapura dan PR",
-      
       "nameRequired": "Nama diperlukan.",
       "nameInvalid": "Nama hanya boleh mengandungi huruf.",
       "emailRequired": "Alamat e-mel diperlukan",
@@ -80,7 +128,17 @@
       "genderRequired": "Sila pilih jantina",
       "nationalityRequired": "Sila pilih kewarganegaraan",
       "counsellingRequired": "Sila pilih jenis kaunseling",
-      "descriptionRequired": "Sila terangkan kebimbangan anda"
+      "descriptionRequired": "Sila terangkan kebimbangan anda",
+      "typeOfConcernRequired": "Sila pilih jenis kebimbangan.",
+      "typeOfConcernOtherRequired": "Sila terangkan kebimbangan anda secara ringkas.",
+      "enquirerTypeRequired": "Sila pilih jenis pertanyaan.",
+      "enquirerNameRequired": "Sila masukkan nama penanya.",
+      "enquirerRelationshipRequired": "Sila masukkan hubungan.",
+      "referralAgencyNameRequired": "Sila pilih atau masukkan nama agensi rujukan.",
+      "referralAgencyContactPersonRequired": "Sila masukkan pegawai hubungan agensi rujukan.",
+      "referralAgencyContactEmailRequired": "Sila masukkan e-mel hubungan agensi rujukan.",
+      "referralAgencyAttachment1Required": "Sila muat naik Lampiran 1 daripada agensi rujukan.",
+      "referralAgencyPasswordRequired": "Sila masukkan kata laluan."
     },
     "errors": {
       "loadingCounsellingTypes": "Tidak dapat memuatkan jenis kaunseling buat masa ini. Sila cuba lagi.",

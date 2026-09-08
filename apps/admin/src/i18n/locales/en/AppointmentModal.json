@@ -8,112 +8,138 @@
       "submitting": "Submitting...",
       "retry": "Retry"
     },
-
     "step1": {
       "title": "Let's Begin Your Healing Journey",
       "subtitle": "We're here to support you. Please share your basic contact details so we can reach out personally.",
-
       "fields": {
         "nric": "NRIC Number",
         "nricPlaceholder": "Enter your NRIC",
-
         "name": "Name (As per NRIC Number)",
         "namePlaceholder": "Enter your name",
-
         "email": "Email Address",
         "emailPlaceholder": "Enter your email address",
-
         "phone": "Phone Number",
         "phonePlaceholder": "8 digit number",
-
         "age": "Age",
         "agePlaceholder": "Enter Your Age",
-
         "gender": "Gender",
         "genderPlaceholder": "Select Gender",
-
         "nationality": "Nationality",
         "nationalityPlaceholder": "Select Nationality",
-
         "searchCountry": "Search country...",
-        "noCountries": "No countries found"
+        "noCountries": "No countries found",
+        "typeOfConcern": "Type Of Concern",
+        "typeOfConcernPlaceholder": "Select Type Of Concern",
+        "typeOfConcernOther": "Brief Description Of Concern",
+        "typeOfConcernOtherPlaceholder": "Please briefly describe your concern",
+        "enquirerType": "Enquirer Type",
+        "enquirerTypePlaceholder": "Select Enquirer Type",
+        "enquirerName": "Name",
+        "enquirerNamePlaceholder": "Enter name",
+        "enquirerRelationship": "Relationship",
+        "enquirerRelationshipPlaceholder": "Enter relationship",
+        "enquirerContactNumber": "Contact Number",
+        "enquirerContactNumberPlaceholder": "Enter contact number",
+        "enquirerEmail": "Email Address",
+        "enquirerEmailPlaceholder": "Enter email address",
+        "referralAgencyName": "Referral Agency Name",
+        "referralAgencyNamePlaceholder": "Select Referral Agency Name",
+        "referralAgencyNameOther": "Referral Agency Name (Others)",
+        "referralAgencyNameOtherPlaceholder": "Enter referral agency name",
+        "referralAgencyContactPerson": "Referral Agency Contact Person",
+        "referralAgencyContactPersonPlaceholder": "Enter contact person",
+        "referralAgencyContactEmail": "Referral Agency Contact Email",
+        "referralAgencyContactEmailPlaceholder": "Enter email address",
+        "referralAgencyAttachment1": "Attachment 1 From Referral Agency",
+        "referralAgencyAttachment2": "Attachment 2 From Referral Agency",
+        "chooseFile": "Choose File",
+        "noFileChosen": "No file chosen",
+        "referralAgencyPassword": "Password",
+        "referralAgencyPasswordPlaceholder": "Enter password"
       },
-
       "genderOptions": {
         "male": "Male",
         "female": "Female",
         "other": "Other"
       },
-
-      "privacyNotice": "Everything you share is handled securely and confidentially in accordance with Singapore's PDPA guidelines."
+      "privacyNotice": "Everything you share is handled securely and confidentially in accordance with Singapore's PDPA guidelines.",
+      "nationalityOptions": {
+        "singaporeCitizen": "Singapore Citizen",
+        "singaporePR": "Singapore PR"
+      },
+      "typeOfConcernOptions": {
+        "individual": "Individual",
+        "couple": "Couple",
+        "marital": "Marital",
+        "familyChildren": "Family/Children",
+        "others": "Others"
+      },
+      "enquirerTypeOptions": {
+        "referralAgency": "Referral Agency",
+        "enquirer": "Enquirer",
+        "self": "Self"
+      },
+      "referralAgencyOptions": {
+        "imhChat": "IMH Chat",
+        "allkinFsc": "Allkin FSC",
+        "others": "Others"
+      }
     },
-
     "step2": {
       "title": "Choose the Support You're Looking For",
       "subtitle": "Select the counselling service that best matches your current needs.",
-
       "loading": "Loading counselling types...",
-
       "counsellingType": "Select Counselling type",
-
       "supportWith": "What would you like support with?",
-
       "helpNote": "Not sure which option fits you? Our team can guide you after submission."
     },
-
     "step3": {
       "title": "Brief Description of Concerns",
       "subtitle": "Share anything you feel comfortable sharing.",
-
       "descriptionLabel": "Please share what brings you here today",
-
       "descriptionPlaceholder": "Please describe your concern",
-
       "descriptionHelp": "This information helps our counselors prepare for your session and provide you with the best support.",
-
       "consent": "I understand that the information shared will be used to process my appointment request and support my counselling journey with confidentiality."
     },
-
     "success": {
       "title": "Appointment Submitted Successfully",
       "message": "Thank you, {{name}}. We have received your request and will contact you within 3 working days.",
       "emailMessage": "A confirmation email has been sent to {{email}}. You can close this window and continue exploring the services.",
       "button": "Close",
-
       "notification": {
         "title": "Appointment Submitted",
         "body": "{{name}} submitted a new appointment request"
       }
     },
-
     "validation": {
       "required": "This field is required",
       "nricRequired": "This program is only eligible for Singapore Citizens and Singapore PRs.",
-
       "nameRequired": "Name is required.",
       "nameInvalid": "Name should contain only letters.",
-
       "emailRequired": "Email is required",
       "emailInvalid": "Enter a valid email address",
-
       "phoneRequired": "Phone number is required",
       "phoneLeadingZero": "Phone number should not start with 0",
       "phoneInvalid": "Phone number must be exactly 8 digits",
-
       "ageRequired": "Age is required",
       "ageInteger": "Age must be a whole number",
       "ageMinimum": "Age must be at least 1",
       "ageMaximum": "Age must be 120 or below",
-
       "genderRequired": "Gender is required",
-
       "nationalityRequired": "Nationality is required",
-
       "counsellingRequired": "Please select a counselling type",
-
-      "descriptionRequired": "Please describe your concern"
+      "descriptionRequired": "Please describe your concern",
+      "typeOfConcernRequired": "Please select a type of concern.",
+      "typeOfConcernOtherRequired": "Please briefly describe your concern.",
+      "enquirerTypeRequired": "Please select an enquirer type.",
+      "enquirerNameRequired": "Please enter the enquirer name.",
+      "enquirerRelationshipRequired": "Please enter the relationship.",
+      "referralAgencyNameRequired": "Please select or enter a referral agency name.",
+      "referralAgencyContactPersonRequired": "Please enter the referral agency contact person.",
+      "referralAgencyContactEmailRequired": "Please enter the referral agency contact email.",
+      "referralAgencyAttachment1Required": "Please upload Attachment 1 from referral agency.",
+      "referralAgencyPasswordRequired": "Please enter the password."
     },
-
     "errors": {
       "loadingCounsellingTypes": "Unable to load counselling types right now. Please try again.",
       "bookingFailed": "Failed to book appointment",

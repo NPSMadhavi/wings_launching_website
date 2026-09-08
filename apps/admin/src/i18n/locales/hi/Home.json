@@ -49,7 +49,14 @@
     "privacyError": "कृपया आगे बढ़ने के लिए गोपनीयता नीति स्वीकार करें।",
     "copyright": "© 2026 WINGS काउंसलिंग सेंटर। सर्वाधिकार सुरक्षित।",
     "poweredBy": "द्वारा संचालित",
-    "privacyPolicy": "गोपनीयता नीति"
+    "privacyPolicy": "गोपनीयता नीति",
+    "visitors": "आगंतुक",
+    "liveVisitors": "लाइव आगंतुक",
+    "totalVisitors": "कुल आगंतुक",
+    "today": "आज",
+    "loadingVisitors": "लोड हो रहा है...",
+    "visitorsUnavailable": "अनुपलब्ध",
+    "careers": "करियर"
   },
   "hero": {
     "slides": [

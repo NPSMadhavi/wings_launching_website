@@ -49,7 +49,14 @@
     "privacyError": "Sila terima dasar privasi untuk meneruskan.",
     "copyright": "© 2026 WINGS Counselling Centre. Hak cipta terpelihara.",
     "poweredBy": "Dikuasakan oleh",
-    "privacyPolicy": "Dasar Privasi"
+    "privacyPolicy": "Dasar Privasi",
+    "visitors": "Pelawat",
+    "liveVisitors": "Pelawat Langsung",
+    "totalVisitors": "Jumlah Pelawat",
+    "today": "hari ini",
+    "loadingVisitors": "Memuatkan...",
+    "visitorsUnavailable": "Tidak tersedia",
+    "careers": "Kerjaya"
   },
   "hero": {
     "slides": [

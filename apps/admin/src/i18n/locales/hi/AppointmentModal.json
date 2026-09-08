@@ -8,114 +8,138 @@
       "submitting": "सबमिट हो रहा है...",
       "retry": "पुनः प्रयास करें"
     },
-
     "step1": {
       "title": "आइए, आपकी उपचार यात्रा की शुरुआत करें",
       "subtitle": "हम आपकी सहायता के लिए यहाँ हैं। कृपया अपनी मूल संपर्क जानकारी साझा करें ताकि हम आपसे व्यक्तिगत रूप से संपर्क कर सकें।",
-
       "fields": {
         "nric": "एनआरआईसी नंबर",
         "nricPlaceholder": "अपना एनआरआईसी दर्ज करें",
-
         "name": "नाम (एनआरआईसी के अनुसार)",
         "namePlaceholder": "अपना नाम दर्ज करें",
-
         "email": "ईमेल पता",
         "emailPlaceholder": "अपना ईमेल पता दर्ज करें",
-
         "phone": "फोन नंबर",
         "phonePlaceholder": "8 अंकों का नंबर दर्ज करें",
-
         "age": "आयु",
         "agePlaceholder": "अपनी आयु दर्ज करें",
-
         "gender": "लिंग",
         "genderPlaceholder": "लिंग चुनें",
-
         "nationality": "राष्ट्रीयता",
         "nationalityPlaceholder": "राष्ट्रीयता चुनें",
-
         "searchCountry": "देश खोजें...",
-        "noCountries": "कोई देश नहीं मिला"
+        "noCountries": "कोई देश नहीं मिला",
+        "typeOfConcern": "चिंता का प्रकार",
+        "typeOfConcernPlaceholder": "चिंता का प्रकार चुनें",
+        "typeOfConcernOther": "चिंता का संक्षिप्त विवरण",
+        "typeOfConcernOtherPlaceholder": "कृपया अपनी चिंता का संक्षेप में वर्णन करें",
+        "enquirerType": "पूछताछकर्ता का प्रकार",
+        "enquirerTypePlaceholder": "पूछताछकर्ता का प्रकार चुनें",
+        "enquirerName": "नाम",
+        "enquirerNamePlaceholder": "नाम दर्ज करें",
+        "enquirerRelationship": "संबंध",
+        "enquirerRelationshipPlaceholder": "संबंध दर्ज करें",
+        "enquirerContactNumber": "संपर्क नंबर",
+        "enquirerContactNumberPlaceholder": "संपर्क नंबर दर्ज करें",
+        "enquirerEmail": "ईमेल पता",
+        "enquirerEmailPlaceholder": "ईमेल पता दर्ज करें",
+        "referralAgencyName": "रेफरल एजेंसी का नाम",
+        "referralAgencyNamePlaceholder": "रेफरल एजेंसी का नाम चुनें",
+        "referralAgencyNameOther": "रेफरल एजेंसी का नाम (अन्य)",
+        "referralAgencyNameOtherPlaceholder": "रेफरल एजेंसी का नाम दर्ज करें",
+        "referralAgencyContactPerson": "रेफरल एजेंसी संपर्क व्यक्ति",
+        "referralAgencyContactPersonPlaceholder": "संपर्क व्यक्ति का नाम दर्ज करें",
+        "referralAgencyContactEmail": "रेफरल एजेंसी संपर्क ईमेल",
+        "referralAgencyContactEmailPlaceholder": "ईमेल पता दर्ज करें",
+        "referralAgencyAttachment1": "रेफरल एजेंसी से संलग्नक 1",
+        "referralAgencyAttachment2": "रेफरल एजेंसी से संलग्नक 2",
+        "chooseFile": "फ़ाइल चुनें",
+        "noFileChosen": "कोई फ़ाइल नहीं चुनी गई",
+        "referralAgencyPassword": "पासवर्ड",
+        "referralAgencyPasswordPlaceholder": "पासवर्ड दर्ज करें"
       },
-
       "genderOptions": {
         "male": "पुरुष",
         "female": "महिला",
         "other": "अन्य"
       },
-
-      "privacyNotice": "आपके द्वारा साझा की गई सभी जानकारी सिंगापुर के PDPA दिशानिर्देशों के अनुसार सुरक्षित और गोपनीय रखी जाएगी।"
+      "privacyNotice": "आपके द्वारा साझा की गई सभी जानकारी सिंगापुर के PDPA दिशानिर्देशों के अनुसार सुरक्षित और गोपनीय रखी जाएगी।",
+      "nationalityOptions": {
+        "singaporeCitizen": "सिंगापुर नागरिक",
+        "singaporePR": "सिंगापुर पीआर"
+      },
+      "typeOfConcernOptions": {
+        "individual": "व्यक्तिगत",
+        "couple": "दंपति",
+        "marital": "वैवाहिक",
+        "familyChildren": "परिवार/बच्चे",
+        "others": "अन्य"
+      },
+      "enquirerTypeOptions": {
+        "referralAgency": "रेफरल एजेंसी",
+        "enquirer": "पूछताछकर्ता",
+        "self": "स्वयं"
+      },
+      "referralAgencyOptions": {
+        "imhChat": "IMH Chat",
+        "allkinFsc": "Allkin FSC",
+        "others": "अन्य"
+      }
     },
-
     "step2": {
       "title": "अपनी आवश्यक सहायता चुनें",
       "subtitle": "वह परामर्श सेवा चुनें जो आपकी वर्तमान आवश्यकताओं से सबसे अधिक मेल खाती हो।",
-
       "loading": "परामर्श प्रकार लोड किए जा रहे हैं...",
-
       "counsellingType": "परामर्श का प्रकार चुनें",
-
       "supportWith": "आप किस विषय में सहायता चाहते हैं?",
-
       "helpNote": "यदि आपको सही विकल्प चुनने में कठिनाई हो रही है, तो सबमिट करने के बाद हमारी टीम आपकी सहायता करेगी।"
     },
-
     "step3": {
       "title": "अपनी चिंताओं का संक्षिप्त विवरण",
       "subtitle": "आप जितना सहज महसूस करें, उतनी जानकारी साझा करें।",
-
       "descriptionLabel": "कृपया बताएं कि आज आपको यहाँ क्या लेकर आया है",
-
       "descriptionPlaceholder": "कृपया अपनी चिंता का विवरण दें",
-
       "descriptionHelp": "यह जानकारी हमारे परामर्शदाताओं को आपके सत्र की तैयारी करने और आपको सर्वोत्तम सहायता प्रदान करने में मदद करती है।",
-
       "consent": "मैं समझता/समझती हूँ कि मेरे द्वारा साझा की गई जानकारी का उपयोग मेरी अपॉइंटमेंट अनुरोध को संसाधित करने और गोपनीयता के साथ मेरी परामर्श यात्रा में सहायता करने के लिए किया जाएगा।"
     },
-
     "success": {
       "title": "अपॉइंटमेंट सफलतापूर्वक सबमिट हो गई",
       "message": "धन्यवाद, {{name}}। हमें आपका अनुरोध प्राप्त हो गया है और हम 3 कार्य दिवसों के भीतर आपसे संपर्क करेंगे।",
       "emailMessage": "{{email}} पर एक पुष्टि ईमेल भेज दी गई है। आप इस विंडो को बंद करके हमारी सेवाओं का अन्वेषण जारी रख सकते हैं।",
       "button": "बंद करें",
-
       "notification": {
         "title": "अपॉइंटमेंट सबमिट हुई",
         "body": "{{name}} ने एक नया अपॉइंटमेंट अनुरोध सबमिट किया है"
       }
     },
-
     "validation": {
       "required": "यह फ़ील्ड आवश्यक है",
-
       "nricRequired": "केवल सिंगापुर के नागरिक और पीआर",
-      
-
       "nameRequired": "नाम आवश्यक है।",
       "nameInvalid": "नाम में केवल अक्षर होने चाहिए।",
-
       "emailRequired": "ईमेल आवश्यक है",
       "emailInvalid": "कृपया एक वैध ईमेल पता दर्ज करें",
-
       "phoneRequired": "फोन नंबर आवश्यक है",
       "phoneLeadingZero": "फोन नंबर 0 से शुरू नहीं होना चाहिए",
       "phoneInvalid": "फोन नंबर ठीक 8 अंकों का होना चाहिए",
-
       "ageRequired": "आयु आवश्यक है",
       "ageInteger": "आयु पूर्ण संख्या होनी चाहिए",
       "ageMinimum": "आयु कम से कम 1 वर्ष होनी चाहिए",
       "ageMaximum": "आयु 120 वर्ष या उससे कम होनी चाहिए",
-
       "genderRequired": "लिंग आवश्यक है",
-
       "nationalityRequired": "राष्ट्रीयता आवश्यक है",
-
       "counsellingRequired": "कृपया परामर्श का प्रकार चुनें",
-
-      "descriptionRequired": "कृपया अपनी चिंता का विवरण दें"
+      "descriptionRequired": "कृपया अपनी चिंता का विवरण दें",
+      "typeOfConcernRequired": "कृपया चिंता का प्रकार चुनें।",
+      "typeOfConcernOtherRequired": "कृपया अपनी चिंता का संक्षेप में वर्णन करें।",
+      "enquirerTypeRequired": "कृपया पूछताछकर्ता का प्रकार चुनें।",
+      "enquirerNameRequired": "कृपया पूछताछकर्ता का नाम दर्ज करें।",
+      "enquirerRelationshipRequired": "कृपया संबंध दर्ज करें।",
+      "referralAgencyNameRequired": "कृपया रेफरल एजेंसी का नाम चुनें या दर्ज करें।",
+      "referralAgencyContactPersonRequired": "कृपया रेफरल एजेंसी संपर्क व्यक्ति का नाम दर्ज करें।",
+      "referralAgencyContactEmailRequired": "कृपया रेफरल एजेंसी संपर्क ईमेल दर्ज करें।",
+      "referralAgencyAttachment1Required": "कृपया रेफरल एजेंसी से संलग्नक 1 अपलोड करें।",
+      "referralAgencyPasswordRequired": "कृपया पासवर्ड दर्ज करें।"
     },
-
     "errors": {
       "loadingCounsellingTypes": "इस समय परामर्श प्रकार लोड नहीं किए जा सके। कृपया पुनः प्रयास करें।",
       "bookingFailed": "अपॉइंटमेंट बुक करने में विफल",

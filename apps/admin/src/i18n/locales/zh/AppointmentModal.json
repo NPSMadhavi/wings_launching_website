@@ -27,14 +27,63 @@
         "nationality": "国籍",
         "nationalityPlaceholder": "请选择国籍",
         "searchCountry": "搜索国家...",
-        "noCountries": "未找到国家"
+        "noCountries": "未找到国家",
+        "typeOfConcern": "关注问题类型",
+        "typeOfConcernPlaceholder": "选择关注问题类型",
+        "typeOfConcernOther": "关注问题简要描述",
+        "typeOfConcernOtherPlaceholder": "请简要描述您的关注问题",
+        "enquirerType": "询问者类型",
+        "enquirerTypePlaceholder": "选择询问者类型",
+        "enquirerName": "姓名",
+        "enquirerNamePlaceholder": "输入姓名",
+        "enquirerRelationship": "关系",
+        "enquirerRelationshipPlaceholder": "输入关系",
+        "enquirerContactNumber": "联系电话",
+        "enquirerContactNumberPlaceholder": "输入联系电话",
+        "enquirerEmail": "电子邮件地址",
+        "enquirerEmailPlaceholder": "输入电子邮件地址",
+        "referralAgencyName": "转介机构名称",
+        "referralAgencyNamePlaceholder": "选择转介机构名称",
+        "referralAgencyNameOther": "转介机构名称（其他）",
+        "referralAgencyNameOtherPlaceholder": "输入转介机构名称",
+        "referralAgencyContactPerson": "转介机构联系人",
+        "referralAgencyContactPersonPlaceholder": "输入联系人",
+        "referralAgencyContactEmail": "转介机构联系电子邮件",
+        "referralAgencyContactEmailPlaceholder": "输入电子邮件地址",
+        "referralAgencyAttachment1": "转介机构附件 1",
+        "referralAgencyAttachment2": "转介机构附件 2",
+        "chooseFile": "选择文件",
+        "noFileChosen": "未选择任何文件",
+        "referralAgencyPassword": "密码",
+        "referralAgencyPasswordPlaceholder": "输入密码"
       },
       "genderOptions": {
         "male": "男",
         "female": "女",
         "other": "其他"
       },
-      "privacyNotice": "您提供的所有信息都会依据新加坡《个人资料保护法》（PDPA）进行安全且保密的处理。"
+      "privacyNotice": "您提供的所有信息都会依据新加坡《个人资料保护法》（PDPA）进行安全且保密的处理。",
+      "nationalityOptions": {
+        "singaporeCitizen": "新加坡公民",
+        "singaporePR": "新加坡永久居民"
+      },
+      "typeOfConcernOptions": {
+        "individual": "个人",
+        "couple": "情侣/伴侣",
+        "marital": "婚姻",
+        "familyChildren": "家庭/儿童",
+        "others": "其他"
+      },
+      "enquirerTypeOptions": {
+        "referralAgency": "转介机构",
+        "enquirer": "询问者",
+        "self": "本人"
+      },
+      "referralAgencyOptions": {
+        "imhChat": "IMH Chat",
+        "allkinFsc": "Allkin FSC",
+        "others": "其他"
+      }
     },
     "step2": {
       "title": "选择您需要的支持",
@@ -65,7 +114,6 @@
     "validation": {
       "required": "此字段为必填项",
       "nricRequired": "仅限新加坡公民和永久居民",
-      
       "nameRequired": "请输入姓名。",
       "nameInvalid": "姓名只能包含字母。",
       "emailRequired": "请输入电子邮箱",
@@ -80,7 +128,17 @@
       "genderRequired": "请选择性别",
       "nationalityRequired": "请选择国籍",
       "counsellingRequired": "请选择辅导类型",
-      "descriptionRequired": "请描述您的情况"
+      "descriptionRequired": "请描述您的情况",
+      "typeOfConcernRequired": "请选择关注问题类型。",
+      "typeOfConcernOtherRequired": "请简要描述您的关注问题。",
+      "enquirerTypeRequired": "请选择询问者类型。",
+      "enquirerNameRequired": "请输入询问者姓名。",
+      "enquirerRelationshipRequired": "请输入关系。",
+      "referralAgencyNameRequired": "请选择或输入转介机构名称。",
+      "referralAgencyContactPersonRequired": "请输入转介机构联系人。",
+      "referralAgencyContactEmailRequired": "请输入转介机构联系电子邮件。",
+      "referralAgencyAttachment1Required": "请上传来自转介机构的附件 1。",
+      "referralAgencyPasswordRequired": "请输入密码。"
     },
     "errors": {
       "loadingCounsellingTypes": "目前无法加载辅导类型，请稍后再试。",

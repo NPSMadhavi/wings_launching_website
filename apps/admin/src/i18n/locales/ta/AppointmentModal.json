@@ -8,113 +8,138 @@
       "submitting": "சமர்ப்பிக்கப்படுகிறது...",
       "retry": "மீண்டும் முயற்சிக்கவும்"
     },
-
     "step1": {
       "title": "உங்கள் குணமடைதல் பயணத்தை தொடங்குவோம்",
       "subtitle": "நாங்கள் உங்களுக்கு ஆதரவாக இருக்கிறோம். தயவுசெய்து உங்கள் அடிப்படை தொடர்பு விவரங்களைப் பகிரவும், இதனால் நாங்கள் உங்களை தனிப்பட்ட முறையில் தொடர்புகொள்ள முடியும்.",
-
       "fields": {
         "nric": "NRIC எண்",
         "nricPlaceholder": "உங்கள் NRIC ஐ உள்ளிடவும்",
-
         "name": "பெயர் (NRIC-இன் படி)",
         "namePlaceholder": "உங்கள் பெயரை உள்ளிடவும்",
-
         "email": "மின்னஞ்சல் முகவரி",
         "emailPlaceholder": "உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்",
-
         "phone": "தொலைபேசி எண்",
         "phonePlaceholder": "8 இலக்க எண்ணை உள்ளிடவும்",
-
         "age": "வயது",
         "agePlaceholder": "உங்கள் வயதை உள்ளிடவும்",
-
         "gender": "பாலினம்",
         "genderPlaceholder": "பாலினத்தைத் தேர்ந்தெடுக்கவும்",
-
         "nationality": "தேசியம்",
         "nationalityPlaceholder": "தேசியத்தைத் தேர்ந்தெடுக்கவும்",
-
         "searchCountry": "நாட்டைத் தேடுங்கள்...",
-        "noCountries": "எந்த நாடும் கிடைக்கவில்லை"
+        "noCountries": "எந்த நாடும் கிடைக்கவில்லை",
+        "typeOfConcern": "கவலை வகை",
+        "typeOfConcernPlaceholder": "கவலை வகையைத் தேர்ந்தெடுக்கவும்",
+        "typeOfConcernOther": "கவலை பற்றிய சுருக்கமான விளக்கம்",
+        "typeOfConcernOtherPlaceholder": "உங்கள் கவலையை சுருக்கமாக விவரிக்கவும்",
+        "enquirerType": "விசாரிப்பவர் வகை",
+        "enquirerTypePlaceholder": "விசாரிப்பவர் வகையைத் தேர்ந்தெடுக்கவும்",
+        "enquirerName": "பெயர்",
+        "enquirerNamePlaceholder": "பெயரை உள்ளிடவும்",
+        "enquirerRelationship": "உறவுமுறை",
+        "enquirerRelationshipPlaceholder": "உறவுமுறையை உள்ளிடவும்",
+        "enquirerContactNumber": "தொடர்பு எண்",
+        "enquirerContactNumberPlaceholder": "தொடர்பு எண்ணை உள்ளிடவும்",
+        "enquirerEmail": "மின்னஞ்சல் முகவரி",
+        "enquirerEmailPlaceholder": "மின்னஞ்சல் முகவரியை உள்ளிடவும்",
+        "referralAgencyName": "பரிந்துரை நிறுவனத்தின் பெயர்",
+        "referralAgencyNamePlaceholder": "பரிந்துரை நிறுவனத்தின் பெயரைத் தேர்ந்தெடுக்கவும்",
+        "referralAgencyNameOther": "பரிந்துரை நிறுவனத்தின் பெயர் (மற்றவை)",
+        "referralAgencyNameOtherPlaceholder": "பரிந்துரை நிறுவனத்தின் பெயரை உள்ளிடவும்",
+        "referralAgencyContactPerson": "பரிந்துரை நிறுவன தொடர்பு நபர்",
+        "referralAgencyContactPersonPlaceholder": "தொடர்பு நபரை உள்ளிடவும்",
+        "referralAgencyContactEmail": "பரிந்துரை நிறுவன தொடர்பு மின்னஞ்சல்",
+        "referralAgencyContactEmailPlaceholder": "மின்னஞ்சல் முகவரியை உள்ளிடவும்",
+        "referralAgencyAttachment1": "பரிந்துரை நிறுவனத்திலிருந்து இணைப்பு 1",
+        "referralAgencyAttachment2": "பரிந்துரை நிறுவனத்திலிருந்து இணைப்பு 2",
+        "chooseFile": "கோப்பைத் தேர்வுசெய்க",
+        "noFileChosen": "கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை",
+        "referralAgencyPassword": "கடவுச்சொல்",
+        "referralAgencyPasswordPlaceholder": "கடவுச்சொல்லை உள்ளிடவும்"
       },
-
       "genderOptions": {
         "male": "ஆண்",
         "female": "பெண்",
         "other": "மற்றவை"
       },
-
-      "privacyNotice": "நீங்கள் பகிரும் அனைத்து தகவல்களும் சிங்கப்பூரின் PDPA வழிகாட்டுதல்களின்படி பாதுகாப்பாகவும் ரகசியமாகவும் கையாளப்படும்."
+      "privacyNotice": "நீங்கள் பகிரும் அனைத்து தகவல்களும் சிங்கப்பூரின் PDPA வழிகாட்டுதல்களின்படி பாதுகாப்பாகவும் ரகசியமாகவும் கையாளப்படும்.",
+      "nationalityOptions": {
+        "singaporeCitizen": "சிங்கப்பூர் குடிமகன்",
+        "singaporePR": "சிங்கப்பூர் பிஆர்"
+      },
+      "typeOfConcernOptions": {
+        "individual": "தனிநபர்",
+        "couple": "தம்பதியர்",
+        "marital": "திருமணம்",
+        "familyChildren": "குடும்பம்/குழந்தைகள்",
+        "others": "மற்றவை"
+      },
+      "enquirerTypeOptions": {
+        "referralAgency": "பரிந்துரை நிறுவனம்",
+        "enquirer": "விசாரிப்பவர்",
+        "self": "சுயமாக"
+      },
+      "referralAgencyOptions": {
+        "imhChat": "IMH Chat",
+        "allkinFsc": "Allkin FSC",
+        "others": "மற்றவை"
+      }
     },
-
     "step2": {
       "title": "உங்களுக்கு தேவையான ஆதரவைத் தேர்ந்தெடுக்கவும்",
       "subtitle": "உங்கள் தற்போதைய தேவைக்கு மிகவும் பொருத்தமான ஆலோசனை சேவையைத் தேர்ந்தெடுக்கவும்.",
-
       "loading": "ஆலோசனை வகைகள் ஏற்றப்படுகின்றன...",
-
       "counsellingType": "ஆலோசனை வகையைத் தேர்ந்தெடுக்கவும்",
-
       "supportWith": "எதில் உங்களுக்கு ஆதரவு தேவை?",
-
       "helpNote": "எந்த விருப்பத்தைத் தேர்வு செய்வது என்று தெரியவில்லையா? சமர்ப்பித்த பிறகு எங்கள் குழு உங்களுக்கு வழிகாட்டும்."
     },
-
     "step3": {
       "title": "உங்கள் கவலைகளின் சுருக்கமான விளக்கம்",
       "subtitle": "உங்களுக்கு வசதியாக இருக்கும் அளவிற்கு தகவலைப் பகிருங்கள்.",
-
       "descriptionLabel": "இன்று உங்களை இங்கு வரவைத்த காரணத்தைப் பகிரவும்",
-
       "descriptionPlaceholder": "உங்கள் கவலையை விவரிக்கவும்",
-
       "descriptionHelp": "இந்த தகவல் எங்கள் ஆலோசகர்கள் உங்கள் அமர்விற்கு தயாராகி சிறந்த ஆதரவை வழங்க உதவும்.",
-
       "consent": "நான் பகிரும் தகவல்கள் என் நேர்முக ஆலோசனை கோரிக்கையை செயல்படுத்தவும், ரகசியத்தன்மையுடன் என் ஆலோசனை பயணத்திற்கு ஆதரவளிக்கவும் பயன்படுத்தப்படும் என்பதை நான் புரிந்துகொள்கிறேன்."
     },
-
     "success": {
       "title": "சந்திப்பு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது",
       "message": "நன்றி, {{name}}. உங்கள் கோரிக்கையை பெற்றுள்ளோம். 3 வேலை நாட்களுக்குள் உங்களை தொடர்புகொள்வோம்.",
       "emailMessage": "{{email}}-க்கு உறுதிப்படுத்தல் மின்னஞ்சல் அனுப்பப்பட்டுள்ளது. இந்த சாளரத்தை மூடி எங்கள் சேவைகளை தொடர்ந்து பார்வையிடலாம்.",
       "button": "மூடு",
-
       "notification": {
         "title": "சந்திப்பு சமர்ப்பிக்கப்பட்டது",
         "body": "{{name}} புதிய சந்திப்பு கோரிக்கையை சமர்ப்பித்துள்ளார்"
       }
     },
-
     "validation": {
       "required": "இந்த புலம் கட்டாயம்",
-
       "nricRequired": "சிங்கப்பூர் குடிமக்கள் மற்றும் PR மட்டுமே",
-
       "nameRequired": "பெயர் அவசியம்.",
       "nameInvalid": "பெயரில் எழுத்துக்கள் மட்டுமே இருக்க வேண்டும்.",
-
       "emailRequired": "மின்னஞ்சல் அவசியம்",
       "emailInvalid": "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்",
-
       "phoneRequired": "தொலைபேசி எண் அவசியம்",
       "phoneLeadingZero": "தொலைபேசி எண் 0-ஆல் தொடங்கக்கூடாது",
       "phoneInvalid": "தொலைபேசி எண் சரியாக 8 இலக்கங்கள் இருக்க வேண்டும்",
-
       "ageRequired": "வயது அவசியம்",
       "ageInteger": "வயது முழு எண்ணாக இருக்க வேண்டும்",
       "ageMinimum": "வயது குறைந்தது 1 ஆக இருக்க வேண்டும்",
       "ageMaximum": "வயது 120 அல்லது அதற்கு குறைவாக இருக்க வேண்டும்",
-
       "genderRequired": "பாலினம் அவசியம்",
-
       "nationalityRequired": "தேசியம் அவசியம்",
-
       "counsellingRequired": "தயவுசெய்து ஒரு ஆலோசனை வகையைத் தேர்ந்தெடுக்கவும்",
-
-      "descriptionRequired": "தயவுசெய்து உங்கள் கவலையை விவரிக்கவும்"
+      "descriptionRequired": "தயவுசெய்து உங்கள் கவலையை விவரிக்கவும்",
+      "typeOfConcernRequired": "தயவுசெய்து கவலை வகையைத் தேர்ந்தெடுக்கவும்.",
+      "typeOfConcernOtherRequired": "தயவுசெய்து உங்கள் கவலையை சுருக்கமாக விவரிக்கவும்.",
+      "enquirerTypeRequired": "தயவுசெய்து விசாரிப்பவர் வகையைத் தேர்ந்தெடுக்கவும்.",
+      "enquirerNameRequired": "தயவுசெய்து விசாரிப்பவரின் பெயரை உள்ளிடவும்.",
+      "enquirerRelationshipRequired": "தயவுசெய்து உறவுமுறையை உள்ளிடவும்.",
+      "referralAgencyNameRequired": "தயவுசெய்து பரிந்துரை நிறுவனத்தின் பெயரைத் தேர்ந்தெடுக்கவும் அல்லது உள்ளிடவும்.",
+      "referralAgencyContactPersonRequired": "தயவுசெய்து பரிந்துரை நிறுவன தொடர்பு நபரை உள்ளிடவும்.",
+      "referralAgencyContactEmailRequired": "தயவுசெய்து பரிந்துரை நிறுவன தொடர்பு மின்னஞ்சலை உள்ளிடவும்.",
+      "referralAgencyAttachment1Required": "தயவுசெய்து பரிந்துரை நிறுவனத்திலிருந்து இணைப்பு 1 ஐ பதிவேற்றவும்.",
+      "referralAgencyPasswordRequired": "தயவுசெய்து கடவுச்சொல்லை உள்ளிடவும்."
     },
-
     "errors": {
       "loadingCounsellingTypes": "தற்போது ஆலோசனை வகைகளை ஏற்ற முடியவில்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
       "bookingFailed": "சந்திப்பை பதிவு செய்ய முடியவில்லை",

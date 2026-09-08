@@ -49,7 +49,14 @@
     "privacyError": "请先接受隐私政策后再继续。",
     "copyright": "© 2026 WINGS 心理辅导中心。保留所有权利。",
     "poweredBy": "技术支持",
-    "privacyPolicy": "隐私政策"
+    "privacyPolicy": "隐私政策",
+    "visitors": "访客",
+    "liveVisitors": "实时访客",
+    "totalVisitors": "总访客数",
+    "today": "今日",
+    "loadingVisitors": "加载中...",
+    "visitorsUnavailable": "不可用",
+    "careers": "职业机会"
   },
   "hero": {
     "slides": [

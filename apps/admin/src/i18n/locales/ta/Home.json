@@ -49,7 +49,14 @@
     "privacyError": "தொடர்வதற்கு தனியுரிமைக் கொள்கையை ஏற்கவும்.",
     "copyright": "© 2026 WINGS ஆலோசனை மையம். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
     "poweredBy": "இயக்கப்படுகிறது",
-    "privacyPolicy": "தனியுரிமைக் கொள்கை"
+    "privacyPolicy": "தனியுரிமைக் கொள்கை",
+    "visitors": "பார்வையாளர்கள்",
+    "liveVisitors": "நேரலை பார்வையாளர்கள்",
+    "totalVisitors": "மொத்த பார்வையாளர்கள்",
+    "today": "இன்று",
+    "loadingVisitors": "ஏற்றுகிறது...",
+    "visitorsUnavailable": "கிடைக்கவில்லை",
+    "careers": "வேலைவாய்ப்புகள்"
   },
   "hero": {
     "slides": [

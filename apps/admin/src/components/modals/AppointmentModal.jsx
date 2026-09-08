@@ -6,6 +6,8 @@ import {
   X,
   ChevronDown,
   Search,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 const API_BASE = "/api";
@@ -400,6 +402,7 @@ export function AppointmentModal({ isOpen, onClose, preSelectedService }) {
   const [submitted, setSubmitted] = useState(false);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [phoneCountry, setPhoneCountry] = useState("Singapore");
+  const [showPassword, setShowPassword] = useState(false);
   const modalPanelRef = useRef(null);
   const scrollLockRef = useRef(0);
 
@@ -720,49 +723,53 @@ const validatePhone = (phone, pCountry) => {
   };
 
   const validateTypeOfConcern = (typeOfConcern) => {
-    if (!typeOfConcern) return "Please select a type of concern.";
+    if (!typeOfConcern) return t("appointmentModal.validation.typeOfConcernRequired");
     return "";
   };
 
   const validateTypeOfConcernOther = (value) => {
     if (formData.type_of_concern === "Others" && (!value || !value.trim())) {
-      return "Please briefly describe your concern.";
+      return t("appointmentModal.validation.typeOfConcernOtherRequired");
     }
     return "";
   };
 
   const validateEnquirerType = (type) => {
-    if (!type) return "Please select an enquirer type.";
+    if (!type) return t("appointmentModal.validation.enquirerTypeRequired");
     return "";
   };
 
   const validateEnquirerName = (name) => {
-    if (!name || !name.trim()) return "Please enter the enquirer name.";
+    if (!name || !name.trim()) return t("appointmentModal.validation.enquirerNameRequired");
     return "";
   };
 
   const validateEnquirerRelationship = (relationship) => {
-    if (!relationship || !relationship.trim()) return "Please enter the relationship.";
+    if (!relationship || !relationship.trim()) return t("appointmentModal.validation.enquirerRelationshipRequired");
     return "";
   };
 
   const validateReferralAgencyName = (name) => {
-    if (!name || !name.trim()) return "Please select or enter a referral agency name.";
+    if (!name || !name.trim()) return t("appointmentModal.validation.referralAgencyNameRequired");
     return "";
   };
 
   const validateReferralAgencyContactPerson = (person) => {
-    if (!person || !person.trim()) return "Please enter the referral agency contact person.";
+    if (!person || !person.trim()) return t("appointmentModal.validation.referralAgencyContactPersonRequired");
     return "";
   };
 
   const validateReferralAgencyEmail = (email) => {
-    if (!email || !email.trim()) return "Please enter the referral agency contact email.";
+    if (!email || !email.trim()) return t("appointmentModal.validation.referralAgencyContactEmailRequired");
     return validateEmail(email);
   };
 
-  const validateCustomFile = (fileName, fieldLabel) => {
-    if (!fileName || !fileName.trim()) return `Please upload ${fieldLabel}.`;
+  const validateCustomFile = (fileName, fieldLabelKey) => {
+    if (!fileName || !fileName.trim()) {
+      return fieldLabelKey
+        ? t(fieldLabelKey)
+        : t("appointmentModal.validation.referralAgencyAttachment1Required");
+    }
     return "";
   };
 
@@ -835,6 +842,7 @@ const validatePhone = (phone, pCountry) => {
     setCompletedSteps([]);
     setPhoneCountry("Singapore");
     setNameTouched(false);
+    setShowPassword(false);
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -1055,8 +1063,8 @@ const validatePhone = (phone, pCountry) => {
       newErrors.referral_agency_name = validateReferralAgencyName(selectedAgencyName);
       newErrors.referral_agency_contact_person = validateReferralAgencyContactPerson(formData.referral_agency_contact_person);
       newErrors.referral_agency_contact_email = validateReferralAgencyEmail(formData.referral_agency_contact_email);
-      newErrors.referral_agency_attachment_1 = validateCustomFile(formData.referral_agency_attachment_1, "Attachment 1 from referral agency");
-      newErrors.referral_agency_password = formData.referral_agency_password ? "" : "Please enter the password.";
+      newErrors.referral_agency_attachment_1 = validateCustomFile(formData.referral_agency_attachment_1, "appointmentModal.validation.referralAgencyAttachment1Required");
+      newErrors.referral_agency_password = formData.referral_agency_password ? "" : t("appointmentModal.validation.referralAgencyPasswordRequired");
     }
 
     setErrors(newErrors);
@@ -1458,9 +1466,9 @@ const handleSubmit = async (e) => {
                               onBlur={handleBlur}
                               className={`w-full px-4 py-3 pr-10 border rounded-[10px] text-[15px] text-[#666] bg-[#FAF8F4] outline-none transition-all appearance-none ${errors.gender ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             >
-                              <option value="" disabled hidden>Select Gender</option>
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
+                              <option value="" disabled hidden>{t("appointmentModal.step1.fields.genderPlaceholder")}</option>
+                              <option value="Male">{t("appointmentModal.step1.genderOptions.male")}</option>
+                              <option value="Female">{t("appointmentModal.step1.genderOptions.female")}</option>
                             </select>
                             <ChevronDown
                               size={18}
@@ -1487,8 +1495,8 @@ const handleSubmit = async (e) => {
                               className={`w-full px-4 py-3 pr-10 border rounded-[10px] text-[15px] text-[#666] bg-[#FAF8F4] outline-none transition-all appearance-none ${errors.nationality ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             >
                               <option value="" disabled hidden>{t("appointmentModal.step1.fields.nationalityPlaceholder")}</option>
-                              <option value="Singapore Citizen">Singapore Citizen</option>
-                              <option value="Singapore PR">Singapore PR</option>
+                              <option value="Singapore Citizen">{t("appointmentModal.step1.nationalityOptions.singaporeCitizen")}</option>
+                              <option value="Singapore PR">{t("appointmentModal.step1.nationalityOptions.singaporePR")}</option>
                             </select>
                             <ChevronDown
                               size={18}
@@ -1503,7 +1511,7 @@ const handleSubmit = async (e) => {
                             htmlFor="appointment-type-of-concern"
                             className="text-[#0D4A7A] text-[clamp(12px,2vw,16px)] font-medium block mb-2"
                           >
-                            Type Of Concern <span className="text-red-500">*</span>
+                            {t("appointmentModal.step1.fields.typeOfConcern")} <span className="text-red-500">*</span>
                           </label>
                           <div className="relative">
                             <select
@@ -1514,12 +1522,12 @@ const handleSubmit = async (e) => {
                               onBlur={handleBlur}
                               className={`w-full px-4 py-3 pr-10 border rounded-[10px] text-[15px] text-[#666] bg-[#FAF8F4] outline-none transition-all appearance-none ${errors.type_of_concern ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             >
-                              <option value="" disabled hidden>Select Type Of Concern</option>
-                              <option value="Individual">Individual</option>
-                              <option value="Couple">Couple</option>
-                              <option value="Marital">Marital</option>
-                              <option value="Family/Children">Family/Children</option>
-                              <option value="Others">Others</option>
+                              <option value="" disabled hidden>{t("appointmentModal.step1.fields.typeOfConcernPlaceholder")}</option>
+                              <option value="Individual">{t("appointmentModal.step1.typeOfConcernOptions.individual")}</option>
+                              <option value="Couple">{t("appointmentModal.step1.typeOfConcernOptions.couple")}</option>
+                              <option value="Marital">{t("appointmentModal.step1.typeOfConcernOptions.marital")}</option>
+                              <option value="Family/Children">{t("appointmentModal.step1.typeOfConcernOptions.familyChildren")}</option>
+                              <option value="Others">{t("appointmentModal.step1.typeOfConcernOptions.others")}</option>
                             </select>
                             <ChevronDown
                               size={18}
@@ -1532,14 +1540,14 @@ const handleSubmit = async (e) => {
                         {formData.type_of_concern === "Others" && (
                           <div className="sm:col-span-2">
                             <label className="text-[#0D4A7A] text-[clamp(12px,2vw,16px)] font-medium block mb-2">
-                              Brief Description Of Concern <span className="text-red-500">*</span>
+                              {t("appointmentModal.step1.fields.typeOfConcernOther")} <span className="text-red-500">*</span>
                             </label>
                             <textarea
                               name="type_of_concern_other"
                               value={formData.type_of_concern_other}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder="Please briefly describe your concern"
+                              placeholder={t("appointmentModal.step1.fields.typeOfConcernOtherPlaceholder")}
                               rows={4}
                               className={`w-full p-4 border rounded-[10px] text-[15px] bg-[#FAF8F4] outline-none transition-all resize-none ${errors.type_of_concern_other ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             />
@@ -1551,7 +1559,7 @@ const handleSubmit = async (e) => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-1">
                         <div className="sm:col-span-2">
                           <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                            Enquirer Type <span className="text-red-500">*</span>
+                            {t("appointmentModal.step1.fields.enquirerType")} <span className="text-red-500">*</span>
                           </label>
                           <select
                             name="enquirer_type"
@@ -1560,10 +1568,10 @@ const handleSubmit = async (e) => {
                             onBlur={handleBlur}
                             className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_type ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                           >
-                            <option value="" disabled hidden>Select Enquirer Type</option>
-                            <option value="Referral Agency">Referral Agency</option>
-                            <option value="Enquirer">Enquirer</option>
-                            <option value="Self">Self</option>
+                            <option value="" disabled hidden>{t("appointmentModal.step1.fields.enquirerTypePlaceholder")}</option>
+                            <option value="Referral Agency">{t("appointmentModal.step1.enquirerTypeOptions.referralAgency")}</option>
+                            <option value="Enquirer">{t("appointmentModal.step1.enquirerTypeOptions.enquirer")}</option>
+                            <option value="Self">{t("appointmentModal.step1.enquirerTypeOptions.self")}</option>
                           </select>
                           <ErrorMessage message={errors.enquirer_type} />
                         </div>
@@ -1573,7 +1581,7 @@ const handleSubmit = async (e) => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                           <div>
                             <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                              Name <span className="text-red-500">*</span>
+                              {t("appointmentModal.step1.fields.enquirerName")} <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1581,7 +1589,7 @@ const handleSubmit = async (e) => {
                               value={formData.enquirer_name}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder="Enter name"
+                              placeholder={t("appointmentModal.step1.fields.enquirerNamePlaceholder")}
                               className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_name ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             />
                             <ErrorMessage message={errors.enquirer_name} />
@@ -1589,7 +1597,7 @@ const handleSubmit = async (e) => {
 
                           <div>
                             <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                              Relationship <span className="text-red-500">*</span>
+                              {t("appointmentModal.step1.fields.enquirerRelationship")} <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1597,7 +1605,7 @@ const handleSubmit = async (e) => {
                               value={formData.enquirer_relationship}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder="Enter relationship"
+                              placeholder={t("appointmentModal.step1.fields.enquirerRelationshipPlaceholder")}
                               className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_relationship ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             />
                             <ErrorMessage message={errors.enquirer_relationship} />
@@ -1605,7 +1613,7 @@ const handleSubmit = async (e) => {
 
                           <div>
                             <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                              Contact Number <span className="text-red-500">*</span>
+                              {t("appointmentModal.step1.fields.enquirerContactNumber")} <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1613,7 +1621,7 @@ const handleSubmit = async (e) => {
                               value={formData.enquirer_contact_number}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder="Enter contact number"
+                              placeholder={t("appointmentModal.step1.fields.enquirerContactNumberPlaceholder")}
                               className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_contact_number ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             />
                             <ErrorMessage message={errors.enquirer_contact_number} />
@@ -1621,7 +1629,7 @@ const handleSubmit = async (e) => {
 
                           <div>
                             <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                              Email Address <span className="text-red-500">*</span>
+                              {t("appointmentModal.step1.fields.enquirerEmail")} <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="email"
@@ -1629,7 +1637,7 @@ const handleSubmit = async (e) => {
                               value={formData.enquirer_email}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder="Enter email address"
+                              placeholder={t("appointmentModal.step1.fields.enquirerEmailPlaceholder")}
                               className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_email ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                             />
                             <ErrorMessage message={errors.enquirer_email} />
@@ -1642,7 +1650,7 @@ const handleSubmit = async (e) => {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div>
                               <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                                Referral Agency Name <span className="text-red-500">*</span>
+                                {t("appointmentModal.step1.fields.referralAgencyName")} <span className="text-red-500">*</span>
                               </label>
                               <select
                                 name="referral_agency_name"
@@ -1650,10 +1658,10 @@ const handleSubmit = async (e) => {
                                 onChange={handleChange}
                                 className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_name ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                               >
-                                <option value="" disabled hidden>Select Referral Agency Name</option>
-                                <option value="IMH Chat">IMH Chat</option>
-                                <option value="Allkin FSC">Allkin FSC</option>
-                                <option value="Others">Others</option>
+                                <option value="" disabled hidden>{t("appointmentModal.step1.fields.referralAgencyNamePlaceholder")}</option>
+                                <option value="IMH Chat">{t("appointmentModal.step1.referralAgencyOptions.imhChat")}</option>
+                                <option value="Allkin FSC">{t("appointmentModal.step1.referralAgencyOptions.allkinFsc")}</option>
+                                <option value="Others">{t("appointmentModal.step1.referralAgencyOptions.others")}</option>
                               </select>
                               <ErrorMessage message={errors.referral_agency_name} />
                             </div>
@@ -1661,14 +1669,14 @@ const handleSubmit = async (e) => {
                             {formData.referral_agency_name === "Others" && (
                               <div>
                                 <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                                  Referral Agency Name (Others) <span className="text-red-500">*</span>
+                                  {t("appointmentModal.step1.fields.referralAgencyNameOther")} <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                   type="text"
                                   name="referral_agency_name_other"
                                   value={formData.referral_agency_name_other}
                                   onChange={handleChange}
-                                  placeholder="Enter referral agency name"
+                                  placeholder={t("appointmentModal.step1.fields.referralAgencyNameOtherPlaceholder")}
                                   className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_name ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                                 />
                               </div>
@@ -1678,14 +1686,14 @@ const handleSubmit = async (e) => {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div>
                               <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                                Referral Agency Contact Person <span className="text-red-500">*</span>
+                                {t("appointmentModal.step1.fields.referralAgencyContactPerson")} <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="text"
                                 name="referral_agency_contact_person"
                                 value={formData.referral_agency_contact_person}
                                 onChange={handleChange}
-                                placeholder="Enter contact person"
+                                placeholder={t("appointmentModal.step1.fields.referralAgencyContactPersonPlaceholder")}
                                 className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_contact_person ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                               />
                               <ErrorMessage message={errors.referral_agency_contact_person} />
@@ -1693,14 +1701,14 @@ const handleSubmit = async (e) => {
 
                             <div>
                               <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                                Referral Agency Contact Email <span className="text-red-500">*</span>
+                                {t("appointmentModal.step1.fields.referralAgencyContactEmail")} <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="email"
                                 name="referral_agency_contact_email"
                                 value={formData.referral_agency_contact_email}
                                 onChange={handleChange}
-                                placeholder="Enter email address"
+                                placeholder={t("appointmentModal.step1.fields.referralAgencyContactEmailPlaceholder")}
                                 className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_contact_email ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                               />
                               <ErrorMessage message={errors.referral_agency_contact_email} />
@@ -1710,11 +1718,11 @@ const handleSubmit = async (e) => {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div>
                               <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                                Attachment 1 From Referral Agency <span className="text-red-500">*</span>
+                                {t("appointmentModal.step1.fields.referralAgencyAttachment1")} <span className="text-red-500">*</span>
                               </label>
                               <div className="flex items-center gap-3">
                                 <label className="inline-flex items-center justify-center px-5 py-3 border border-[#0D4A7A] rounded-[10px] bg-[#FAF8F4] text-[#0D4A7A] font-medium cursor-pointer hover:bg-[#edf6ff]">
-                                  Choose File
+                                  {t("appointmentModal.step1.fields.chooseFile")}
                                   <input
                                     type="file"
                                     name="referral_agency_attachment_1"
@@ -1723,7 +1731,7 @@ const handleSubmit = async (e) => {
                                   />
                                 </label>
                                 <span className="text-[#333] text-[16px]">
-                                  {formData.referral_agency_attachment_1 ? formData.referral_agency_attachment_1 : "No file chosen"}
+                                  {formData.referral_agency_attachment_1 ? formData.referral_agency_attachment_1 : t("appointmentModal.step1.fields.noFileChosen")}
                                 </span>
                               </div>
                               <ErrorMessage message={errors.referral_agency_attachment_1} />
@@ -1731,11 +1739,11 @@ const handleSubmit = async (e) => {
 
                             <div>
                               <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                                Attachment 2 From Referral Agency
+                                {t("appointmentModal.step1.fields.referralAgencyAttachment2")}
                               </label>
                               <div className="flex items-center gap-3">
                                 <label className="inline-flex items-center justify-center px-5 py-3 border border-[#0D4A7A] rounded-[10px] bg-[#FAF8F4] text-[#0D4A7A] font-medium cursor-pointer hover:bg-[#edf6ff]">
-                                  Choose File
+                                  {t("appointmentModal.step1.fields.chooseFile")}
                                   <input
                                     type="file"
                                     name="referral_agency_attachment_2"
@@ -1744,7 +1752,7 @@ const handleSubmit = async (e) => {
                                   />
                                 </label>
                                 <span className="text-[#333] text-[16px]">
-                                  {formData.referral_agency_attachment_2 ? formData.referral_agency_attachment_2 : "No file chosen"}
+                                  {formData.referral_agency_attachment_2 ? formData.referral_agency_attachment_2 : t("appointmentModal.step1.fields.noFileChosen")}
                                 </span>
                               </div>
                             </div>
@@ -1753,16 +1761,31 @@ const handleSubmit = async (e) => {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div>
                               <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
-                                Password <span className="text-red-500">*</span>
+                                {t("appointmentModal.step1.fields.referralAgencyPassword")} <span className="text-red-500">*</span>
                               </label>
-                              <input
-                                type="password"
-                                name="referral_agency_password"
-                                value={formData.referral_agency_password}
-                                onChange={handleChange}
-                                placeholder="Enter password"
-                                className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_password ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
-                              />
+                              <div className="relative">
+                                <input
+                                  type={showPassword ? "text" : "password"}
+                                  name="referral_agency_password"
+                                  autoComplete="current-password"
+                                  value={formData.referral_agency_password}
+                                  onChange={handleChange}
+                                  placeholder={t("appointmentModal.step1.fields.referralAgencyPasswordPlaceholder")}
+                                  className={`w-full px-5 py-4 pr-12 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_password ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPassword((prev) => !prev)}
+                                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer flex items-center justify-center p-1"
+                                  aria-label={showPassword ? "Hide password" : "Show password"}
+                                >
+                                  {showPassword ? (
+                                    <EyeOff size={20} />
+                                  ) : (
+                                    <Eye size={20} />
+                                  )}
+                                </button>
+                              </div>
                               <ErrorMessage message={errors.referral_agency_password} />
                             </div>
                           </div>
