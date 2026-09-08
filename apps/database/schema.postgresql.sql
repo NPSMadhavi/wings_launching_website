@@ -198,20 +198,32 @@ CREATE TABLE IF NOT EXISTS events (
 
 -- ─── Appointments ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS appointments (
-  id                    SERIAL PRIMARY KEY,
-  nric_fin_number       VARCHAR(100) NOT NULL,
-  name                  VARCHAR(150) NOT NULL,
-  age                   INT NOT NULL,
-  gender                VARCHAR(20) NOT NULL CHECK (gender IN ('Male', 'Female', 'Other')),
-  nationality           VARCHAR(100) NOT NULL,
-  email                 VARCHAR(150) NOT NULL,
-  phone                 VARCHAR(20) NOT NULL,
-  counselling_type      VARCHAR(150) NOT NULL,
-  sub_counselling_types TEXT,
-  description           TEXT,
-  remarks               TEXT,
-  created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id                             SERIAL PRIMARY KEY,
+  nric_fin_number                VARCHAR(100) NOT NULL,
+  name                           VARCHAR(150) NOT NULL,
+  age                            INT NOT NULL,
+  gender                         VARCHAR(20) NOT NULL CHECK (gender IN ('Male', 'Female', 'Other')),
+  nationality                    VARCHAR(100) NOT NULL,
+  email                          VARCHAR(150) NOT NULL,
+  phone                          VARCHAR(20) NOT NULL,
+  counselling_type               VARCHAR(150) NOT NULL,
+  sub_counselling_types          TEXT,
+  description                    TEXT,
+  remarks                        TEXT,
+  type_of_concern                VARCHAR(100),
+  type_of_concern_other          TEXT,
+  enquirer_type                  VARCHAR(50),
+  enquirer_name                  VARCHAR(150),
+  enquirer_relationship          VARCHAR(100),
+  enquirer_contact_number        VARCHAR(50),
+  enquirer_email                 VARCHAR(150),
+  referral_agency_name           VARCHAR(150),
+  referral_agency_contact_person VARCHAR(150),
+  referral_agency_contact_email  VARCHAR(150),
+  referral_agency_password       TEXT,
+  attachments_json               TEXT,
+  created_at                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ─── Counselling Types ───────────────────────────────────────────────────────

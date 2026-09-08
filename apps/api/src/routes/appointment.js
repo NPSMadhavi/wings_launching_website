@@ -11,6 +11,8 @@ const router = express.Router();
 async function ensureAppointmentColumns() {
     const columns = [
         ["sub_counselling_types", "TEXT NULL"],
+        ["type_of_concern", "VARCHAR(100) NULL"],
+        ["type_of_concern_other", "TEXT NULL"],
         ["enquirer_type", "TEXT NULL"],
         ["enquirer_name", "TEXT NULL"],
         ["enquirer_relationship", "TEXT NULL"],
@@ -25,18 +27,9 @@ async function ensureAppointmentColumns() {
 
     for (const [colName, colType] of columns) {
         try {
-            const [cols] = await db.execute(
-                `SELECT column_name FROM information_schema.columns
-                 WHERE table_schema = current_schema()
-                   AND table_name = 'appointments'
-                   AND column_name = '${colName}'`
+            await db.execute(
+                `ALTER TABLE appointments ADD COLUMN IF NOT EXISTS ${colName} ${colType}`
             );
-            if (cols.length === 0) {
-                await db.execute(
-                    `ALTER TABLE appointments ADD COLUMN ${colName} ${colType}`
-                );
-                console.log(`[Appointments] Added ${colName} column`);
-            }
         } catch (err) {
             if (!isDuplicateColumnError(err)) {
                 console.warn(`[Appointments] Schema check for ${colName} failed:`, err.message);
