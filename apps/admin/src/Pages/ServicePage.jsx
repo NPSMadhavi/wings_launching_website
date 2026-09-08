@@ -320,7 +320,7 @@ export default function ServicePage() {
                                 {/* Book an Appointment Button - Only for Counselling tab */}
                                 {activeTab === "counselling" && (
                                 <button
-                                        onClick={() => openModal(card.appointmentSelection || card.title)}
+                                        onClick={() => openModal()}
                                         className={`flex items-center justify-center gap-2 mt-auto w-full cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] py-3 px-4 sm:py-3 sm:px-5 rounded-full border border-[#1B4585] font-['DM_Sans'] font-semibold text-[13px] md:text-[16px] ${
                                             hoveredButton === `${activeTab}-${index}`
                                                 ? "bg-[#1B4585] text-white"

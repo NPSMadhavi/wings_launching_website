@@ -5,6 +5,7 @@
       "back": "返回",
       "continue": "继续",
       "submit": "提交",
+      "submitting": "提交中...",
       "retry": "重试"
     },
     "step1": {

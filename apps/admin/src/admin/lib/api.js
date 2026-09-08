@@ -401,4 +401,13 @@ export const api = {
       body: fd,
     });
   },
+
+  fetchLiveVisitorCount: async () => {
+    return apiFetch("/visitors/live-count");
+  },
+
+  fetchVisitorStats: async () => {
+    return apiFetch("/visitors/stats");
+  },
 };
+

@@ -33,6 +33,32 @@ export function Footer() {
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | success | duplicate | error | privacy
   const [socialLinks, setSocialLinks] = useState(FALLBACK_SOCIAL);
+  const [totalVisitors, setTotalVisitors] = useState(null);
+  const [todayVisitors, setTodayVisitors] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/visitors/public-total");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && data) {
+          if (typeof data.totalVisitors === "number") {
+            setTotalVisitors(data.totalVisitors);
+          }
+          if (typeof data.todayVisitors === "number") {
+            setTodayVisitors(data.todayVisitors);
+          }
+        }
+      } catch {
+        /* keep defaults */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -474,6 +500,30 @@ export function Footer() {
               </form>
             </div>
 
+          </div>
+
+          {/* VISITORS BADGE CARD */}
+          <div className="mb-6 text-left">
+            <div className="inline-flex items-center gap-4 sm:gap-6 px-6 py-3.5 rounded-2xl border border-white bg-transparent shadow-sm">
+              <span className="text-white/70 text-xs sm:text-sm font-bold tracking-widest">
+                Visitors
+              </span>
+
+              <span className="text-white text-2xl sm:text-3xl font-semibold tracking-wider">
+                {totalVisitors !== null
+                  ? totalVisitors.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+                  : "..."}
+              </span>
+
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
+                <span className="text-[#38BDF8] font-bold text-sm sm:text-base">
+                  +{todayVisitors}
+                </span>
+                <span className="text-white/70">
+                  today
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* DIVIDER */}

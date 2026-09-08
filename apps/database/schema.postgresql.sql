@@ -299,3 +299,14 @@ CREATE TABLE IF NOT EXISTS article_language (
   updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uq_article_language UNIQUE (article_id, language_id)
 );
+
+-- Anonymous live visitors tracking
+CREATE TABLE IF NOT EXISTS visitors (
+  id          SERIAL PRIMARY KEY,
+  visitor_id  VARCHAR(100) NOT NULL UNIQUE,
+  last_seen   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_visitors_last_seen ON visitors (last_seen);
+

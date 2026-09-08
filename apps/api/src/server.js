@@ -31,6 +31,7 @@ import formSubmissionEmailsRouter from "./routes/formSubmissionEmails.js";
 import candidatesRouter from "./routes/candidates.js";
 import notifyRouter, { ensureNotifyTables } from "./routes/notify.js";
 import eventSubscribersRouter from "./routes/eventSubcriber.js";
+import visitorsRouter from "./routes/visitors.js";
 import { db } from "./config/db.js";
 import {
   isDuplicateColumnError,
@@ -92,6 +93,7 @@ app.use(
 );
 
 app.use(express.json({ limit: "50mb" }));
+app.use(express.text({ limit: "1mb", type: ["text/plain", "text/*"] }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // ── Express Session ────────────────────────────────────────────────────────
@@ -173,6 +175,7 @@ app.use("/api/counselling-types", counsellingTypesRouter);
 app.use("/api", partnersRouter);
 app.use("/api", testimonialsRouter);
 app.use("/api", socialMediaRouter);
+app.use("/api", visitorsRouter);
 const DEFAULT_INTERVIEW_SLOT_SETTINGS = [
   { round: 1, timeSlot: "07:30", isActive: true },
   { round: 1, timeSlot: "08:30", isActive: true },

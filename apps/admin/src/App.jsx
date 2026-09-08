@@ -63,6 +63,7 @@ import { scrollToPageContentSection } from "@/lib/scrollToSection";
 import { CandidateAuthModal } from "@/components/modals/CandidateAuthModal";
 
 import ContentProtection from "@/components/ContentProtection";
+import { VisitorHeartbeat } from "@/components/VisitorHeartbeat";
 
 
 /* ---------------- Scroll To Top ---------------- */
@@ -220,6 +221,7 @@ export default function App() {
 
                 <div className="page-wrapper">
                   <ContentProtection />
+                  <VisitorHeartbeat />
 
                 <ScrollToTop />
                 <SharedNavbar />

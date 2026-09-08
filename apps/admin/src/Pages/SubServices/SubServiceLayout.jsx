@@ -264,7 +264,7 @@ export default function SubServiceLayout({
               viewport={{ once: true }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => openModal(appointmentSelection || serviceLabel)}
+              onClick={() => openModal()}
               className="mt-12 h-[60px] px-8 rounded-full bg-[#1B4585] text-white font-['Plus_Jakarta_Sans',sans-serif] text-[17px] font-semibold inline-flex items-center gap-4 hover:scale-105 transition-all duration-300"
             >
               {t("subService.buttons.bookAppointment")}

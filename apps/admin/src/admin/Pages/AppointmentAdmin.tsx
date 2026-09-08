@@ -8,6 +8,9 @@ import {
     Pencil,
     Trash2,
     X,
+    FileText,
+    Download,
+    ExternalLink,
 } from "lucide-react";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 
@@ -18,12 +21,36 @@ function parseSubCounsellingTypes(
     value?: string | null,
     fallback?: string | null
 ): string[] {
-    const raw = value || fallback;
-    if (!raw) return [];
-    return raw
+    if (!value && !fallback) return [];
+
+    let str = value || fallback || "";
+
+    try {
+        if (str.startsWith("[") && str.endsWith("]")) {
+            const parsed = JSON.parse(str);
+            if (Array.isArray(parsed)) {
+                return parsed.map((item) => String(item).trim()).filter(Boolean);
+            }
+        }
+    } catch (e) {
+        // Ignore JSON error
+    }
+
+    return str
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean);
+}
+
+function getEffectiveEnquirerType(item: any): string {
+    if (item?.enquirer_type) return item.enquirer_type;
+    if (item?.referral_agency_name || item?.referral_agency_contact_person || item?.referral_agency_contact_email) {
+        return "Referral Agency";
+    }
+    if (item?.enquirer_name || item?.enquirer_relationship || item?.relationship || item?.enquirer_contact_number || item?.enquirer_email) {
+        return "Enquirer";
+    }
+    return "Self";
 }
 
 function SubCounsellingTypesTable({
@@ -70,6 +97,41 @@ export default function AppointmentsPage() {
     const [editFormData, setEditFormData] = useState({});
     const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    // State for Expandable Row & Attachments Modal
+    const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
+    const [viewingAttachmentsItem, setViewingAttachmentsItem] = useState<any | null>(null);
+
+    const getAppointmentAttachments = (item: any) => {
+        if (!item) return [];
+        const list: any[] = [];
+        if (Array.isArray(item.attachments)) list.push(...item.attachments);
+        if (item.referral_agency_attachment_1_data || item.referral_agency_attachment_1) {
+            list.push({
+                name: item.referral_agency_attachment_1 || "Referral_Attachment_1",
+                data: item.referral_agency_attachment_1_data || item.referral_agency_attachment_1,
+            });
+        }
+        if (item.referral_agency_attachment_2_data || item.referral_agency_attachment_2) {
+            list.push({
+                name: item.referral_agency_attachment_2 || "Referral_Attachment_2",
+                data: item.referral_agency_attachment_2_data || item.referral_agency_attachment_2,
+            });
+        }
+        if (item.attachment1) list.push(item.attachment1);
+        if (item.attachment2) list.push(item.attachment2);
+
+        const unique: any[] = [];
+        const names = new Set();
+        for (const file of list) {
+            const name = typeof file === "string" ? file : file?.name || file?.filename || "Attachment";
+            if (name && !names.has(name)) {
+                names.add(name);
+                unique.push(typeof file === "string" ? { name: file, data: file } : file);
+            }
+        }
+        return unique;
+    };
 
     const handleBack = () => {
   window.history.back();
@@ -255,16 +317,15 @@ export default function AppointmentsPage() {
 
     const exportExcel = () => {
         const headers = [
-            "NRIC/FIN Number",
+            "NRIC",
             "Name",
             "Age",
             "Gender",
             "Email",
             "Phone",
-            "Counselling Type",
-            "Sub Counselling Types",
-            "Description",
-            "Remarks"
+            "Concerns",
+            "Enquirer Type",
+            "Description"
         ];
 
         const rows = appointments.map((item) => [
@@ -274,10 +335,9 @@ export default function AppointmentsPage() {
             `"${(item.gender || '').replace(/"/g, '""')}"`,
             `"${(item.email || '').replace(/"/g, '""')}"`,
             `"${(item.phone || '').replace(/"/g, '""')}"`,
-            `"${(item.counselling_type || '').replace(/"/g, '""')}"`,
-            `"${(item.sub_counselling_types || item.remarks || '').replace(/"/g, '""')}"`,
+            `"${((item.type_of_concern === 'Others' ? item.type_of_concern_other : item.type_of_concern) || '').replace(/"/g, '""')}"`,
+            `"${getEffectiveEnquirerType(item).replace(/"/g, '""')}"`,
             `"${(item.description || '').replace(/"/g, '""')}"`,
-            `"${(item.remarks || '').replace(/"/g, '""')}"`,
         ]);
 
         const csvContent = [headers, ...rows]
@@ -335,7 +395,7 @@ export default function AppointmentsPage() {
             // Add headers
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
-            const headers = ['NRIC/FIN', 'Name', 'Age', 'Gender', 'Email', 'Phone', 'Counselling Type', 'Sub Counselling Types', 'Description', 'Remarks'];
+            const headers = ['NRIC', 'Name', 'Age', 'Gender', 'Email', 'Phone', 'Concerns', 'Enquirer Type', 'Description'];
 
             headers.forEach(header => {
                 const th = document.createElement('th');
@@ -361,10 +421,9 @@ export default function AppointmentsPage() {
                     appointment.gender || '',
                     appointment.email || '',
                     appointment.phone || '',
-                    appointment.counselling_type || '',
-                    (appointment.sub_counselling_types || appointment.remarks || '').substring(0, 100),
-                    (appointment.description || '').substring(0, 100),
-                    (appointment.remarks || '').substring(0, 100)
+                    appointment.type_of_concern === 'Others' ? appointment.type_of_concern_other : (appointment.type_of_concern || ''),
+                    getEffectiveEnquirerType(appointment),
+                    (appointment.description || '').substring(0, 100)
                 ];
 
                 rowData.forEach(data => {
@@ -606,7 +665,7 @@ export default function AppointmentsPage() {
                         <thead className="bg-[#eef2ff]">
                             <tr>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
-                                    NRIC/FIN
+                                    NRIC
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
                                     Name
@@ -618,22 +677,19 @@ export default function AppointmentsPage() {
                                     Gender
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
-                                    Mail
+                                    Email
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
                                     Phone
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
-                                    Counselling Type
+                                    Concerns
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
-                                    Sub Counselling Types
+                                    Enquirer Type
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
                                     Description
-                                </th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-blue-900">
-                                    Remarks
                                 </th>
                                 <th className="px-6 py-4 text-center text-sm font-semibold text-blue-900">
                                     Actions
@@ -643,91 +699,170 @@ export default function AppointmentsPage() {
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="11" className="text-center py-16 text-gray-500">
+                                    <td colSpan={10} className="text-center py-16 text-gray-500">
                                         Loading appointments...
                                     </td>
                                 </tr>
                             ) : paginatedAppointments.length === 0 ? (
                                 <tr>
-                                    <td colSpan="11" className="text-center py-16 text-gray-400">
+                                    <td colSpan={10} className="text-center py-16 text-gray-400">
                                         No appointments found
                                     </td>
                                 </tr>
                             ) : (
-                                paginatedAppointments.map((item, index) => (
-                                    <tr
-                                        key={item.id}
-                                        className={`
+                                paginatedAppointments.map((item: any, index: number) => (
+                                    <React.Fragment key={item.id}>
+                                        <tr
+                                            className={`
                       border-b border-gray-50
                       hover:bg-[#F8FAFC]
                       transition-all
                       ${index % 2 === 0 ? "bg-white" : "bg-[#FCFCFD]"}
                     `}
-                                    >
-                                        <td className="px-6 py-5 text-sm text-gray-700">
-                                            {item.nric_fin_number || '-'}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex flex-col">
-                                                <span className=" text-gray-700 text-[15px]">
-                                                    {item.name}
+                                        >
+                                            <td className="px-6 py-5 text-sm text-gray-700">
+                                                {item.nric_fin_number || '-'}
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <div className="flex flex-col">
+                                                    <span className=" text-gray-700 text-[15px]">
+                                                        {item.name}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-gray-700">
+                                                {item.age || '-'}
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <span className="px-3 py-1 rounded-full text-xs text-gray-700">
+                                                    {item.gender}
                                                 </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm text-gray-700">
-                                            {item.age || '-'}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className="px-3 py-1 rounded-full text-xs text-gray-700">
-                                                {item.gender}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm text-gray-700">
-                                            {item.email}
-                                        </td>
-                                        <td className="px-6 py-5 text-sm text-gray-700">
-                                            {item.phone}
-                                        </td>
-                                       <td className="px-6 py-5 text-left">
-  <span className="inline-block px-3 py-1 rounded-full text-xs   text-gray-700 text-left">
-    {item.counselling_type}
-  </span>
-</td>
-                                        <td className="px-6 py-5 align-top">
-                                            <SubCounsellingTypesTable
-                                                value={item.sub_counselling_types}
-                                                fallback={item.remarks}
-                                            />
-                                        </td>
-                                        <td className="px-6 py-5 text-sm text-gray-700 max-w-[200px]">
-                                            <div className="line-clamp-2">
-                                                {item.description || '-'}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm text-gray-700 max-w-[200px]">
-                                            <div className="line-clamp-2">
-                                                {item.remarks || '-'}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center justify-center gap-3">
-                                                <button
-                                                    onClick={() => handleView(item)}
-                                                    className="w-9 h-9 rounded-xl flex items-center justify-center hover:scale-105 transition-all"
-                                                    title="View"
-                                                >
-                                                    <Eye size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => setDeleteTarget(item.id)}
-                                                    className="w-9 h-9 rounded-xl  flex items-center justify-center hover:scale-105 transition-all"
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-gray-700">
+                                                {item.email}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-gray-700">
+                                                {item.phone}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-gray-700">
+                                                {item.type_of_concern === "Others" ? item.type_of_concern_other : (item.type_of_concern || '-')}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-gray-700">
+                                                {getEffectiveEnquirerType(item)}
+                                            </td>
+                                            <td className="px-6 py-5 text-sm text-gray-700 max-w-[200px]">
+                                                <div className="line-clamp-2">
+                                                    {item.description || '-'}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center justify-center gap-3">
+                                                    <button
+                                                        onClick={() => handleView(item)}
+                                                        className="w-9 h-9 rounded-xl flex items-center justify-center hover:scale-105 transition-all text-blue-900"
+                                                        title="View"
+                                                    >
+                                                        <Eye size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setDeleteTarget(item.id)}
+                                                        className="w-9 h-9 rounded-xl flex items-center justify-center hover:scale-105 transition-all text-red-600"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+
+                                                    {getEffectiveEnquirerType(item) !== "Self" && (
+                                                        <button
+                                                            onClick={() => setExpandedRowId(expandedRowId === item.id ? null : item.id)}
+                                                            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                                                                expandedRowId === item.id ? "bg-[#0D4A7A] text-white" : "hover:bg-gray-100 text-gray-700"
+                                                            }`}
+                                                            title="Toggle Details"
+                                                        >
+                                                            <ChevronDown size={16} className={`transition-transform duration-200 ${expandedRowId === item.id ? "rotate-180" : ""}`} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        {expandedRowId === item.id && getEffectiveEnquirerType(item) !== "Self" && (
+                                            <tr key={`expanded-${item.id}`} className="bg-[#F0F7FA]/70 border-b border-blue-100">
+                                                <td colSpan={10} className="px-8 py-5">
+                                                    <div className="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm space-y-4">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-3">
+                                                            <div>
+                                                                <h4 className="text-base font-bold text-[#0D4A7A] flex items-center gap-2">
+                                                                    <FileText size={18} />
+                                                                    {getEffectiveEnquirerType(item) === "Referral Agency" ? "Referral Agency Details" : "Enquirer Details"}
+                                                                </h4>
+                                                            </div>
+
+                                                            {getEffectiveEnquirerType(item) === "Referral Agency" && (
+                                                                <button
+                                                                    onClick={() => setViewingAttachmentsItem(item)}
+                                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#0D4A7A] text-white text-xs font-semibold rounded-xl hover:bg-[#003460] transition-all shadow-sm"
+                                                                >
+                                                                    <FileText size={14} />
+                                                                    <span>View Attachments</span>
+                                                                    {getAppointmentAttachments(item).length > 0 && (
+                                                                        <span className="bg-white text-[#0D4A7A] px-2 py-0.5 rounded-full text-[10px] font-bold ml-1">
+                                                                            {getAppointmentAttachments(item).length}
+                                                                        </span>
+                                                                    )}
+                                                                </button>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                                                            {getEffectiveEnquirerType(item) === "Referral Agency" ? (
+                                                                <>
+                                                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                        <span className="text-gray-400 block uppercase font-bold text-[10px] mb-1">Referral Agency Name</span>
+                                                                        <span className="text-gray-900 font-semibold text-sm">{item.referral_agency_name || "-"}</span>
+                                                                    </div>
+                                                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                        <span className="text-gray-400 block uppercase font-bold text-[10px] mb-1">Referral Agency Contact Person</span>
+                                                                        <span className="text-gray-900 font-semibold text-sm">{item.referral_agency_contact_person || "-"}</span>
+                                                                    </div>
+                                                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                        <span className="text-gray-400 block uppercase font-bold text-[10px] mb-1">Referral Agency Contact Email</span>
+                                                                        <span className="text-gray-900 font-semibold text-sm">{item.referral_agency_contact_email || "-"}</span>
+                                                                    </div>
+                                                                    {item.referral_agency_password && (
+                                                                        <div className="bg-amber-50 p-3 rounded-xl border border-amber-200">
+                                                                            <span className="text-amber-800 block uppercase font-bold text-[10px] mb-1">Document Password</span>
+                                                                            <span className="text-amber-900 font-mono font-bold text-sm bg-white px-2 py-0.5 rounded border border-amber-300 inline-block">{item.referral_agency_password}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                        <span className="text-gray-400 block uppercase font-bold text-[10px] mb-1">Enquirer Name</span>
+                                                                        <span className="text-gray-900 font-semibold text-sm">{item.enquirer_name || "-"}</span>
+                                                                    </div>
+                                                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                        <span className="text-gray-400 block uppercase font-bold text-[10px] mb-1">Relationship</span>
+                                                                        <span className="text-gray-900 font-semibold text-sm">{item.enquirer_relationship || item.relationship || "-"}</span>
+                                                                    </div>
+                                                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                        <span className="text-gray-400 block uppercase font-bold text-[10px] mb-1">Enquirer Contact Number</span>
+                                                                        <span className="text-gray-900 font-semibold text-sm">{item.enquirer_contact_number || "-"}</span>
+                                                                    </div>
+                                                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                                                        <span className="text-gray-400 block uppercase font-bold text-[10px] mb-1">Enquirer Email Address</span>
+                                                                        <span className="text-gray-900 font-semibold text-sm">{item.enquirer_email || "-"}</span>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 ))
                             )}
                         </tbody>
@@ -788,7 +923,7 @@ export default function AppointmentsPage() {
                                     <table className="w-full text-left border-collapse">
                                         <tbody>
                                             <tr className="border-b border-gray-100">
-                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase w-1/3">NRIC/FIN Number</th>
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase w-1/3">NRIC</th>
                                                 <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.nric_fin_number || '-'}</td>
                                             </tr>
                                             <tr className="border-b border-gray-100">
@@ -816,27 +951,65 @@ export default function AppointmentsPage() {
                                                 <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.phone}</td>
                                             </tr>
                                             <tr className="border-b border-gray-100">
-                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Counselling Type</th>
-                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.counselling_type}</td>
-                                            </tr>
-                                            <tr className="border-b border-gray-100">
-                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase align-top">Sub Counselling Types</th>
-                                                <td className="py-3">
-                                                    <div className="flex flex-wrap gap-2">
-                                                        <SubCounsellingTypesTable
-                                                            value={selectedAppointment?.sub_counselling_types}
-                                                            fallback={selectedAppointment?.remarks}
-                                                        />
-                                                    </div>
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Concerns</th>
+                                                <td className="py-3 text-gray-900 font-medium">
+                                                    {selectedAppointment?.type_of_concern === "Others" 
+                                                        ? selectedAppointment?.type_of_concern_other 
+                                                        : (selectedAppointment?.type_of_concern || '-')}
                                                 </td>
                                             </tr>
                                             <tr className="border-b border-gray-100">
+                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Enquirer Type</th>
+                                                <td className="py-3 text-gray-900 font-medium">{selectedAppointment?.enquirer_type || 'Enquirer'}</td>
+                                            </tr>
+
+                                            {selectedAppointment?.enquirer_name && (
+                                                <tr className="border-b border-gray-100">
+                                                    <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Enquirer Name</th>
+                                                    <td className="py-3 text-gray-900 font-medium">{selectedAppointment.enquirer_name}</td>
+                                                </tr>
+                                            )}
+                                            {(selectedAppointment?.enquirer_relationship || selectedAppointment?.relationship) && (
+                                                <tr className="border-b border-gray-100">
+                                                    <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Relationship</th>
+                                                    <td className="py-3 text-gray-900 font-medium">{selectedAppointment.enquirer_relationship || selectedAppointment.relationship}</td>
+                                                </tr>
+                                            )}
+                                            {selectedAppointment?.enquirer_contact_number && (
+                                                <tr className="border-b border-gray-100">
+                                                    <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Enquirer Contact Number</th>
+                                                    <td className="py-3 text-gray-900 font-medium">{selectedAppointment.enquirer_contact_number}</td>
+                                                </tr>
+                                            )}
+                                            {selectedAppointment?.enquirer_email && (
+                                                <tr className="border-b border-gray-100">
+                                                    <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Enquirer Email Address</th>
+                                                    <td className="py-3 text-gray-900 font-medium">{selectedAppointment.enquirer_email}</td>
+                                                </tr>
+                                            )}
+
+                                            {selectedAppointment?.referral_agency_name && (
+                                                <tr className="border-b border-gray-100">
+                                                    <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Referral Agency Name</th>
+                                                    <td className="py-3 text-gray-900 font-medium">{selectedAppointment.referral_agency_name}</td>
+                                                </tr>
+                                            )}
+                                            {selectedAppointment?.referral_agency_contact_person && (
+                                                <tr className="border-b border-gray-100">
+                                                    <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Referral Agency Contact Person</th>
+                                                    <td className="py-3 text-gray-900 font-medium">{selectedAppointment.referral_agency_contact_person}</td>
+                                                </tr>
+                                            )}
+                                            {selectedAppointment?.referral_agency_contact_email && (
+                                                <tr className="border-b border-gray-100">
+                                                    <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase">Referral Agency Contact Email</th>
+                                                    <td className="py-3 text-gray-900 font-medium">{selectedAppointment.referral_agency_contact_email}</td>
+                                                </tr>
+                                            )}
+
+                                            <tr className="border-b border-gray-100">
                                                 <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase align-top">Description</th>
                                                 <td className="py-3 text-gray-900 whitespace-pre-wrap">{selectedAppointment?.description || '-'}</td>
-                                            </tr>
-                                            <tr>
-                                                <th className="py-3 pr-4 text-xs font-bold text-gray-500 uppercase align-top">Remarks</th>
-                                                <td className="py-3 text-gray-900 whitespace-pre-wrap">{selectedAppointment?.remarks || '-'}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -1011,6 +1184,130 @@ export default function AppointmentsPage() {
                 onConfirm={handleDelete}
                 onCancel={() => setDeleteTarget(null)}
             />
+            {/* ATTACHMENTS VIEW MODAL */}
+            {viewingAttachmentsItem && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl animate-in fade-in zoom-in-95">
+                        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-2xl bg-blue-50 text-[#0D4A7A] flex items-center justify-center">
+                                    <FileText size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">
+                                        Uploaded Documents
+                                    </h3>
+                                    <p className="text-xs text-gray-500">
+                                        Submitted by {viewingAttachmentsItem.name} ({viewingAttachmentsItem.enquirer_type || 'Enquirer'})
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setViewingAttachmentsItem(null)}
+                                className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {viewingAttachmentsItem.referral_agency_password && (
+                            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between">
+                                <span className="text-xs font-semibold text-amber-900">
+                                    Document Protection Password:
+                                </span>
+                                <code className="bg-white text-amber-900 font-bold font-mono px-3 py-1 rounded-lg border border-amber-300 text-sm">
+                                    {viewingAttachmentsItem.referral_agency_password}
+                                </code>
+                            </div>
+                        )}
+
+                        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                            {getAppointmentAttachments(viewingAttachmentsItem).length === 0 ? (
+                                <div className="text-center py-10 text-gray-400 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                    <FileText size={36} className="mx-auto mb-2 opacity-40" />
+                                    <p className="text-sm font-medium">No attached documents found for this submission.</p>
+                                </div>
+                            ) : (
+                                getAppointmentAttachments(viewingAttachmentsItem).map((file: any, idx: number) => {
+                                    const fileName = typeof file === 'string' ? file : file.name || `Document_${idx + 1}`;
+                                    const fileData = typeof file === 'object' && file.data ? file.data : (typeof file === 'string' ? file : '');
+
+                                    const openFile = () => {
+                                        if (!fileData) return;
+                                        try {
+                                            if (fileData.startsWith('data:')) {
+                                                const arr = fileData.split(',');
+                                                const mimeMatch = arr[0].match(/:(.*?);/);
+                                                const mime = mimeMatch ? mimeMatch[1] : 'application/pdf';
+                                                const bstr = atob(arr[1]);
+                                                let n = bstr.length;
+                                                const u8arr = new Uint8Array(n);
+                                                while (n--) {
+                                                    u8arr[n] = bstr.charCodeAt(n);
+                                                }
+                                                const blob = new Blob([u8arr], { type: mime });
+                                                const blobUrl = URL.createObjectURL(blob);
+                                                window.open(blobUrl, '_blank');
+                                                return;
+                                            }
+                                        } catch (e) {
+                                            console.warn('Failed to convert data URI to blob:', e);
+                                        }
+                                        window.open(fileData, '_blank');
+                                    };
+
+                                    return (
+                                        <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100/80 rounded-2xl border border-gray-200/80 transition-all">
+                                            <div className="flex items-center gap-3 min-w-0 pr-2">
+                                                <div className="w-9 h-9 rounded-xl bg-blue-100 text-[#0D4A7A] flex items-center justify-center shrink-0">
+                                                    <FileText size={18} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold text-gray-800 truncate">
+                                                        {fileName}
+                                                    </p>
+                                                    <p className="text-[11px] text-gray-400">
+                                                        Uploaded Attachment #{idx + 1}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {fileData && (
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                    <button
+                                                        onClick={openFile}
+                                                        className="px-3.5 py-1.5 bg-[#0D4A7A] text-white text-xs font-semibold rounded-xl hover:bg-[#003460] transition-all flex items-center gap-1.5 shadow-sm"
+                                                    >
+                                                        <ExternalLink size={13} />
+                                                        <span>View</span>
+                                                    </button>
+                                                    <a
+                                                        href={fileData}
+                                                        download={fileName}
+                                                        className="px-3 py-1.5 border border-gray-300 text-gray-700 text-xs font-medium rounded-xl hover:bg-white transition-all flex items-center gap-1.5"
+                                                    >
+                                                        <Download size={13} />
+                                                        <span>Download</span>
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+
+                        <div className="flex justify-end pt-2">
+                            <button
+                                onClick={() => setViewingAttachmentsItem(null)}
+                                className="px-6 py-2.5 bg-gray-100 text-gray-700 font-semibold text-xs rounded-xl hover:bg-gray-200 transition-all"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

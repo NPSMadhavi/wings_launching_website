@@ -244,12 +244,7 @@ export default function SupportTopicPage() {
       navigate(`/services/sub/${service.id}`);
       return;
     }
-    openModal(
-      service.appointmentSelection || {
-        counsellingTypeName: service.parentName,
-        subTypeName: service.title,
-      }
-    );
+    openModal();
   };
 
   return (
@@ -683,7 +678,7 @@ export default function SupportTopicPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    openModal(service.appointmentSelection || service.title)
+                    openModal()
                   }
                   className={`flex items-center justify-center gap-2 mt-auto w-full cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] py-3 px-4 sm:py-3 sm:px-5 rounded-full border border-[#1B4585] font-['DM_Sans'] font-semibold text-[13px] sm:text-[14px] ${
                     hoveredButton === `support-${index}`

@@ -20,6 +20,7 @@ import CounsellingTypeAdmin from "./Pages/CounsellingtypeAdmin";
 import PartnersAdmin from "./Pages/PartnersAdmin";
 import TestimonialsAdmin from "./Pages/TestimonialsAdmin";
 import SocialMediaAdmin from "./Pages/SocialMediaAdmin";
+import VisitorsAdmin from "./Pages/VisitorsAdmin";
 import PrimaryCcMailsAdmin from "./Pages/PrimaryCcMailsAdmin";
 import NotifyMailsAdmin from "./Pages/NotifyMailsAdmin";
 import EmailsAdmin from "./Pages/EmailsAdmin";
@@ -55,6 +56,7 @@ function AdminRoutes() {
         <Route path="/admin/partners" component={PartnersAdmin} />
         <Route path="/admin/testimonials" component={TestimonialsAdmin} />
         <Route path="/admin/social-media" component={SocialMediaAdmin} />
+        <Route path="/admin/visitors" component={VisitorsAdmin} />
         <Route path="/admin/settings/primary-cc-mails" component={PrimaryCcMailsAdmin} />
         <Route path="/admin/settings/notify-mails" component={NotifyMailsAdmin} />
         <Route path="/admin/settings/emails" component={EmailsAdmin} />

@@ -67,13 +67,7 @@ const countryPhoneRules = {
 
 // List of countries for nationality dropdown
 const countries = [
-  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Australia", "Austria",
-  "Bangladesh", "Belgium", "Brazil", "Canada", "China", "Denmark", "Egypt", "Finland",
-  "France", "Germany", "Greece", "India", "Indonesia", "Iran", "Iraq", "Ireland",
-  "Italy", "Japan", "Malaysia", "Mexico", "Nepal", "Netherlands", "New Zealand", "Norway",
-  "Pakistan", "Philippines", "Poland", "Portugal", "Russia", "Saudi Arabia", "Singapore",
-  "South Africa", "South Korea", "Spain", "Sri Lanka", "Sweden", "Switzerland", "Thailand",
-  "Turkey", "United Arab Emirates", "United Kingdom", "United States", "Vietnam"
+  "Singapore Citizen", "Singapore PR"
 ];
 
 // Phone Input — fixed to Singapore (+65), 8 digits only
@@ -286,23 +280,17 @@ const resolvePreselectedCounselling = (types, selection) => {
 const CustomNationalityDropdown = ({ value, onChange, onBlur, error }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
-        setSearchTerm("");
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const filteredCountries = countries.filter(country =>
-    country.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const VISIBLE_ROWS = 5;
   const ROW_HEIGHT_PX = 44;
@@ -311,7 +299,6 @@ const CustomNationalityDropdown = ({ value, onChange, onBlur, error }) => {
   const handleSelect = (country) => {
     onChange({ target: { name: 'nationality', value: country } });
     setIsOpen(false);
-    setSearchTerm("");
   };
 
   const handleTriggerBlur = (e) => {
@@ -352,36 +339,18 @@ const CustomNationalityDropdown = ({ value, onChange, onBlur, error }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full bottom-full mb-1 bg-white border border-[#E3E1E1] rounded-[10px] shadow-lg">
-          <div className="p-2 border-b border-[#E3E1E1]">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder={t("appointmentModal.step1.fields.searchCountry")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-[14px] border border-[#E3E1E1] rounded outline-none focus:border-[#0D4A7A]"
-                autoFocus
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-          </div>
+        <div className="absolute z-50 w-full top-full mt-1 bg-white border border-[#E3E1E1] rounded-[10px] shadow-lg">
           <div className="overflow-y-auto" style={{ maxHeight: listMaxHeight }}>
-            {filteredCountries.length > 0 ? (
-              filteredCountries.map((country) => (
-                <div
-                  key={country}
-                  onClick={() => handleSelect(country)}
-                  className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-[14px] transition-colors ${value === country ? 'bg-blue-50 text-[#0D4A7A] font-medium' : ''
-                    }`}
-                >
-                  {country}
-                </div>
-              ))
-            ) : (
-              <div className="px-3 py-2 text-gray-500 text-center">{t("appointmentModal.step1.fields.noCountries")}</div>
-            )}
+            {countries.map((country) => (
+              <div
+                key={country}
+                onClick={() => handleSelect(country)}
+                className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-[14px] transition-colors ${value === country ? 'bg-blue-50 text-[#0D4A7A] font-medium' : ''
+                  }`}
+              >
+                {country}
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -406,6 +375,20 @@ export function AppointmentModal({ isOpen, onClose, preSelectedService }) {
     age: "",
     gender: "",
     nationality: "",
+    type_of_concern: "",
+    type_of_concern_other: "",
+    enquirer_type: "",
+    enquirer_name: "",
+    enquirer_relationship: "",
+    enquirer_contact_number: "",
+    enquirer_email: "",
+    referral_agency_name: "",
+    referral_agency_name_other: "",
+    referral_agency_contact_person: "",
+    referral_agency_contact_email: "",
+    referral_agency_attachment_1: "",
+    referral_agency_attachment_2: "",
+    referral_agency_password: "",
     counselling_type_id: "",
     counselling_type_name: "",
     description: "",
@@ -413,6 +396,7 @@ export function AppointmentModal({ isOpen, onClose, preSelectedService }) {
 
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedSubTypeIds, setSelectedSubTypeIds] = useState([]);
+  const [typeOfConcernOther, setTypeOfConcernOther] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [phoneCountry, setPhoneCountry] = useState("Singapore");
@@ -488,13 +472,87 @@ export function AppointmentModal({ isOpen, onClose, preSelectedService }) {
 
   // Fetch counselling types and sub-types from API
   useEffect(() => {
-    if (isOpen && step === 2 && counsellingData.length === 0) {
+    if (isOpen && counsellingData.length === 0) {
       fetchCounsellingTypes();
     }
-  }, [isOpen, step]);
+  }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen || step !== 2 || counsellingData.length === 0) return;
+    if (!isOpen || counsellingData.length === 0) return;
+
+    if (!formData.counselling_type_id) {
+      const defaultType = counsellingData[0];
+      setFormData((prev) => ({
+        ...prev,
+        counselling_type_id: String(defaultType.id),
+        counselling_type_name: defaultType.name,
+      }));
+      setSelectedServices([]);
+      setSelectedSubTypeIds([]);
+      return;
+    }
+
+    const selectedType = counsellingData.find(
+      (type) => String(type.id) === String(formData.counselling_type_id)
+    );
+
+    if (selectedType && !formData.counselling_type_name) {
+      setFormData((prev) => ({
+        ...prev,
+        counselling_type_name: selectedType.name,
+      }));
+    }
+
+    if (!preSelectedService && !formData.counselling_type_id && counsellingData.length > 0) {
+      const defaultType = counsellingData[0];
+
+      setFormData((prev) => ({
+        ...prev,
+        counselling_type_id: String(defaultType.id),
+        counselling_type_name: defaultType.name,
+      }));
+
+      setSelectedServices([]);
+      setSelectedSubTypeIds([]);
+    }
+
+    const resolvedSelection = resolvePreselectedCounselling(
+      counsellingData,
+      preSelectedService
+    );
+
+    if (resolvedSelection?.type) {
+      setFormData((prev) => ({
+        ...prev,
+        counselling_type_id: String(resolvedSelection.type.id),
+        counselling_type_name: resolvedSelection.type.name,
+      }));
+
+      if (resolvedSelection.subType) {
+        setSelectedServices([resolvedSelection.subType.name]);
+        setSelectedSubTypeIds([resolvedSelection.subType.id]);
+      } else {
+        setSelectedServices([]);
+        setSelectedSubTypeIds([]);
+      }
+    }
+
+    if (!preSelectedService && formData.counselling_type_id) {
+      const defaultSelected = counsellingData.find(
+        (type) => String(type.id) === String(formData.counselling_type_id)
+      );
+
+      if (defaultSelected && !selectedServices.length && !selectedSubTypeIds.length) {
+        setFormData((prev) => ({
+          ...prev,
+          counselling_type_name: defaultSelected.name,
+        }));
+      }
+    }
+  }, [isOpen, counsellingData, preSelectedService, formData.counselling_type_id, selectedServices.length, selectedSubTypeIds.length]);
+
+  useEffect(() => {
+    if (!isOpen || counsellingData.length === 0) return;
 
     const resolvedSelection = resolvePreselectedCounselling(
       counsellingData,
@@ -661,6 +719,53 @@ const validatePhone = (phone, pCountry) => {
     return "";
   };
 
+  const validateTypeOfConcern = (typeOfConcern) => {
+    if (!typeOfConcern) return "Please select a type of concern.";
+    return "";
+  };
+
+  const validateTypeOfConcernOther = (value) => {
+    if (formData.type_of_concern === "Others" && (!value || !value.trim())) {
+      return "Please briefly describe your concern.";
+    }
+    return "";
+  };
+
+  const validateEnquirerType = (type) => {
+    if (!type) return "Please select an enquirer type.";
+    return "";
+  };
+
+  const validateEnquirerName = (name) => {
+    if (!name || !name.trim()) return "Please enter the enquirer name.";
+    return "";
+  };
+
+  const validateEnquirerRelationship = (relationship) => {
+    if (!relationship || !relationship.trim()) return "Please enter the relationship.";
+    return "";
+  };
+
+  const validateReferralAgencyName = (name) => {
+    if (!name || !name.trim()) return "Please select or enter a referral agency name.";
+    return "";
+  };
+
+  const validateReferralAgencyContactPerson = (person) => {
+    if (!person || !person.trim()) return "Please enter the referral agency contact person.";
+    return "";
+  };
+
+  const validateReferralAgencyEmail = (email) => {
+    if (!email || !email.trim()) return "Please enter the referral agency contact email.";
+    return validateEmail(email);
+  };
+
+  const validateCustomFile = (fileName, fieldLabel) => {
+    if (!fileName || !fileName.trim()) return `Please upload ${fieldLabel}.`;
+    return "";
+  };
+
   const validateCounsellingType = (typeId) => {
     if (!typeId) return t("appointmentModal.validation.counsellingRequired");
     return "";
@@ -698,6 +803,7 @@ const validatePhone = (phone, pCountry) => {
     setSubmitted(false);
     setStep(1);
     setErrors({});
+    setTypeOfConcernOther("");
     setFormData({
       nric_fin_number: "",
       name: "",
@@ -706,6 +812,20 @@ const validatePhone = (phone, pCountry) => {
       age: "",
       gender: "",
       nationality: "",
+      type_of_concern: "",
+      type_of_concern_other: "",
+      enquirer_type: "",
+      enquirer_name: "",
+      enquirer_relationship: "",
+      enquirer_contact_number: "",
+      enquirer_email: "",
+      referral_agency_name: "",
+      referral_agency_name_other: "",
+      referral_agency_contact_person: "",
+      referral_agency_contact_email: "",
+      referral_agency_attachment_1: "",
+      referral_agency_attachment_2: "",
+      referral_agency_password: "",
       counselling_type_id: "",
       counselling_type_name: "",
       description: "",
@@ -723,12 +843,10 @@ const validatePhone = (phone, pCountry) => {
     const { name, value } = e.target;
     let processedValue = value;
 
-
     if (name === "name") {
       processedValue = value.replace(/[^A-Za-z\s'-]/g, "");
     }
     if (name === "age") {
-      // Only allow positive integers up to 120
       const stripped = value.replace(/\D/g, '');
       const num = parseInt(stripped, 10);
       if (stripped === '') {
@@ -748,11 +866,89 @@ const validatePhone = (phone, pCountry) => {
         processedValue = processedValue.slice(0, 15);
       }
     }
+    if (name === "enquirer_contact_number") {
+      processedValue = value.replace(/\D/g, "").replace(/^0+/, "");
+      processedValue = processedValue.slice(0, 15);
+    }
     if (name === "nationality") {
-      // Nationality change no longer affects phone
       setFormData((prev) => ({ ...prev, nationality: value }));
       if (errors.nationality) {
         setErrors((prev) => ({ ...prev, nationality: "" }));
+      }
+      return;
+    }
+    if (name === "type_of_concern") {
+      setFormData((prev) => ({
+        ...prev,
+        type_of_concern: value,
+        ...(value !== "Others" ? { type_of_concern_other: "" } : {}),
+      }));
+      if (errors.type_of_concern) {
+        setErrors((prev) => ({ ...prev, type_of_concern: "" }));
+      }
+      if (errors.type_of_concern_other && value !== "Others") {
+        setErrors((prev) => ({ ...prev, type_of_concern_other: "" }));
+      }
+      return;
+    }
+    if (name === "type_of_concern_other") {
+      setFormData((prev) => ({ ...prev, type_of_concern_other: processedValue }));
+      if (errors.type_of_concern_other) {
+        setErrors((prev) => ({ ...prev, type_of_concern_other: "" }));
+      }
+      return;
+    }
+    if (name === "enquirer_type") {
+      const resetFields = {
+        enquirer_name: "",
+        enquirer_relationship: "",
+        enquirer_contact_number: "",
+        enquirer_email: "",
+        referral_agency_name: "",
+        referral_agency_name_other: "",
+        referral_agency_contact_person: "",
+        referral_agency_contact_email: "",
+        referral_agency_attachment_1: "",
+        referral_agency_attachment_2: "",
+        referral_agency_password: "",
+      };
+
+      setFormData((prev) => ({
+        ...prev,
+        enquirer_type: value,
+        ...((value !== "Enquirer" && value !== "Referral Agency") ? resetFields : {}),
+      }));
+      if (errors.enquirer_type) {
+        setErrors((prev) => ({ ...prev, enquirer_type: "" }));
+      }
+      return;
+    }
+    if (name === "referral_agency_name") {
+      setFormData((prev) => ({
+        ...prev,
+        referral_agency_name: value,
+        referral_agency_name_other: value === "Others" ? prev.referral_agency_name_other : "",
+      }));
+      return;
+    }
+    if (name === "referral_agency_attachment_1" || name === "referral_agency_attachment_2") {
+      const file = e.target.files?.[0];
+      const fileName = file?.name || "";
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setFormData((prev) => ({
+            ...prev,
+            [name]: fileName,
+            [`${name}_data`]: event.target.result,
+          }));
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setFormData((prev) => ({ ...prev, [name]: "", [`${name}_data`]: "" }));
+      }
+      if (errors[name]) {
+        setErrors((prev) => ({ ...prev, [name]: "" }));
       }
       return;
     }
@@ -799,6 +995,8 @@ const validatePhone = (phone, pCountry) => {
       case "age": error = validateAge(value); break;
       case "gender": error = validateGender(value); break;
       case "nationality": error = validateNationality(value); break;
+      case "type_of_concern": error = validateTypeOfConcern(value); break;
+      case "type_of_concern_other": error = validateTypeOfConcernOther(value); break;
       case "counselling_type_id": error = validateCounsellingType(value); break;
       case "description": error = validateDescription(value); break;
       default: break;
@@ -837,9 +1035,32 @@ const validatePhone = (phone, pCountry) => {
       age: validateAge(formData.age),
       gender: validateGender(formData.gender),
       nationality: validateNationality(formData.nationality),
+      type_of_concern: validateTypeOfConcern(formData.type_of_concern),
+      type_of_concern_other: validateTypeOfConcernOther(formData.type_of_concern_other),
+      enquirer_type: validateEnquirerType(formData.enquirer_type),
     };
+
+    if (formData.enquirer_type === "Enquirer") {
+      newErrors.enquirer_name = validateEnquirerName(formData.enquirer_name);
+      newErrors.enquirer_relationship = validateEnquirerRelationship(formData.enquirer_relationship);
+      newErrors.enquirer_contact_number = validatePhone(formData.enquirer_contact_number, phoneCountry);
+      newErrors.enquirer_email = validateEmail(formData.enquirer_email);
+    }
+
+    if (formData.enquirer_type === "Referral Agency") {
+      const selectedAgencyName = formData.referral_agency_name === "Others"
+        ? formData.referral_agency_name_other
+        : formData.referral_agency_name;
+
+      newErrors.referral_agency_name = validateReferralAgencyName(selectedAgencyName);
+      newErrors.referral_agency_contact_person = validateReferralAgencyContactPerson(formData.referral_agency_contact_person);
+      newErrors.referral_agency_contact_email = validateReferralAgencyEmail(formData.referral_agency_contact_email);
+      newErrors.referral_agency_attachment_1 = validateCustomFile(formData.referral_agency_attachment_1, "Attachment 1 from referral agency");
+      newErrors.referral_agency_password = formData.referral_agency_password ? "" : "Please enter the password.";
+    }
+
     setErrors(newErrors);
-    
+
     const hasErrors = Object.values(newErrors).some(error => error !== "");
     return !hasErrors;
   };
@@ -855,6 +1076,9 @@ const validatePhone = (phone, pCountry) => {
   const validateStep3 = () => {
     const newErrors = {
       description: validateDescription(formData.description),
+      type_of_concern_other: formData.type_of_concern === "Others"
+        ? validateTypeOfConcernOther(formData.type_of_concern_other)
+        : "",
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error !== "");
@@ -865,23 +1089,33 @@ const validatePhone = (phone, pCountry) => {
       const isValid = validateStep1();
       if (isValid) {
         setCompletedSteps(prev => prev.includes(1) ? prev : [...prev, 1]);
+        if (!formData.counselling_type_id && counsellingData.length > 0) {
+          const defaultType = counsellingData[0];
+          setFormData((prev) => ({
+            ...prev,
+            counselling_type_id: String(defaultType.id),
+            counselling_type_name: defaultType.name,
+          }));
+        }
         setStep(2);
       }
     } else if (step === 2) {
-      const isValid = validateStep2();
+      const isValid = validateStep3();
       if (isValid) {
         setCompletedSteps(prev => prev.includes(2) ? prev : [...prev, 2]);
-        setStep(3);
+        handleSubmit();
       }
     }
   };
 
   const handleBack = () => {
-    setStep(step - 1);
+    setStep(step === 2 ? 1 : step - 1);
   };
 
 const handleSubmit = async (e) => {
-  e.preventDefault();
+  if (e && typeof e.preventDefault === "function") {
+    e.preventDefault();
+  }
 
   if (!validateStep3()) return;
 
@@ -891,6 +1125,23 @@ const handleSubmit = async (e) => {
     age: formData.age,
     gender: formData.gender,
     nationality: formData.nationality,
+    type_of_concern: formData.type_of_concern,
+    type_of_concern_other: formData.type_of_concern === "Others" ? formData.type_of_concern_other : null,
+    enquirer_type: formData.enquirer_type || null,
+    enquirer_name: formData.enquirer_type === "Enquirer" ? formData.enquirer_name : null,
+    enquirer_relationship: formData.enquirer_type === "Enquirer" ? formData.enquirer_relationship : null,
+    enquirer_contact_number: formData.enquirer_type === "Enquirer" ? formData.enquirer_contact_number : null,
+    enquirer_email: formData.enquirer_type === "Enquirer" ? formData.enquirer_email : null,
+    referral_agency_name: formData.enquirer_type === "Referral Agency"
+      ? (formData.referral_agency_name === "Others" ? formData.referral_agency_name_other : formData.referral_agency_name)
+      : null,
+    referral_agency_contact_person: formData.enquirer_type === "Referral Agency" ? formData.referral_agency_contact_person : null,
+    referral_agency_contact_email: formData.enquirer_type === "Referral Agency" ? formData.referral_agency_contact_email : null,
+    referral_agency_password: formData.enquirer_type === "Referral Agency" ? formData.referral_agency_password : null,
+    referral_agency_attachment_1: formData.enquirer_type === "Referral Agency" ? formData.referral_agency_attachment_1 : null,
+    referral_agency_attachment_1_data: formData.enquirer_type === "Referral Agency" ? formData.referral_agency_attachment_1_data : null,
+    referral_agency_attachment_2: formData.enquirer_type === "Referral Agency" ? formData.referral_agency_attachment_2 : null,
+    referral_agency_attachment_2_data: formData.enquirer_type === "Referral Agency" ? formData.referral_agency_attachment_2_data : null,
     email: formData.email,
     phone: formData.phone,
     counselling_type: formData.counselling_type_name,
@@ -938,13 +1189,11 @@ const handleSubmit = async (e) => {
 
   const getStepTitle = () => {
     if (step === 1) return t("appointmentModal.step1.title");
-    if (step === 2) return t("appointmentModal.step2.title");
     return t("appointmentModal.step3.title");
   };
 
   const getStepSubtitle = () => {
     if (step === 1) return t("appointmentModal.step1.subtitle");
-    if (step === 2) return t("appointmentModal.step2.subtitle");
     return t("appointmentModal.step3.subtitle");
   };
 
@@ -993,18 +1242,9 @@ const handleSubmit = async (e) => {
   ></div>
   <div
     className={`w-[50px] sm:w-[70px] md:w-[90px] h-[6px] rounded-[5px] transition-all ${
-      completedSteps.includes(2)
+      completedSteps.includes(2) || completedSteps.includes(3)
         ? "bg-[#B8E4A8]"  // Light Green for completed
         : step >= 2
-        ? "bg-[#0D4A7A]"  // Blue for current
-        : "bg-[#D9D9D9]"  // Gray for not reached
-    }`}
-  ></div>
-  <div
-    className={`w-[50px] sm:w-[70px] md:w-[90px] h-[6px] rounded-[5px] transition-all ${
-      completedSteps.includes(3)
-        ? "bg-[#B8E4A8]"  // Light Green for completed
-        : step >= 3
         ? "bg-[#0D4A7A]"  // Blue for current
         : "bg-[#D9D9D9]"  // Gray for not reached
     }`}
@@ -1051,7 +1291,7 @@ const handleSubmit = async (e) => {
             </div>
             ) : (
               <form
-                onSubmit={step === 3 ? handleSubmit : (e) => { e.preventDefault(); handleNext(); }}
+                onSubmit={step === 2 ? handleSubmit : (e) => { e.preventDefault(); handleNext(); }}
                 className="flex flex-col flex-1 min-h-0"
               >
                 <div className="p-4 sm:p-6 md:p-8 pt-4 sm:pt-6 flex-1 overflow-y-auto min-h-0">
@@ -1188,10 +1428,9 @@ const handleSubmit = async (e) => {
                         </div>
                       </div>
 
-                      {/* Row 3: Age, Gender, Nationality */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         <div>
-                          <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                          <label className="text-[#0D4A7A] text-[clamp(12px,2vw,16px)] font-medium block mb-2">
                             {t("appointmentModal.step1.fields.age")} <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -1202,49 +1441,333 @@ const handleSubmit = async (e) => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             placeholder={t("appointmentModal.step1.fields.agePlaceholder")}
-                            className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.age ? 'border-red-500' : 'border-[#E3E1E1]'
-                              } focus:border-[#0D4A7A]`}
+                            className={`w-full px-4 py-3 border rounded-[10px] text-[15px] bg-[#FAF8F4] outline-none transition-all ${errors.age ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
                           />
                           <ErrorMessage message={errors.age} />
                         </div>
 
                         <div>
-                          <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                          <label className="text-[#0D4A7A] text-[clamp(12px,2vw,16px)] font-medium block mb-2">
                             {t("appointmentModal.step1.fields.gender")} <span className="text-red-500">*</span>
                           </label>
-                   <select
-  name="gender"
-  value={formData.gender}
-  onChange={handleChange}
-  onBlur={handleBlur}
-  className={`w-full px-5 py-4 border rounded-[10px] text-[16px] text-[#666] bg-[#FAF8F4] outline-none transition-all appearance-none ${
-    errors.gender ? "border-red-500" : "border-[#E3E1E1]"
-  } focus:border-[#0D4A7A]`}
->
-  <option value="">{t("appointmentModal.step1.fields.genderPlaceholder")}</option>
-  <option value="Male">{t("appointmentModal.step1.genderOptions.male")}</option>
-  <option value="Female">{t("appointmentModal.step1.genderOptions.female")}</option>
-  <option value="Other">{t("appointmentModal.step1.genderOptions.other")}</option>
-</select>
+                          <div className="relative">
+                            <select
+                              name="gender"
+                              value={formData.gender}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              className={`w-full px-4 py-3 pr-10 border rounded-[10px] text-[15px] text-[#666] bg-[#FAF8F4] outline-none transition-all appearance-none ${errors.gender ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            >
+                              <option value="" disabled hidden>Select Gender</option>
+                              <option value="Male">Male</option>
+                              <option value="Female">Female</option>
+                            </select>
+                            <ChevronDown
+                              size={18}
+                              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                            />
+                          </div>
                           <ErrorMessage message={errors.gender} />
                         </div>
 
-                        <div className="sm:col-span-2 lg:col-span-1">
+                        <div>
                           <label
                             htmlFor="appointment-nationality"
-                            className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2"
+                            className="text-[#0D4A7A] text-[clamp(12px,2vw,16px)] font-medium block mb-2"
                           >
                             {t("appointmentModal.step1.fields.nationality")} <span className="text-red-500">*</span>
                           </label>
-                          <CustomNationalityDropdown
-                            value={formData.nationality}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            error={errors.nationality}
-                          />
+                          <div className="relative">
+                            <select
+                              id="appointment-nationality"
+                              name="nationality"
+                              value={formData.nationality}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              className={`w-full px-4 py-3 pr-10 border rounded-[10px] text-[15px] text-[#666] bg-[#FAF8F4] outline-none transition-all appearance-none ${errors.nationality ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            >
+                              <option value="" disabled hidden>{t("appointmentModal.step1.fields.nationalityPlaceholder")}</option>
+                              <option value="Singapore Citizen">Singapore Citizen</option>
+                              <option value="Singapore PR">Singapore PR</option>
+                            </select>
+                            <ChevronDown
+                              size={18}
+                              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                            />
+                          </div>
                           <ErrorMessage message={errors.nationality} />
                         </div>
+
+                        <div>
+                          <label
+                            htmlFor="appointment-type-of-concern"
+                            className="text-[#0D4A7A] text-[clamp(12px,2vw,16px)] font-medium block mb-2"
+                          >
+                            Type Of Concern <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="appointment-type-of-concern"
+                              name="type_of_concern"
+                              value={formData.type_of_concern}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              className={`w-full px-4 py-3 pr-10 border rounded-[10px] text-[15px] text-[#666] bg-[#FAF8F4] outline-none transition-all appearance-none ${errors.type_of_concern ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            >
+                              <option value="" disabled hidden>Select Type Of Concern</option>
+                              <option value="Individual">Individual</option>
+                              <option value="Couple">Couple</option>
+                              <option value="Marital">Marital</option>
+                              <option value="Family/Children">Family/Children</option>
+                              <option value="Others">Others</option>
+                            </select>
+                            <ChevronDown
+                              size={18}
+                              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                            />
+                          </div>
+                          <ErrorMessage message={errors.type_of_concern} />
+                        </div>
+
+                        {formData.type_of_concern === "Others" && (
+                          <div className="sm:col-span-2">
+                            <label className="text-[#0D4A7A] text-[clamp(12px,2vw,16px)] font-medium block mb-2">
+                              Brief Description Of Concern <span className="text-red-500">*</span>
+                            </label>
+                            <textarea
+                              name="type_of_concern_other"
+                              value={formData.type_of_concern_other}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              placeholder="Please briefly describe your concern"
+                              rows={4}
+                              className={`w-full p-4 border rounded-[10px] text-[15px] bg-[#FAF8F4] outline-none transition-all resize-none ${errors.type_of_concern_other ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            />
+                            <ErrorMessage message={errors.type_of_concern_other} />
+                          </div>
+                        )}
                       </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-1">
+                        <div className="sm:col-span-2">
+                          <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                            Enquirer Type <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            name="enquirer_type"
+                            value={formData.enquirer_type}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_type ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                          >
+                            <option value="" disabled hidden>Select Enquirer Type</option>
+                            <option value="Referral Agency">Referral Agency</option>
+                            <option value="Enquirer">Enquirer</option>
+                            <option value="Self">Self</option>
+                          </select>
+                          <ErrorMessage message={errors.enquirer_type} />
+                        </div>
+                      </div>
+
+                      {formData.enquirer_type === "Enquirer" && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                          <div>
+                            <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                              Name <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="enquirer_name"
+                              value={formData.enquirer_name}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              placeholder="Enter name"
+                              className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_name ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            />
+                            <ErrorMessage message={errors.enquirer_name} />
+                          </div>
+
+                          <div>
+                            <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                              Relationship <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="enquirer_relationship"
+                              value={formData.enquirer_relationship}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              placeholder="Enter relationship"
+                              className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_relationship ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            />
+                            <ErrorMessage message={errors.enquirer_relationship} />
+                          </div>
+
+                          <div>
+                            <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                              Contact Number <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="enquirer_contact_number"
+                              value={formData.enquirer_contact_number}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              placeholder="Enter contact number"
+                              className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_contact_number ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            />
+                            <ErrorMessage message={errors.enquirer_contact_number} />
+                          </div>
+
+                          <div>
+                            <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                              Email Address <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="email"
+                              name="enquirer_email"
+                              value={formData.enquirer_email}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              placeholder="Enter email address"
+                              className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.enquirer_email ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                            />
+                            <ErrorMessage message={errors.enquirer_email} />
+                          </div>
+                        </div>
+                      )}
+
+                      {formData.enquirer_type === "Referral Agency" && (
+                        <div className="space-y-5 pt-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                              <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                                Referral Agency Name <span className="text-red-500">*</span>
+                              </label>
+                              <select
+                                name="referral_agency_name"
+                                value={formData.referral_agency_name}
+                                onChange={handleChange}
+                                className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_name ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                              >
+                                <option value="" disabled hidden>Select Referral Agency Name</option>
+                                <option value="IMH Chat">IMH Chat</option>
+                                <option value="Allkin FSC">Allkin FSC</option>
+                                <option value="Others">Others</option>
+                              </select>
+                              <ErrorMessage message={errors.referral_agency_name} />
+                            </div>
+
+                            {formData.referral_agency_name === "Others" && (
+                              <div>
+                                <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                                  Referral Agency Name (Others) <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  name="referral_agency_name_other"
+                                  value={formData.referral_agency_name_other}
+                                  onChange={handleChange}
+                                  placeholder="Enter referral agency name"
+                                  className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_name ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                              <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                                Referral Agency Contact Person <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="referral_agency_contact_person"
+                                value={formData.referral_agency_contact_person}
+                                onChange={handleChange}
+                                placeholder="Enter contact person"
+                                className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_contact_person ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                              />
+                              <ErrorMessage message={errors.referral_agency_contact_person} />
+                            </div>
+
+                            <div>
+                              <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                                Referral Agency Contact Email <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="email"
+                                name="referral_agency_contact_email"
+                                value={formData.referral_agency_contact_email}
+                                onChange={handleChange}
+                                placeholder="Enter email address"
+                                className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_contact_email ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                              />
+                              <ErrorMessage message={errors.referral_agency_contact_email} />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                              <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                                Attachment 1 From Referral Agency <span className="text-red-500">*</span>
+                              </label>
+                              <div className="flex items-center gap-3">
+                                <label className="inline-flex items-center justify-center px-5 py-3 border border-[#0D4A7A] rounded-[10px] bg-[#FAF8F4] text-[#0D4A7A] font-medium cursor-pointer hover:bg-[#edf6ff]">
+                                  Choose File
+                                  <input
+                                    type="file"
+                                    name="referral_agency_attachment_1"
+                                    onChange={handleChange}
+                                    className="hidden"
+                                  />
+                                </label>
+                                <span className="text-[#333] text-[16px]">
+                                  {formData.referral_agency_attachment_1 ? formData.referral_agency_attachment_1 : "No file chosen"}
+                                </span>
+                              </div>
+                              <ErrorMessage message={errors.referral_agency_attachment_1} />
+                            </div>
+
+                            <div>
+                              <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                                Attachment 2 From Referral Agency
+                              </label>
+                              <div className="flex items-center gap-3">
+                                <label className="inline-flex items-center justify-center px-5 py-3 border border-[#0D4A7A] rounded-[10px] bg-[#FAF8F4] text-[#0D4A7A] font-medium cursor-pointer hover:bg-[#edf6ff]">
+                                  Choose File
+                                  <input
+                                    type="file"
+                                    name="referral_agency_attachment_2"
+                                    onChange={handleChange}
+                                    className="hidden"
+                                  />
+                                </label>
+                                <span className="text-[#333] text-[16px]">
+                                  {formData.referral_agency_attachment_2 ? formData.referral_agency_attachment_2 : "No file chosen"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                              <label className="text-[#0D4A7A] text-[clamp(14px,3.5vw,18px)] font-medium block mb-2">
+                                Password <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="password"
+                                name="referral_agency_password"
+                                value={formData.referral_agency_password}
+                                onChange={handleChange}
+                                placeholder="Enter password"
+                                className={`w-full px-5 py-4 border rounded-[10px] text-[16px] bg-[#FAF8F4] outline-none transition-all ${errors.referral_agency_password ? 'border-red-500' : 'border-[#E3E1E1]'} focus:border-[#0D4A7A]`}
+                              />
+                              <ErrorMessage message={errors.referral_agency_password} />
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                     
 <div className="bg-[#E8F3DC] rounded-[10px] p-5 flex gap-3 items-center">
@@ -1273,141 +1796,8 @@ const handleSubmit = async (e) => {
                     </div>
                   )}
 
-                  {/* Step 2 - Counselling Selection */}
-  {step === 2 && (
-  <div className="flex flex-col min-h-[320px] sm:min-h-[400px] h-auto">
-    {loadingTypes ? (
-      <div className="text-center py-8">
-        <p className="text-[#0D4A7A]">{t("appointmentModal.step2.loading")}</p>
-      </div>
-    ) : (
-      <>
-        {counsellingTypesError && counsellingData.length === 0 && (
-          <div className="mb-4 rounded-[10px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 flex items-center justify-between gap-3">
-            <span>{counsellingTypesError}</span>
-            <button
-              type="button"
-              onClick={fetchCounsellingTypes}
-              className="shrink-0 rounded-full border border-red-300 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-100"
-            >
-              {t("appointmentModal.common.retry")}
-            </button>
-          </div>
-        )}
-
-        {/* Scrollable content area - this will scroll if content overflows */}
-        <div className="flex-1 overflow-y-auto pr-2">
-          <div>
-            <label className="text-[#0D4A7A] text-[16px] font-medium block mb-4">
-              {t("appointmentModal.step2.counsellingType")} <span className="text-red-500">*</span>
-            </label>
-            <div
-              className={`grid gap-3 sm:gap-4 ${
-                counsellingData.length === 1 
-                  ? 'grid-cols-1 max-w-xs mx-auto' 
-                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-              }`}
-              role="radiogroup"
-              aria-label="Select counselling type"
-            >
-              {counsellingData.map(option => (
-                <button
-                  key={option.id}
-                  type="button"
-                  data-counselling-type-option
-                  role="radio"
-                  aria-checked={parseInt(formData.counselling_type_id, 10) === option.id}
-                  onClick={() => {
-                    const event = {
-                      target: {
-                        name: 'counselling_type_id',
-                        value: option.id.toString()
-                      }
-                    };
-                    handleChange(event);
-                    if (errors.counselling_type_id) {
-                      setErrors(prev => ({ ...prev, counselling_type_id: "" }));
-                    }
-                  }}
-                  className={`py-4 px-6 rounded-[10px] text-[16px] font-medium transition-all focus-visible:outline-none focus-visible:ring-0 ${
-                    parseInt(formData.counselling_type_id) === option.id
-                      ? 'bg-[#E3F1FC] text-[#0D4A7A] border-2 border-[#0D4A7A]'
-                      : 'bg-[#FAF8F4] text-[#3A3A3A] border border-[#E3E1E1] hover:border-[#0D4A7A] focus-visible:border-2 focus-visible:border-[#0D4A7A]'
-                  }`}
-                  style={{
-                    width: '100%',
-                    height: '75px',
-                    padding: '14px 24px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: '10px',
-                  }}
-                >
-                  {option.name}
-                </button>
-              ))}
-            </div>
-            <ErrorMessage message={errors.counselling_type_id} />
-          </div>
-
-          {/* Service Options - Based on selected counselling type */}
-          {formData.counselling_type_id && getCurrentServiceOptions().length > 0 && (
-            <div className="mt-6">
-              <label className="text-[#0D4A7A] text-[16px] font-medium block mb-4">
-                {t("appointmentModal.step2.supportWith")} ({formData.counselling_type_name})
-              </label>
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
-                role="group"
-                aria-label="Select support options"
-              >
-                {getCurrentServiceOptions().map(service => (
-                  <button
-                    key={service.id}
-                    type="button"
-                    data-support-option
-                    role="checkbox"
-                    aria-checked={selectedSubTypeIds.includes(service.id)}
-                    onClick={() => handleServiceToggle(service)}
-                    className={`py-4 px-6 rounded-[10px] text-[16px] font-medium transition-all text-center focus-visible:outline-none focus-visible:ring-0 ${
-                      selectedSubTypeIds.includes(service.id)
-                        ? 'bg-[#E3F1FC] text-[#0D4A7A] border-2 border-[#0D4A7A]'
-                        : 'bg-[#FAF8F4] text-[#3A3A3A] border border-[#E3E1E1] hover:border-[#0D4A7A] focus-visible:border-2 focus-visible:border-[#0D4A7A]'
-                    }`}
-                    style={{
-                      width: '100%',
-                      height: '75px',
-                      padding: '14px 24px',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: '10px',
-                    }}
-                  >
-                    {service.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Info Box - Fixed at bottom, never moves */}
-        <div className="bg-[#E8F3DC] rounded-[10px] p-5 flex gap-3 items-center mt-4 flex-shrink-0">
-          <div className="flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M4 2C3.46957 2 2.96086 2.21071 2.58579 2.58579C2.21071 2.96086 2 3.46957 2 4V16C2 16.5304 2.21071 17.0391 2.58579 17.4142C2.96086 17.7893 3.46957 18 4 18H8V21C8 21.2652 8.10536 21.5196 8.29289 21.7071C8.48043 21.8946 8.73478 22 9 22H9.5C9.75 22 10 21.9 10.2 21.71L13.9 18H20C20.5304 18 21.0391 17.7893 21.4142 17.4142C21.7893 17.0391 22 16.5304 22 16V4C22 3.46957 21.7893 2.96086 21.4142 2.58579C21.0391 2.21071 20.5304 2 20 2H4ZM4 4H20V16H13.08L10 19.08V16H4V4ZM12.19 5.5C11.3 5.5 10.59 5.68 10.05 6.04C9.5 6.4 9.22 7 9.27 7.69H11.24C11.24 7.41 11.34 7.2 11.5 7.06C11.7 6.92 11.92 6.85 12.19 6.85C12.5 6.85 12.77 6.93 12.95 7.11C13.13 7.28 13.22 7.5 13.22 7.8C13.22 8.08 13.14 8.33 13 8.54C12.83 8.76 12.62 8.94 12.36 9.08C11.84 9.4 11.5 9.68 11.29 9.92C11.1 10.16 11 10.5 11 11H13C13 10.72 13.05 10.5 13.14 10.32C13.23 10.15 13.4 10 13.66 9.85C14.12 9.64 14.5 9.36 14.79 9C15.08 8.63 15.23 8.24 15.23 7.8C15.23 7.1 14.96 6.54 14.42 6.12C13.88 5.71 13.13 5.5 12.19 5.5ZM11 12V14H13V12H11Z" fill="#1F5500"/>
-            </svg>
-          </div>
-          <p className="text-[#1F5500] text-[15px] font-medium leading-[19px]">
-            {t("appointmentModal.step2.helpNote")}
-          </p>
-        </div>
-      </>
-    )}
-  </div>
-)}
-                  {/* Step 3 - Description */}
-{step === 3 && (
+                  {/* Step 2 - Description */}
+{step === 2 && (
   <div className="flex flex-col min-h-[320px] sm:min-h-[400px] h-auto">
     <div className="flex-1 overflow-y-auto pr-2">
       <div className="space-y-4">
@@ -1477,7 +1867,7 @@ const handleSubmit = async (e) => {
                       </svg>{t("appointmentModal.common.back")}</button>
                   )}
 
-                  {step < 3 ? (
+                  {step < 2 ? (
                     <button
                       type="button"
                       onClick={handleNext}
@@ -1503,21 +1893,30 @@ const handleSubmit = async (e) => {
                       disabled={loading}
                       className="px-8 py-3 rounded-full bg-[#1B4585] text-white font-medium hover:bg-[#0D4A7A] transition-all disabled:opacity-50 flex items-center gap-2"
                     >
-                      {loading ? t("appointmentModal.common.submit") : t("appointmentModal.common.submit")}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="24"
-                        viewBox="0 0 12 24"
-                        fill="none"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M10.157 12.711L4.5 18.368L3.086 16.954L8.036 12.004L3.086 7.05401L4.5 5.64001L10.157 11.297C10.3445 11.4845 10.4498 11.7389 10.4498 12.004C10.4498 12.2692 10.3445 12.5235 10.157 12.711Z"
-                          fill="white"
-                        />
-                      </svg>
+                      {loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>{t("appointmentModal.common.submitting") || "Submitting..."}</span>
+                        </div>
+                      ) : (
+                        <>
+                          <span>{t("appointmentModal.common.submit") || "Submit"}</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="24"
+                            viewBox="0 0 12 24"
+                            fill="none"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M10.157 12.711L4.5 18.368L3.086 16.954L8.036 12.004L3.086 7.05401L4.5 5.64001L10.157 11.297C10.3445 11.4845 10.4498 11.7389 10.4498 12.004C10.4498 12.2692 10.3445 12.5235 10.157 12.711Z"
+                              fill="white"
+                            />
+                          </svg>
+                        </>
+                      )}
                     </button>
                   )}
                 </div>

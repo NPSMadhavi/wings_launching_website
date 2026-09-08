@@ -70,23 +70,69 @@ export async function recordFormSubmissionEmail({
 }
 
 export function formatAppointmentEmailContent(appointment) {
+  const enquirerType = appointment.enquirer_type || appointment.enquirerType || "";
+  const enquirerName = appointment.enquirer_name || appointment.enquirerName;
+  const enquirerRelationship = appointment.enquirer_relationship || appointment.enquirerRelationship || appointment.relationship;
+  const enquirerContactNumber = appointment.enquirer_contact_number || appointment.enquirerContactNumber;
+  const enquirerEmail = appointment.enquirer_email || appointment.enquirerEmail;
+
+  const refAgencyName = appointment.referral_agency_name || appointment.referralAgencyName;
+  const refAgencyPerson = appointment.referral_agency_contact_person || appointment.referralAgencyContactPerson;
+  const refAgencyEmail = appointment.referral_agency_contact_email || appointment.referralAgencyContactEmail;
+  const refAgencyPassword = appointment.referral_agency_password || appointment.referralAgencyPassword;
+
+  let concernsText = appointment.type_of_concern || "";
+  if (appointment.type_of_concern_other) {
+    concernsText = concernsText ? `${concernsText} (${appointment.type_of_concern_other})` : appointment.type_of_concern_other;
+  }
+  if (!concernsText) {
+    let concernsList = [];
+    if (appointment.counselling_type) concernsList.push(appointment.counselling_type);
+    if (appointment.sub_counselling_types) concernsList.push(appointment.sub_counselling_types);
+    concernsText = concernsList.join(", ");
+  }
+  const concerns = concernsText || "—";
+
+  let messageText = appointment.description || appointment.remarks || "—";
+  if (appointment.description && appointment.remarks && appointment.description !== appointment.remarks) {
+    messageText = `${appointment.description}\nRemarks: ${appointment.remarks}`;
+  }
+
   const lines = [
-    `New appointment request from ${appointment.name || "Unknown"}`,
+    "An appointment request has been submitted on your website wingscounselling.org.sg with following credentials.",
     "",
-    `Counselling Type: ${appointment.counselling_type || "—"}`,
-    `Sub Types: ${appointment.sub_counselling_types || appointment.remarks || "—"}`,
-    `Description: ${appointment.description || "—"}`,
-    "",
-    `NRIC/FIN: ${appointment.nric_fin_number || "—"}`,
-    `Email: ${appointment.email || "—"}`,
-    `Phone: ${appointment.phone || "—"}`,
+    `Full Name: ${appointment.name || "—"}`,
     `Age: ${appointment.age ?? "—"}`,
-    `Gender: ${appointment.gender || "—"}`,
-    `Nationality: ${appointment.nationality || "—"}`,
+    `Gender : ${appointment.gender || "—"}`,
+    `Residential Status: ${appointment.nationality || "—"}`,
   ];
 
-  if (appointment.remarks) {
-    lines.push("", `Remarks: ${appointment.remarks}`);
+  if (appointment.nric_fin_number) {
+    lines.push(`NRIC: ${appointment.nric_fin_number}`);
+  }
+
+  lines.push(
+    `Email: ${appointment.email || "—"}`,
+    `Contact: ${appointment.phone || "—"}`,
+    `Concerns: ${concerns}`
+  );
+
+  if (enquirerType) lines.push(`Enquirer Type: ${enquirerType}`);
+  if (enquirerName) lines.push(`Enquirer Name: ${enquirerName}`);
+  if (enquirerRelationship) lines.push(`Relationship: ${enquirerRelationship}`);
+  if (enquirerContactNumber) lines.push(`Enquirer Contact Number: ${enquirerContactNumber}`);
+  if (enquirerEmail) lines.push(`Enquirer Email Address: ${enquirerEmail}`);
+
+  if (refAgencyName) lines.push(`Referral Agency Name: ${refAgencyName}`);
+  if (refAgencyPerson) lines.push(`Referral Agency Contact Person: ${refAgencyPerson}`);
+  if (refAgencyEmail) lines.push(`Referral Agency Contact Email: ${refAgencyEmail}`);
+
+  lines.push(`Message: ${messageText}`);
+
+  if (refAgencyPassword) lines.push(`Password: ${refAgencyPassword}`);
+
+  if (Array.isArray(appointment.attachments) && appointment.attachments.length) {
+    lines.push(`Attached Documents: ${appointment.attachments.map(f => typeof f === 'string' ? f : (f.name || 'Document')).join(', ')}`);
   }
 
   return lines.join("\n");

@@ -20,6 +20,8 @@ import {
   getMailFrom,
   getMailTo,
 } from "../services/microsoftMailService.js";
+import { encryptPDF } from "@pdfsmaller/pdf-encrypt";
+import { PDFDocument } from "pdf-lib";
 
 /**
  * All site emails go through Microsoft Graph (MAIL_FROM mailbox).
@@ -197,18 +199,13 @@ function getAdminNotificationEmailWrapper(content, title = "WINGS Admin Notifica
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${escapeHtml(title)}</title>
     </head>
-    <body style="margin:0;padding:0;background:#e8f0f7;font-family:'Segoe UI',Arial,sans-serif;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#e8f0f7;padding:32px 16px;">
+    <body style="margin:0;padding:0;background:#ffffff;font-family:'Segoe UI',Arial,sans-serif;color:#222222;text-align:left;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;padding:0;text-align:left;">
         <tr>
-          <td align="center">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:620px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.10);">
+          <td align="left" style="text-align:left;padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:800px;background:#ffffff;text-align:left;">
               <tr>
-                <td style="background:#ffffff;padding:32px;text-align:center;border-bottom:1px solid #e2e8f0;">
-                  <img src="cid:wings-logo@wings" alt="WINGS Logo" style="display:block;margin:0 auto;width:180px;height:auto;max-width:100%;" />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:28px 32px;">
+                <td style="padding:16px 0;font-family:'Segoe UI',Arial,sans-serif;color:#222222;text-align:left;">
                   ${content}
                 </td>
               </tr>
@@ -221,46 +218,250 @@ function getAdminNotificationEmailWrapper(content, title = "WINGS Admin Notifica
   `;
 }
 
-function buildAppointmentAdminNotificationHtml(appointment) {
-  const clientName = escapeHtml(appointment.name || "Unknown");
-  const counsellingType = appointment.counselling_type || "—";
-  const subTypes = parseSubCounsellingTypes(
-    appointment.sub_counselling_types || appointment.remarks
+export async function protectFileWithPassword(fileName, fileBuffer, password) {
+  if (!password || typeof password !== "string" || !password.trim()) {
+    return { buffer: fileBuffer, name: fileName, isPdf: fileName.toLowerCase().endsWith(".pdf") };
+  }
+
+  const cleanPass = password.trim();
+  const lowerName = (fileName || "document").toLowerCase();
+  let pdfBytes = null;
+
+  if (lowerName.endsWith(".pdf") && fileBuffer && fileBuffer.length > 50) {
+    try {
+      const doc = await PDFDocument.load(fileBuffer, { ignoreEncryption: true });
+      pdfBytes = await doc.save();
+    } catch {
+      pdfBytes = null;
+    }
+  }
+
+  if (!pdfBytes) {
+    try {
+      const doc = await PDFDocument.create();
+      const page = doc.addPage([595, 842]);
+
+      if ((lowerName.endsWith(".png") || lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) && fileBuffer) {
+        try {
+          const image = lowerName.endsWith(".png") ? await doc.embedPng(fileBuffer) : await doc.embedJpg(fileBuffer);
+          const { width, height } = image.scaleToFit(500, 700);
+          page.drawImage(image, { x: 47, y: 792 - height - 40, width, height });
+        } catch {
+          page.drawText(`Document Attachment: ${fileName}`, { x: 50, y: 750, size: 16 });
+        }
+      } else {
+        page.drawText(`Document Attachment: ${fileName}`, { x: 50, y: 750, size: 16 });
+      }
+      pdfBytes = await doc.save();
+    } catch {
+      pdfBytes = null;
+    }
+  }
+
+  if (pdfBytes) {
+    try {
+      const encryptedBytes = await encryptPDF(pdfBytes, cleanPass, { algorithm: "RC4" });
+      const outName = lowerName.endsWith(".pdf")
+        ? fileName
+        : `${path.parse(fileName).name}_protected.pdf`;
+      return { buffer: Buffer.from(encryptedBytes), name: outName, isPdf: true };
+    } catch (encryptErr) {
+      console.warn("[Email] Password protection failed, sending original file:", encryptErr.message);
+    }
+  }
+
+  return { buffer: fileBuffer, name: fileName, isPdf: false };
+}
+
+async function prepareAppointmentGraphAttachments(appointment) {
+  const graphAttachments = [];
+  const rawList = [];
+  const password = appointment.referral_agency_password || appointment.password || "";
+
+  if (Array.isArray(appointment.attachments)) {
+    rawList.push(...appointment.attachments);
+  }
+  if (appointment.attachment1) rawList.push(appointment.attachment1);
+  if (appointment.attachment2) rawList.push(appointment.attachment2);
+  if (appointment.referral_agency_attachment_1_data || appointment.referral_agency_attachment_1) {
+    rawList.push({
+      name: appointment.referral_agency_attachment_1 || "Attachment_1.pdf",
+      data: appointment.referral_agency_attachment_1_data || appointment.referral_agency_attachment_1,
+    });
+  }
+  if (appointment.referral_agency_attachment_2_data || appointment.referral_agency_attachment_2) {
+    rawList.push({
+      name: appointment.referral_agency_attachment_2 || "Attachment_2.pdf",
+      data: appointment.referral_agency_attachment_2_data || appointment.referral_agency_attachment_2,
+    });
+  }
+
+  const processedNames = new Set();
+
+  for (let idx = 0; idx < rawList.length; idx++) {
+    const item = rawList[idx];
+    if (!item) continue;
+
+    let fileName = `Attachment_${idx + 1}.pdf`;
+    let fileBuf = null;
+    let contentType = "application/pdf";
+
+    if (typeof item === "object" && item !== null) {
+      fileName = item.name || item.filename || fileName;
+      contentType = item.contentType || item.mimetype || contentType;
+      let base64 = item.contentBytes || item.base64 || item.data || "";
+
+      if (typeof base64 === "string" && base64.includes(",")) {
+        base64 = base64.split(",")[1];
+      }
+
+      if (base64) {
+        fileBuf = Buffer.from(base64, "base64");
+      }
+    } else if (typeof item === "string") {
+      if (item.startsWith("data:")) {
+        const matches = item.match(/^data:([^;]+);base64,(.+)$/);
+        contentType = matches ? matches[1] : contentType;
+        const base64 = matches ? matches[2] : item.split(",")[1] || "";
+        const ext = contentType.split("/")[1] || "pdf";
+        fileName = `Attachment_${idx + 1}.${ext}`;
+        if (base64) {
+          fileBuf = Buffer.from(base64, "base64");
+        }
+      } else {
+        fileName = path.basename(item);
+        try {
+          const uploadsDir = path.resolve(process.cwd(), "uploads");
+          const possiblePaths = [
+            item,
+            path.resolve(process.cwd(), item.replace(/^\/+/, "")),
+            path.join(uploadsDir, fileName),
+            path.resolve(process.cwd(), "apps/api/uploads", fileName),
+          ];
+          let foundPath = possiblePaths.find((p) => fs.existsSync(p));
+          if (foundPath) {
+            fileBuf = fs.readFileSync(foundPath);
+          }
+        } catch (err) {
+          console.warn("[Email] Could not read file from path:", item, err.message);
+        }
+      }
+    }
+
+    if (fileBuf && fileBuf.length > 0) {
+      if (processedNames.has(fileName)) continue;
+      processedNames.add(fileName);
+
+      const protectedResult = await protectFileWithPassword(fileName, fileBuf, password);
+
+      graphAttachments.push({
+        "@odata.type": "#microsoft.graph.fileAttachment",
+        name: protectedResult.name,
+        contentType: protectedResult.isPdf ? "application/pdf" : contentType,
+        contentBytes: protectedResult.buffer.toString("base64"),
+      });
+    }
+  }
+
+  return graphAttachments;
+}
+
+async function buildAppointmentAdminNotificationHtml(appointment) {
+  const name = escapeHtml(appointment.name || "—");
+  const age = appointment.age != null ? String(appointment.age) : "—";
+  const gender = escapeHtml(appointment.gender || "—");
+  const nationality = escapeHtml(appointment.nationality || "—");
+  const nric = appointment.nric_fin_number ? escapeHtml(appointment.nric_fin_number) : "";
+  const email = escapeHtml(appointment.email || "—");
+  const phone = escapeHtml(appointment.phone || "—");
+
+  let concernsText = appointment.type_of_concern || "";
+  if (appointment.type_of_concern_other) {
+    concernsText = concernsText ? `${concernsText} (${appointment.type_of_concern_other})` : appointment.type_of_concern_other;
+  }
+  if (!concernsText) {
+    let concernsList = [];
+    if (appointment.counselling_type) concernsList.push(appointment.counselling_type);
+    if (appointment.sub_counselling_types) concernsList.push(appointment.sub_counselling_types);
+    concernsText = concernsList.join(", ");
+  }
+  const concerns = escapeHtml(concernsText || "—");
+
+  const enquirerType = escapeHtml(
+    appointment.enquirer_type || appointment.enquirerType || ""
   );
-  const subTypesExtra = subTypes.length
-    ? `${buildSubCounsellingTypesEmailTable(subTypes)}`
-    : "";
+  const enquirerName = appointment.enquirer_name || appointment.enquirerName;
+  const enquirerRelationship = appointment.enquirer_relationship || appointment.enquirerRelationship || appointment.relationship;
+  const enquirerContactNumber = appointment.enquirer_contact_number || appointment.enquirerContactNumber;
+  const enquirerEmail = appointment.enquirer_email || appointment.enquirerEmail;
 
-  const contactRows = [
-    ["Full Name", appointment.name],
-    ["Email", appointment.email],
-    ["Phone", appointment.phone],
-    ["NRIC / FIN", appointment.nric_fin_number],
-    ["Age", appointment.age],
-    ["Gender", appointment.gender],
-    ["Nationality", appointment.nationality],
-  ];
+  const refAgencyName = appointment.referral_agency_name || appointment.referralAgencyName;
+  const refAgencyPerson = appointment.referral_agency_contact_person || appointment.referralAgencyContactPerson;
+  const refAgencyEmail = appointment.referral_agency_contact_email || appointment.referralAgencyContactEmail;
+  const refAgencyPassword = appointment.referral_agency_password || appointment.referralAgencyPassword;
 
-  let html = `
-    <p style="margin:0 0 8px 0;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">
-      New Appointment Submission
+  let messageText = appointment.description || appointment.remarks || "—";
+  if (appointment.description && appointment.remarks && appointment.description !== appointment.remarks) {
+    messageText = `${appointment.description}\nRemarks: ${appointment.remarks}`;
+  }
+  const message = escapeHtml(messageText);
+
+  const graphFiles = await prepareAppointmentGraphAttachments(appointment);
+  const fileNames = graphFiles.map((f) => f.name);
+
+  let fieldsHtml = `<div>Full Name: ${name}</div>
+<div>Age: ${age}</div>
+<div>Gender : ${gender}</div>
+<div>Residential Status: ${nationality}</div>
+${nric ? `<div>NRIC: ${nric}</div>\n` : ""}<div>Email: ${email}</div>
+<div>Contact: ${phone}</div>
+<div>Concerns: ${concerns}</div>
+`;
+
+  if (enquirerType) {
+    fieldsHtml += `<div>Enquirer Type: ${enquirerType}</div>\n`;
+  }
+  if (enquirerName) {
+    fieldsHtml += `<div>Enquirer Name: ${escapeHtml(enquirerName)}</div>\n`;
+  }
+  if (enquirerRelationship) {
+    fieldsHtml += `<div>Relationship: ${escapeHtml(enquirerRelationship)}</div>\n`;
+  }
+  if (enquirerContactNumber) {
+    fieldsHtml += `<div>Enquirer Contact Number: ${escapeHtml(enquirerContactNumber)}</div>\n`;
+  }
+  if (enquirerEmail) {
+    fieldsHtml += `<div>Enquirer Email Address: ${escapeHtml(enquirerEmail)}</div>\n`;
+  }
+
+  if (refAgencyName) {
+    fieldsHtml += `<div>Referral Agency Name: ${escapeHtml(refAgencyName)}</div>\n`;
+  }
+  if (refAgencyPerson) {
+    fieldsHtml += `<div>Referral Agency Contact Person: ${escapeHtml(refAgencyPerson)}</div>\n`;
+  }
+  if (refAgencyEmail) {
+    fieldsHtml += `<div>Referral Agency Contact Email: ${escapeHtml(refAgencyEmail)}</div>\n`;
+  }
+
+  fieldsHtml += `<div>Message: ${message}</div>\n`;
+
+  if (refAgencyPassword) {
+    fieldsHtml += `<div>Password: ${escapeHtml(refAgencyPassword)}</div>\n`;
+  }
+
+  if (fileNames.length > 0) {
+    fieldsHtml += `<div>Attached Documents: ${escapeHtml(fileNames.join(", "))} (attached to this email)</div>\n`;
+  }
+
+  return `
+    <p style="margin:0 0 20px 0;font-size:15px;color:#222222;line-height:1.6;font-family:'Segoe UI',Arial,sans-serif;text-align:left;">
+      An appointment request has been submitted on your website wingscounselling.org.sg with following credentials.
     </p>
-    <h2 style="margin:0 0 24px 0;color:#0D4A7A;font-size:22px;font-weight:700;">
-      Appointment Request — ${clientName}
-    </h2>
-    ${buildAdminDetailsCard("Applicant Contact Details", contactRows)}
-    ${buildAdminHighlightedCard("Selected Support", "Main Counselling Type", counsellingType, subTypesExtra)}
+    <div style="font-size:15px;color:#222222;line-height:1.8;font-family:'Segoe UI',Arial,sans-serif;text-align:left;">
+      ${fieldsHtml}
+    </div>
   `;
-
-  if (appointment.description) {
-    html += buildAdminTextCard("Brief Description of Concern", appointment.description);
-  }
-
-  if (appointment.remarks) {
-    html += buildAdminTextCard("Remarks", appointment.remarks);
-  }
-
-  return html;
 }
 
 function buildVolunteerAdminNotificationHtml(volunteer) {
@@ -719,14 +920,29 @@ function buildSubCounsellingTypesEmailTable(subTypes) {
       "To be discussed during your session"
   );
 
+  let concernsText = appointment.type_of_concern || "";
+  if (appointment.type_of_concern_other) {
+    concernsText = concernsText ? `${concernsText} (${appointment.type_of_concern_other})` : appointment.type_of_concern_other;
+  }
+  if (!concernsText) {
+    let concernsList = [];
+    if (appointment.counselling_type) concernsList.push(appointment.counselling_type);
+    if (appointment.sub_counselling_types) concernsList.push(appointment.sub_counselling_types);
+    concernsText = concernsList.join(", ");
+  }
+  const concernType = concernsText || "—";
+  const enquirerType = appointment.enquirer_type || appointment.enquirerType || "Self";
+
   const detailRows = [
-    ["NRIC / FIN", appointment.nric_fin_number],
+    ["NRIC", appointment.nric_fin_number],
     ["Full Name", appointment.name],
     ["Email", appointment.email],
     ["Phone", appointment.phone],
     ["Age", appointment.age],
     ["Gender", appointment.gender],
     ["Nationality", appointment.nationality],
+    ["Concern Type", concernType],
+    ["Enquirer Type", enquirerType],
   ]
     .map(
       ([label, value]) => `
@@ -1139,9 +1355,10 @@ function buildSubCounsellingTypesEmailTable(subTypes) {
   const adminTo = allPrimary.length ? allPrimary : adminPrimary ? [adminPrimary] : [];
   if (adminTo.length) {
     try {
-      const orgSubject = `New appointment submission on WINGS`;
-      const orgContent = buildAppointmentAdminNotificationHtml(appointment);
+      const orgSubject = `New appointment submission on WINGS website`;
+      const orgContent = await buildAppointmentAdminNotificationHtml(appointment);
       const ccList = adminCc.length ? adminCc : undefined;
+      const graphAttachments = await prepareAppointmentGraphAttachments(appointment);
 
       await sendWithFallback({
         from: getFromAddress(),
@@ -1149,7 +1366,8 @@ function buildSubCounsellingTypesEmailTable(subTypes) {
         cc: ccList,
         replyTo: userEmail || undefined,
         subject: orgSubject,
-        html: getAdminNotificationEmailWrapper(orgContent, "New Appointment Submission"),
+        html: getAdminNotificationEmailWrapper(orgContent, "New appointment submission on WINGS website"),
+        attachments: graphAttachments.length ? graphAttachments : undefined,
       });
       orgEmailSent = true;
       console.log(

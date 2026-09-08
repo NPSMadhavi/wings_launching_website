@@ -174,6 +174,9 @@ CREATE TABLE appointments (
     counselling_type VARCHAR(150) NOT NULL,
     sub_counselling_types TEXT,
     
+    type_of_concern VARCHAR(100),
+    type_of_concern_other TEXT,
+    
     description TEXT,
     
     remarks TEXT,

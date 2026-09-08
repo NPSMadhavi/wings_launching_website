@@ -30,6 +30,7 @@ import {
   showBrowserNotification,
 } from "../lib/browserNotifications";
 import { toast } from "react-toastify";
+import { api } from "../lib/api";
 
 /* ================= TYPES ================= */
 
@@ -267,9 +268,34 @@ export default function AdminLayout({
     () => getNotificationPermission()
   );
   const [showPermissionBanner, setShowPermissionBanner] = useState(false);
+  const [liveVisitors, setLiveVisitors] = useState(0);
   const emailsMenuRef = useRef<HTMLDivElement | null>(null);
 
   const _sseRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    if (!token) return;
+    let isMounted = true;
+
+    const loadLiveVisitors = async () => {
+      try {
+        const res = await api.fetchLiveVisitorCount();
+        if (isMounted && res && typeof res.count === "number") {
+          setLiveVisitors(res.count);
+        }
+      } catch (_err) {
+        // Silently handle error
+      }
+    };
+
+    loadLiveVisitors();
+    const interval = setInterval(loadLiveVisitors, 3000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [token]);
 
   useEffect(() => {
     if (!isNotificationSupported()) return;
@@ -520,6 +546,10 @@ export default function AdminLayout({
 
     if (href === "/admin/social-media") {
       return location === "/admin/social-media";
+    }
+
+    if (href === "/admin/visitors") {
+      return location === "/admin/visitors";
     }
 
     if (href === "/admin/settings/primary-cc-mails") {
@@ -853,6 +883,19 @@ export default function AdminLayout({
     <Share2 size={18} />
 
     {!sidebarCollapsed && <span>Social Media Links</span>}
+  </button>
+
+  <button
+    onClick={() => handleNavigate("/admin/visitors")}
+    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+      isActive("/admin/visitors")
+        ? "bg-blue-50 text-gray-900"
+        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+    }`}
+  >
+    <Users size={18} />
+
+    {!sidebarCollapsed && <span>Visitors</span>}
   </button>
 </div>
 

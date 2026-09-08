@@ -242,40 +242,6 @@ function formatDate(value) {
 }
 
 function buildAppointmentEmailHtml(appointment) {
-  const rows = [
-    ["Appointment ID", appointment.id],
-    ["Full Name", appointment.name],
-    ["Email", appointment.email],
-    ["Phone Number", appointment.phone],
-    ["NRIC / FIN Number", appointment.nric_fin_number],
-    ["Age", appointment.age],
-    ["Gender", appointment.gender],
-    ["Nationality", appointment.nationality],
-    ["Counselling Type", appointment.counselling_type],
-    ["Sub Counselling Type(s)", appointment.sub_counselling_types],
-    ["Description / Message", appointment.description],
-    ["Remarks", appointment.remarks],
-    ["Submitted On", formatDate(appointment.created_at)],
-  ];
-
-  const tableRows = rows
-    .map(
-      ([label, value]) => `
-        <tr>
-          <td style="padding:10px 16px;background:#f4f8fc;font-size:13px;
-                     font-weight:700;color:#2c5f8a;width:38%;
-                     border-bottom:1px solid #e2e8f0;white-space:nowrap;">
-            ${esc(label)}
-          </td>
-          <td style="padding:10px 16px;background:#ffffff;font-size:14px;
-                     color:#1e293b;border-bottom:1px solid #e2e8f0;
-                     word-break:break-word;">
-            ${esc(value)}
-          </td>
-        </tr>`
-    )
-    .join("");
-
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -283,52 +249,21 @@ function buildAppointmentEmailHtml(appointment) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>New Appointment — WINGS Counselling Centre</title>
 </head>
-<body style="margin:0;padding:0;background:#e8f0f7;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0"
-         style="background:#e8f0f7;padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0"
-               style="max-width:620px;width:100%;background:#ffffff;
-                      border-radius:16px;overflow:hidden;
-                      box-shadow:0 8px 30px rgba(0,0,0,0.10);">
-          <tr>
-            <td style="background:linear-gradient(135deg,#004689 0%,#1d4ed8 100%);
-                       padding:36px 32px;text-align:center;">
-              <h1 style="margin:0 0 6px;color:#ffffff;font-size:26px;font-weight:700;">
-                WINGS Counselling Centre
-              </h1>
-              <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">
-                New Appointment Request Received
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="background:#fff9e6;padding:16px 32px;border-bottom:2px solid #ffd700;">
-              <p style="margin:0;color:#92660a;font-size:14px;font-weight:600;text-align:center;">
-                A new appointment has been submitted and requires your attention.
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:28px 32px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                     style="border:1px solid #d4e4ed;border-radius:10px;overflow:hidden;">
-                ${tableRows}
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="background:#1a3a5c;padding:24px 32px;text-align:center;">
-              <p style="margin:0;color:rgba(255,255,255,0.75);font-size:12px;">
-                This notification was sent automatically by the WINGS Appointment System.
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<body style="margin:0;padding:20px;font-family:Arial,sans-serif;line-height:1.6;color:#333;">
+  <p>An appointment request has been submitted on your website with following credentials.</p>
+  
+  <p>
+    <strong>NRIC:</strong> ${esc(appointment.nric_fin_number || "—")}<br>
+    <strong>Fullname:</strong> ${esc(appointment.name || "—")}<br>
+    <strong>Age:</strong> ${esc(appointment.age || "—")}<br>
+    <strong>Gender:</strong> ${esc(appointment.gender || "—")}<br>
+    <strong>Residential Status:</strong> ${esc(appointment.nationality || "—")}<br>
+    <strong>Email:</strong> ${esc(appointment.email || "—")}<br>
+    <strong>Contact:</strong> ${esc(appointment.phone || "—")}<br>
+    <strong>Concerns:</strong> ${esc(appointment.counselling_type || "—")}${appointment.sub_counselling_types ? ", " + esc(appointment.sub_counselling_types) : ""}${appointment.type_of_concern ? ", " + esc(appointment.type_of_concern) : ""}<br>
+    <strong>Message:</strong> ${esc(appointment.description || "—")}<br>
+    ${appointment.type_of_concern === "Others" && appointment.type_of_concern_other ? `<strong>Brief Description Of Concern:</strong> ${esc(appointment.type_of_concern_other)}<br>` : ""}
+  </p>
 </body>
 </html>`;
 }
@@ -364,7 +299,7 @@ export async function sendAppointmentNotification(appointment) {
 
   const clientName =
     (appointment.name || "").trim().split(/\s+/)[0] || "Client";
-  const subject = `New Appointment Request — ${clientName} | WINGS Counselling Centre`;
+  const subject = `New appointment submission on WINGS website`;
 
   try {
     await sendGraphMail({
