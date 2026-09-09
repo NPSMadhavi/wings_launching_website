@@ -1102,7 +1102,7 @@ onMouseLeave={() => {
                      LANGUAGE - COMMENTED OUT
                   ===================================================== */}
                   
-                  <div
+                  {/* <div
                     className="
                       relative
                     "
@@ -1287,7 +1287,7 @@ onMouseLeave={() => {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
+                  </div> */}
                 
 
                   {/* DONATE */}
