@@ -132,8 +132,8 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="WINGS Counselling Centre | Professional Counselling & Therapy Services"
-        description="WINGS Counselling Centre provides compassionate, professional counselling, individual & family therapy, youth support, and clinical supervision in Singapore."
+        title="WINGS Counselling Centre in Singapore | Counselling & Therapy services"
+        description="WINGS Counselling Centre provides individuals, families, and young people with caring therapy, youth support, and expert clinical supervision. Get support today."
         path="/"
         ogImage="/assets/wingsLogo.png"
         jsonLd={homeJsonLd}

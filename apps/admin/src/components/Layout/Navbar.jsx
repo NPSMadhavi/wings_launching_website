@@ -20,6 +20,7 @@ import { useLocation, Link } from "wouter";
 import { scrollToContactWithRetry, scrollToPartnersWithRetry } from "@/lib/scrollToSection";
 
 import { useAppointment } from "@/context/AppointmentContext";
+import GlobalSearch from "@/components/Search/GlobalSearch";
 
 const navLinks = [
   { id: "home", labelKey: "navbar.home", href: "/", route: true },
@@ -1290,6 +1291,8 @@ onMouseLeave={() => {
                   </div> */}
                 
 
+                  <GlobalSearch />
+
                   {/* DONATE */}
                   <a
                     href="#"
@@ -1397,9 +1400,11 @@ onMouseLeave={() => {
                    MOBILE BUTTON
                 ===================================================== */}
 
-                <button
+                <div className={`${mobileBtnClass} items-center gap-1.5 flex-shrink-0`}>
+                  <GlobalSearch isMobile={true} />
+                  <button
                   className={`
-                    ${mobileBtnClass}
+                    flex
                     items-center
                     justify-center
                     p-2
@@ -1432,6 +1437,7 @@ onMouseLeave={() => {
                     />
                   )}
                 </button>
+                </div>
               </div>
             </div>
           </motion.div>

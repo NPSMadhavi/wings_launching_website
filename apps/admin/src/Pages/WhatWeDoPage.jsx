@@ -279,7 +279,7 @@ export default function SupportTopicPage() {
         <div className="absolute inset-0 bg-black/65" />
 
         {/* HERO CONTENT */}
-        <div className="relative z-10 w-full h-full flex items-center justify-center px-6 md:px-12 lg:px-[100px]">
+        <div className="relative z-10 w-full h-full flex items-center justify-center px-6 md:px-12 lg:px-[100px] pt-[100px] sm:pt-[110px] md:pt-0 pb-8 md:pb-0">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -407,17 +407,17 @@ export default function SupportTopicPage() {
           </p>
 
           {/* Category Buttons */}
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
             {categoryOptions.map((item, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedCategory(item)}
-                className={`h-[50px] px-7 rounded-full border transition-all duration-300 ${
+                className={`min-h-[38px] md:h-[50px] h-auto px-3.5 py-1.5 sm:px-5 sm:py-2 md:px-7 rounded-full border text-[13px] sm:text-[15px] md:text-[20px] font-normal max-w-full text-center leading-snug whitespace-normal break-words transition-all duration-300 inline-flex items-center justify-center ${
                   selectedCategory === item
                     ? "bg-[#1E3A8A] text-white border-[#1E3A8A]"
                     : "bg-white border-[#D2D2D2] hover:border-[#1E3A8A] hover:text-[#1E3A8A]"
                 }`}
-                style={styles.body}
+                style={{ fontFamily: "DM Sans, sans-serif" }}
               >
                 {item === "All" ? t("supportTopic.articles.all") : item}
               </button>

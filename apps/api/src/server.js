@@ -32,6 +32,7 @@ import candidatesRouter from "./routes/candidates.js";
 import notifyRouter, { ensureNotifyTables } from "./routes/notify.js";
 import eventSubscribersRouter from "./routes/eventSubcriber.js";
 import visitorsRouter from "./routes/visitors.js";
+import adminUsersRouter from "./routes/adminUsers.js";
 import { db } from "./config/db.js";
 import {
   isDuplicateColumnError,
@@ -154,6 +155,7 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api", authRouter);
+app.use("/api", adminUsersRouter);
 app.use("/api", eventsRouter);
 app.use("/api", teamRouter);
 app.use("/api", articlesRouter);

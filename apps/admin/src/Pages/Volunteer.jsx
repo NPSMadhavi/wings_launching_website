@@ -56,8 +56,8 @@ const Volunteer = () => {
   return (
     <>
       <SEO
-        title="Volunteer With Us | WINGS Counselling Centre"
-        description="Join WINGS Counselling Centre as a volunteer and help empower individuals, families, and communities through mental health awareness and community support."
+        title="Volunteer with WINGS Counselling Centre"
+        description="Volunteer with WINGS Counselling Centre to support individuals and families, build useful skills and form lasting connections. Explore how to get involved"
         path="/volunteer"
         ogImage="/assets/volunteer.png"
       />

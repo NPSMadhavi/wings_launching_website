@@ -121,8 +121,8 @@ export default function RelationshipArticlePage() {
       style={styles.body}
     >
       <SEO
-        title="Relationship & Marital Support Guide | WINGS Counselling Centre"
-        description="Navigate relationship challenges, improve communication, rebuild trust, and explore couples counselling with guidance from WINGS Counselling Centre."
+        title="Relationship counselling services | Counselling & Therapy services"
+        description="Looking for relationship counselling services in Singapore? WINGS Counselling offers professional support to improve communication, resolve conflicts, and strengthen relationships."
         path="/RelationshipArticlePage"
         ogImage="/assets/ihero1.jpeg"
         ogType="article"

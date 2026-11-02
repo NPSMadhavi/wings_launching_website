@@ -1,5 +1,5 @@
 import { Switch, Route, Router as WouterRouter, useLocation, Redirect } from "wouter";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -83,6 +83,29 @@ function ScrollToTop() {
 
     if (!scrollToPageContentSection(location)) {
       window.scrollTo(0, 0);
+    }
+  }, [location]);
+
+  return null;
+}
+
+/* ---------------- Google Analytics SPA Route Tracker ---------------- */
+function GoogleAnalyticsTracker() {
+  const [location] = useLocation();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("event", "page_view", {
+        page_path: location,
+        page_location: window.location.href,
+        page_title: document.title,
+      });
     }
   }, [location]);
 
@@ -222,6 +245,7 @@ export default function App() {
                 <div className="page-wrapper">
                   <ContentProtection />
                   <VisitorHeartbeat />
+                  <GoogleAnalyticsTracker />
 
                 <ScrollToTop />
                 <SharedNavbar />

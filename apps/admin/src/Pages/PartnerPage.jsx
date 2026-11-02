@@ -73,8 +73,8 @@ const PartnerPage = () => {
     <div className="w-full bg-[#F5F9FF]">
 
       <SEO
-        title="Our Partners & Collaborators | WINGS Counselling Centre"
-        description="Discover our esteemed partners, schools, voluntary welfare organisations, and community collaborators working together with WINGS Counselling Centre."
+        title="Our partner and collaborators | WINGS Counselling"
+        description="Mental wellness in Singapore grows through local partnerships. We work with health experts and community groups to build support that helps people thrive"
         path="/partners"
         ogImage="/assets/partners-hero.jpg"
       />

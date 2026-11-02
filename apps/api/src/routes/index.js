@@ -17,6 +17,7 @@ import testimonialsRouter from "./testimonials.js";
 import socialMediaRouter from "./socialMedia.js";
 import formSubmissionEmailsRouter from "./formSubmissionEmails.js";
 import jobsRouter from "./jobs.js";
+import adminUsersRouter from "./adminUsers.js";
 import { db } from "../config/db.js";
 import { isDuplicateColumnError } from "../config/pg-helpers.js";
 import { requireAdmin } from "../middlewares/auth.js";
@@ -25,6 +26,7 @@ const router: IRouter = Router();
 
 router.use(healthRouter);
 router.use(authRouter);
+router.use(adminUsersRouter);
 router.use(teamRouter);
 router.use(articlesRouter);
 router.use(careersRouter);

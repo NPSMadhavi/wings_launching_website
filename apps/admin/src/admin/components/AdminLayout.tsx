@@ -18,7 +18,8 @@ import {
   User,
   Mail,
   Menu,
-  X
+  X,
+  ShieldCheck
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -253,7 +254,7 @@ export default function AdminLayout({
 }) {
 
   const [location, navigate] = useLocation();
-  const { logout, token } = useAuth();
+  const { logout, token, user, canAccess } = useAuth();
 
   const [notifications, setNotifications] = useState<
     SSENotification[]
@@ -548,6 +549,10 @@ export default function AdminLayout({
       return location === "/admin/social-media";
     }
 
+    if (href === "/admin/user-management") {
+      return location === "/admin/user-management" || location === "/admin/users-management";
+    }
+
     if (href === "/admin/visitors") {
       return location === "/admin/visitors";
     }
@@ -607,6 +612,20 @@ export default function AdminLayout({
       navigate(href);
     }
   };
+
+  const hasAnyManageAccess =
+    canAccess("team") ||
+    canAccess("articles") ||
+    canAccess("careers") ||
+    canAccess("events") ||
+    canAccess("services") ||
+    canAccess("appointments") ||
+    canAccess("volunteers") ||
+    canAccess("partners") ||
+    canAccess("testimonials") ||
+    canAccess("social-media") ||
+    canAccess("user-management") ||
+    canAccess("visitors");
 
   return (
     <div className="h-screen flex flex-col bg-[#f8fafc] overflow-hidden font-sans">
@@ -725,307 +744,305 @@ export default function AdminLayout({
 
           {/* Dashboard */}
 
-        <div className="pt-2">
-  <button
-    onClick={() => navigate("/admin")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all relative ${
-      isActive("/admin")
-        ? "bg-blue-50 text-gray-900"  // Changed from font-[DM sans] to text-gray-900
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"  // Changed from text-gray-400 to text-gray-700
-    }`}
-  >
-    {isActive("/admin") && (
-      <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-[#004689] rounded-r-full" />
-    )}
+        {canAccess("dashboard") && (
+          <div className="pt-2">
+            <button
+              onClick={() => navigate("/admin")}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all relative ${
+                isActive("/admin")
+                  ? "bg-blue-50 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+              }`}
+            >
+              {isActive("/admin") && (
+                <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-[#004689] rounded-r-full" />
+              )}
 
-    <LayoutDashboard size={18} />
+              <LayoutDashboard size={18} />
 
-    {!sidebarCollapsed && <span>Dashboard</span>}
-  </button>
-</div>
+              {!sidebarCollapsed && <span>Dashboard</span>}
+            </button>
+          </div>
+        )}
 
           {/* MANAGE */}
-<div className="space-y-1">
+          {hasAnyManageAccess && (
+            <div className="space-y-1">
+              {!sidebarCollapsed && (
+                <h3 className="text-[20px] font-[DM Sans, sans-serif] text-blue-400 px-2 mb-3">
+                  Manage
+                </h3>
+              )}
 
-  {!sidebarCollapsed && (
-    <h3 className="text-[20px] font-[DM Sans, sans-serif] text-blue-400 px-2 mb-3">
-      Manage
-    </h3>
+  {canAccess("team") && (
+    <button
+      onClick={() => handleNavigate("/admin/team")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/team")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Users size={18} />
+
+      {!sidebarCollapsed && <span>Team Members</span>}
+    </button>
   )}
 
-  <button
-    onClick={() => handleNavigate("/admin/team")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/team")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Users size={18} />
+  {canAccess("articles") && (
+    <button
+      onClick={() => handleNavigate("/admin/articles")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/articles")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <FileText size={18} />
 
-    {!sidebarCollapsed && <span>Team Members</span>}
-  </button>
+      {!sidebarCollapsed && <span>Articles</span>}
+    </button>
+  )}
 
-  <button
-    onClick={() => handleNavigate("/admin/articles")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/articles")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <FileText size={18} />
+  {canAccess("careers") && (
+    <button
+      onClick={() => handleNavigate("/admin/careers")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/careers")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Briefcase size={18} />
 
-    {!sidebarCollapsed && <span>Articles</span>}
-  </button>
+      {!sidebarCollapsed && <span>Careers</span>}
+    </button>
+  )}
 
-  <button
-    onClick={() => handleNavigate("/admin/careers")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/careers")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Briefcase size={18} />
+  {canAccess("events") && (
+    <button
+      onClick={() => handleNavigate("/admin/events")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/events")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Calendar size={18} />
 
-    {!sidebarCollapsed && <span>Careers</span>}
-  </button>
+      {!sidebarCollapsed && <span>Events</span>}
+    </button>
+  )}
 
-  <button
-    onClick={() => handleNavigate("/admin/events")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/events")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Calendar size={18} />
+  {canAccess("services") && (
+    <button
+      onClick={() => handleNavigate("/admin/counselling-types")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/counselling-types")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Briefcase size={18} />
 
-    {!sidebarCollapsed && <span>Events</span>}
-  </button>
-
-  <button
-    onClick={() => handleNavigate("/admin/counselling-types")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/counselling-types")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Briefcase size={18} />
-
-    {!sidebarCollapsed && <span>Services</span>}
-  </button>
+      {!sidebarCollapsed && <span>Services</span>}
+    </button>
+  )}
 
   {/* APPOINTMENTS */}
 
-  <button
-    onClick={() => handleNavigate("/admin/appointments")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/appointments")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Calendar size={18} />
+  {canAccess("appointments") && (
+    <button
+      onClick={() => handleNavigate("/admin/appointments")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/appointments")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Calendar size={18} />
 
-    {!sidebarCollapsed && <span>Appointments</span>}
-  </button>
-
-  <button
-    onClick={() => handleNavigate("/admin/volunteers")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/volunteers")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <HeartHandshake size={18} />
-
-    {!sidebarCollapsed && <span>Volunteers</span>}
-  </button>
-
-  <button
-    onClick={() => handleNavigate("/admin/partners")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/partners")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Handshake size={18} />
-
-    {!sidebarCollapsed && <span>Partners</span>}
-  </button>
-
-  <button
-    onClick={() => handleNavigate("/admin/testimonials")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/testimonials")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <MessageSquareQuote size={18} />
-
-    {!sidebarCollapsed && <span>Testimonials</span>}
-  </button>
-
-  <button
-    onClick={() => handleNavigate("/admin/social-media")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/social-media")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Share2 size={18} />
-
-    {!sidebarCollapsed && <span>Social Media Links</span>}
-  </button>
-
-  <button
-    onClick={() => handleNavigate("/admin/visitors")}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("/admin/visitors")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    <Users size={18} />
-
-    {!sidebarCollapsed && <span>Visitors</span>}
-  </button>
-</div>
-
-          {/* SETTINGS */}
-<div className="space-y-1">
-
-  {!sidebarCollapsed && (
-    <h3 className="text-[20px] font-[DM Sans, sans-serif] text-blue-400 px-2 mb-3">
-      Settings
-    </h3>
+      {!sidebarCollapsed && <span>Appointments</span>}
+    </button>
   )}
 
-  {/* <button
-    type="button"
-    onClick={async () => {
-      if (notifPermission !== "granted") {
-        await handleEnableNotifications();
-      } else {
-        setShowNotifsPage(true);
-      }
-    }}
-    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      showNotifsPage
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-    title={
-      notifPermission === "granted"
-        ? "View notifications"
-        : "Enable desktop notifications"
-    }
-  >
-    <Bell size={18} />
+  {canAccess("volunteers") && (
+    <button
+      onClick={() => handleNavigate("/admin/volunteers")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/volunteers")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <HeartHandshake size={18} />
 
-    {!sidebarCollapsed && (
-      <span className="flex-1 text-left">
-        {notifPermission === "granted" ? "Notifications" : "Enable Notifications"}
-      </span>
-    )}
+      {!sidebarCollapsed && <span>Volunteers</span>}
+    </button>
+  )}
 
-    {unread > 0 && (
-      <span className="ml-auto w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
-        {unread > 9 ? "9+" : unread}
-      </span>
-    )}
-  </button> */}
+  {canAccess("partners") && (
+    <button
+      onClick={() => handleNavigate("/admin/partners")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/partners")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Handshake size={18} />
 
-  {/* Mails dropdown */}
+      {!sidebarCollapsed && <span>Partners</span>}
+    </button>
+  )}
 
- <div className="relative w-full" ref={emailsMenuRef}>
-  <button
-    type="button"
-    onClick={() => {
-      if (sidebarCollapsed) {
-        handleNavigate("/admin/settings/primary-cc-mails");
-      } else {
-        setEmailsDropdownOpen((v) => !v);
-      }
-    }}
-    className={`relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
-      isActive("__emails_section__")
-        ? "bg-blue-50 text-gray-900"
-        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-    }`}
-  >
-    {isActive("__emails_section__") && (
-      <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-[#004689] rounded-r-full" />
-    )}
+  {canAccess("testimonials") && (
+    <button
+      onClick={() => handleNavigate("/admin/testimonials")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/testimonials")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <MessageSquareQuote size={18} />
 
-    <Mail size={18} />
+      {!sidebarCollapsed && <span>Testimonials</span>}
+    </button>
+  )}
 
-    {!sidebarCollapsed && (
-      <>
-        <span className="flex-1 text-left">Mails</span>
-        <ChevronDown
-          size={16}
-          className={`transition-transform ${emailsDropdownOpen ? "rotate-180" : ""}`}
-        />
-      </>
-    )}
-  </button>
+  {canAccess("social-media") && (
+    <button
+      onClick={() => handleNavigate("/admin/social-media")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/social-media")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Share2 size={18} />
 
-  {!sidebarCollapsed && emailsDropdownOpen && (
-    <div className="mt-1 ml-4 pl-4 border-l border-gray-200 space-y-1">
-      <button
-        type="button"
-        onClick={() => handleNavigate("/admin/settings/primary-cc-mails")}
-        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[16px] transition-all ${
-          isActive("/admin/settings/primary-cc-mails")
-            ? "bg-blue-50 text-[#004689] font-medium"
-            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-        }`}
-      >
-        Mails
-      </button>
-      <button
-        type="button"
-        onClick={() => handleNavigate("/admin/settings/notify-mails")}
-        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[16px] transition-all ${
-          isActive("/admin/settings/notify-mails")
-            ? "bg-blue-50 text-[#004689] font-medium"
-            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-        }`}
-      >
-        Notify mails
-      </button>
-    </div>
+      {!sidebarCollapsed && <span>Social Media Links</span>}
+    </button>
+  )}
+
+  {/* USER MANAGEMENT (Above Visitors) */}
+  {canAccess("user-management") && (
+    <button
+      onClick={() => handleNavigate("/admin/user-management")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/user-management")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <ShieldCheck size={18} />
+
+      {!sidebarCollapsed && <span>User Management</span>}
+    </button>
+  )}
+
+  {canAccess("visitors") && (
+    <button
+      onClick={() => handleNavigate("/admin/visitors")}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+        isActive("/admin/visitors")
+          ? "bg-blue-50 text-gray-900"
+          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+      }`}
+    >
+      <Users size={18} />
+
+      {!sidebarCollapsed && <span>Visitors</span>}
+    </button>
   )}
 </div>
-  {/* Logout */}
+)}
 
-  <button
-    onClick={logout}
-    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all"
-  >
-    <LogOut size={18} />
+          {/* SETTINGS (Render only if user has access to mails) */}
+          {canAccess("mails") && (
+            <div className="space-y-1">
+              {!sidebarCollapsed && (
+                <h3 className="text-[20px] font-[DM Sans, sans-serif] text-blue-400 px-2 mb-3">
+                  Settings
+                </h3>
+              )}
 
-    {!sidebarCollapsed && <span>Logout</span>}
-  </button>
+              {/* Mails dropdown */}
+              <div className="relative w-full" ref={emailsMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (sidebarCollapsed) {
+                      handleNavigate("/admin/settings/primary-cc-mails");
+                    } else {
+                      setEmailsDropdownOpen((v) => !v);
+                    }
+                  }}
+                  className={`relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[20px] transition-all ${
+                    isActive("__emails_section__")
+                      ? "bg-blue-50 text-gray-900"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  }`}
+                >
+                  {isActive("__emails_section__") && (
+                    <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-[#004689] rounded-r-full" />
+                  )}
 
-</div>
+                  <Mail size={18} />
+
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="flex-1 text-left">Mails</span>
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform ${emailsDropdownOpen ? "rotate-180" : ""}`}
+                      />
+                    </>
+                  )}
+                </button>
+
+                {!sidebarCollapsed && emailsDropdownOpen && (
+                  <div className="mt-1 ml-4 pl-4 border-l border-gray-200 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/admin/settings/primary-cc-mails")}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[16px] transition-all ${
+                        isActive("/admin/settings/primary-cc-mails")
+                          ? "bg-blue-50 text-[#004689] font-medium"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
+                    >
+                      Mails
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/admin/settings/notify-mails")}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[16px] transition-all ${
+                        isActive("/admin/settings/notify-mails")
+                          ? "bg-blue-50 text-[#004689] font-medium"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
+                    >
+                      Notify mails
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Bottom */}
 
-        <div className="flex-shrink-0 border-t border-gray-100 p-6 pt-4 space-y-4">
+        <div className="flex-shrink-0 border-t border-gray-100 p-4 pt-3 space-y-2.5">
 
           <button
             onClick={() => window.open("/", "_blank")}
-            className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-bold text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-all"
+            className={`w-full flex items-center ${
+              sidebarCollapsed ? "justify-center px-0" : "gap-3 px-3.5"
+            } py-2 rounded-xl text-sm font-bold text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-all`}
+            title="View Website"
           >
             <Eye size={18} />
 
@@ -1033,30 +1050,60 @@ export default function AdminLayout({
           </button>
 
           {!sidebarCollapsed ? (
-            <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50/50 border border-gray-50">
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50/50 border border-gray-100">
 
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#004689] font-bold shadow-sm">
-                <User size={18} />
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#004689] font-bold shadow-sm shrink-0">
+                {user?.email ? (
+                  <span className="text-xs font-black uppercase">
+                    {user.email.charAt(0)}
+                  </span>
+                ) : (
+                  <User size={18} />
+                )}
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-gray-800 truncate">
-                  Administrator
+                <div
+                  className="text-sm font-bold text-gray-800 truncate"
+                  title={user?.email || "Administrator"}
+                >
+                  {user?.email || "Administrator"}
                 </div>
 
-                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
-                  Admin
+                <div className="text-[10px] font-bold text-[#004689] uppercase tracking-tight truncate">
+                  {user?.role || "Admin"}
                 </div>
               </div>
 
             </div>
           ) : (
             <div className="flex justify-center p-2">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#004689] font-bold shadow-sm">
-                <User size={18} />
+              <div
+                className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#004689] font-bold shadow-sm"
+                title={user?.email || "Administrator"}
+              >
+                {user?.email ? (
+                  <span className="text-xs font-black uppercase">
+                    {user.email.charAt(0)}
+                  </span>
+                ) : (
+                  <User size={18} />
+                )}
               </div>
             </div>
           )}
+
+          {/* Logout Option (Below Profile Card) */}
+          <button
+            onClick={logout}
+            className={`w-full flex items-center ${
+              sidebarCollapsed ? "justify-center px-0" : "gap-3 px-3.5"
+            } py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all`}
+            title="Logout"
+          >
+            <LogOut size={18} />
+            {!sidebarCollapsed && <span>Logout</span>}
+          </button>
         </div>
 
         {/* Collapse Button */}

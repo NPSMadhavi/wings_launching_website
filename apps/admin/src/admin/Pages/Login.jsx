@@ -21,8 +21,34 @@ export default function Login() {
     setErr("");
 
     try {
-      const { token } = await api.login(email.trim(), p);
-      login(token);
+      const res = await api.login(email.trim(), p);
+      login(res.token, res.user);
+
+      if (res.user && !res.user.isSuperAdmin && Array.isArray(res.user.sections) && !res.user.sections.includes("all")) {
+        if (!res.user.sections.includes("dashboard")) {
+          const sectionPathMap = {
+            team: "/admin/team",
+            articles: "/admin/articles",
+            careers: "/admin/careers",
+            events: "/admin/events",
+            services: "/admin/counselling-types",
+            appointments: "/admin/appointments",
+            volunteers: "/admin/volunteers",
+            partners: "/admin/partners",
+            testimonials: "/admin/testimonials",
+            "social-media": "/admin/social-media",
+            "user-management": "/admin/user-management",
+            visitors: "/admin/visitors",
+            mails: "/admin/settings/primary-cc-mails",
+          };
+          const firstAllowed = res.user.sections.map((s) => sectionPathMap[s]).filter(Boolean)[0];
+          if (firstAllowed) {
+            navigate(firstAllowed);
+            return;
+          }
+        }
+      }
+
       navigate("/admin");
     } catch (error) {
       const msg = error instanceof Error ? error.message : "";

@@ -156,8 +156,8 @@ export default function ServicePage() {
     return (
         <div className="w-full flex flex-col min-h-screen items-center bg-[#FAFAF5]">
             <SEO
-                title="Counselling & Therapy Services | WINGS Counselling Centre"
-                description="Explore our comprehensive counselling services including individual therapy, couples & marital therapy, family support, youth counselling, and clinical supervision."
+                title="Relationship counselling services in Singapore | WINGS Counselling"
+                description="Relationship counselling Services in Singapore at WINGS Counselling helps couples resolve conflict, rebuild trust and find practical ways forward. Book now."
                 path="/services"
                 ogImage="/assets/indvidualservice.png"
             />

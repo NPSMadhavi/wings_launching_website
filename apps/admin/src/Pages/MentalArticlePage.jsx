@@ -120,8 +120,8 @@ export default function MentalArticlePage() {
       style={styles.body}
     >
       <SEO
-        title="Mental Health & Financial Stress | WINGS Counselling Centre"
-        description="Explore the impact of financial strain on emotional well-being and mental health, and discover effective coping strategies and professional support."
+        title="Mental health Counselling in Singapore | WINGS Counselling"
+        description="Find compassionate mental health counselling in Singapore at WINGS Counselling Centre. Get professional support for stress, anxiety, depression, relationships and more"
         path="/MentalArticlePage"
         ogImage="/assets/ihero1.jpeg"
         ogType="article"

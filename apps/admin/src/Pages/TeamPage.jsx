@@ -88,8 +88,8 @@ const TeamPage = () => {
     return (
         <div className="w-full bg-white font-sans overflow-x-hidden">
             <SEO
-                title="Our Clinical Team | WINGS Counselling Centre"
-                description="Meet our dedicated team of experienced counsellors, therapists, clinical supervisors, and mental health professionals at WINGS Counselling Centre."
+                title="Meet our WINGS Counselling team | Book an appointment"
+                description="Meet our WINGS Counselling team and find affordable, professional counselling for life's challenges. Learn how our counsellors can help you take the next step."
                 path="/team"
                 ogImage="/assets/team_hero_bg.png"
             />

@@ -21,21 +21,49 @@ import PartnersAdmin from "./Pages/PartnersAdmin";
 import TestimonialsAdmin from "./Pages/TestimonialsAdmin";
 import SocialMediaAdmin from "./Pages/SocialMediaAdmin";
 import VisitorsAdmin from "./Pages/VisitorsAdmin";
+import UserManagementAdmin from "./Pages/UserManagementAdmin";
 import PrimaryCcMailsAdmin from "./Pages/PrimaryCcMailsAdmin";
 import NotifyMailsAdmin from "./Pages/NotifyMailsAdmin";
 import EmailsAdmin from "./Pages/EmailsAdmin";
 
 function AdminRoutes() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [location, navigate] = useLocation();
 
   useEffect(() => {
     if (!token) return;
 
-    if (location === "/") {
-      navigate("/admin");
+    if (location === "/" || location === "/admin") {
+      if (user && !user.isSuperAdmin && Array.isArray(user.sections) && !user.sections.includes("all")) {
+        if (!user.sections.includes("dashboard")) {
+          const sectionPathMap = {
+            team: "/admin/team",
+            articles: "/admin/articles",
+            careers: "/admin/careers",
+            events: "/admin/events",
+            services: "/admin/counselling-types",
+            appointments: "/admin/appointments",
+            volunteers: "/admin/volunteers",
+            partners: "/admin/partners",
+            testimonials: "/admin/testimonials",
+            "social-media": "/admin/social-media",
+            "user-management": "/admin/user-management",
+            visitors: "/admin/visitors",
+            mails: "/admin/settings/primary-cc-mails",
+          };
+          const firstAllowed = user.sections.map((s) => sectionPathMap[s]).filter(Boolean)[0];
+          if (firstAllowed && location !== firstAllowed) {
+            navigate(firstAllowed);
+            return;
+          }
+        }
+      }
+
+      if (location === "/") {
+        navigate("/admin");
+      }
     }
-  }, [location, navigate, token]);
+  }, [location, navigate, token, user]);
 
   if (!token) {
     return <Login />;
@@ -56,6 +84,8 @@ function AdminRoutes() {
         <Route path="/admin/partners" component={PartnersAdmin} />
         <Route path="/admin/testimonials" component={TestimonialsAdmin} />
         <Route path="/admin/social-media" component={SocialMediaAdmin} />
+        <Route path="/admin/user-management" component={UserManagementAdmin} />
+        <Route path="/admin/users-management" component={UserManagementAdmin} />
         <Route path="/admin/visitors" component={VisitorsAdmin} />
         <Route path="/admin/settings/primary-cc-mails" component={PrimaryCcMailsAdmin} />
         <Route path="/admin/settings/notify-mails" component={NotifyMailsAdmin} />

@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { getSeoMetadata } from "../lib/seoMetadata";
 
 const DOMAIN = "https://wingscounselling.org.sg";
 const DEFAULT_IMAGE = "/assets/wingsLogo.png";
@@ -14,19 +15,23 @@ export function SEO({
   noindex = false,
   jsonLd = null,
 }) {
-  const fullTitle = title
-    ? title.includes("WINGS")
-      ? title
-      : `${title} | ${SITE_NAME}`
-    : `${SITE_NAME} | Professional Counselling & Therapy Services`;
-
-  const metaDescription =
-    description ||
-    "WINGS Counselling Centre provides compassionate, professional counselling, individual & family therapy, youth support, and clinical supervision in Singapore.";
-
   // Normalize canonical URL path
   const cleanPath = path ? (path.startsWith("/") ? path : `/${path}`) : "";
   const canonicalUrl = `${DOMAIN}${cleanPath}`;
+
+  const matched = getSeoMetadata(
+    cleanPath || (typeof window !== "undefined" ? window.location.pathname : "")
+  );
+
+  const fullTitle =
+    matched?.title ||
+    title ||
+    `${SITE_NAME} | Professional Counselling & Therapy Services`;
+
+  const metaDescription =
+    matched?.description ||
+    description ||
+    "WINGS Counselling Centre provides compassionate, professional counselling, individual & family therapy, youth support, and clinical supervision in Singapore.";
 
   // Image URL resolution
   let imageUrl = ogImage || DEFAULT_IMAGE;

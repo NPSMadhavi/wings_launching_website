@@ -77,8 +77,8 @@ export default function Careers() {
   return (
     <div className="min-h-screen bg-[#FAFAF5] overflow-x-hidden font-sans">
       <SEO
-        title="Careers & Opportunities | WINGS Counselling Centre"
-        description="Explore career opportunities at WINGS Counselling Centre and join our dedicated team of counsellors, therapists, and mental health professionals."
+        title="Career opportunities at WINGS Counselling Centre Singapore"
+        description="Explore a career at WINGS Counselling Centre and learn about roles, workplace values, and how your skills can support people seeking care.View openings."
         path="/career"
         ogImage="/assets/careersection.png"
       />

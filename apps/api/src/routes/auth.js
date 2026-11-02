@@ -1,16 +1,19 @@
 import { Router } from "express";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { pool } from "../config/db.js";
 import { getJwtSecret } from "../middlewares/auth.js";
 import { getAdminEmail, getFrontendUrl } from "../config/microsoftConfig.js";
 
 const router = Router();
+
 
 /* ─────────────────────────────────────────────────────────────
    Admin login with email + password
    POST /api/admin/login
    Body: { email, password }  (username accepted as alias for email)
    ───────────────────────────────────────────────────────────── */
-router.post("/admin/login", (req, res) => {
+router.post("/admin/login", async (req, res) => {
   try {
     const body = req.body || {};
     const email = String(body.email || body.username || "")
@@ -18,34 +21,104 @@ router.post("/admin/login", (req, res) => {
       .toLowerCase();
     const password = String(body.password || "");
 
-    const ADMIN_EMAIL = getAdminEmail();
-    const ADMIN_PASS = String(process.env.ADMIN_PASSWORD || "");
-
-    if (!ADMIN_EMAIL || !ADMIN_PASS) {
-      console.error(
-        "Admin login: ADMIN_EMAIL or ADMIN_PASSWORD not set in .env"
-      );
-      return res.status(500).json({
-        error:
-          "Admin login is not configured on the server. Set ADMIN_EMAIL and ADMIN_PASSWORD in apps/api/.env",
-      });
-    }
-
     if (!email || !password) {
       return res.status(400).json({ error: "Missing credentials" });
     }
 
-    if (email !== ADMIN_EMAIL || password !== ADMIN_PASS) {
-      return res.status(401).json({ error: "Invalid credentials" });
+    const ADMIN_EMAIL = (getAdminEmail() || "").toLowerCase();
+    const ADMIN_PASS = String(process.env.ADMIN_PASSWORD || "");
+
+    // 1. Check Primary Super Administrator (from .env)
+    if (ADMIN_EMAIL && ADMIN_PASS && email === ADMIN_EMAIL && password === ADMIN_PASS) {
+      const token = jwt.sign(
+        {
+          id: 0,
+          email: getAdminEmail(),
+          username: getAdminEmail(),
+          role: "Super Admin",
+          isSuperAdmin: true,
+          sections: ["all"],
+        },
+        getJwtSecret(),
+        { expiresIn: "1d" }
+      );
+
+      return res.json({
+        token,
+        user: {
+          id: 0,
+          email: getAdminEmail(),
+          role: "Super Admin",
+          isSuperAdmin: true,
+          sections: ["all"],
+        },
+      });
     }
 
-    const token = jwt.sign(
-      { email: ADMIN_EMAIL, username: ADMIN_EMAIL },
-      getJwtSecret(),
-      { expiresIn: "1d" }
-    );
+    // 2. Check admin_users in PostgreSQL database
+    try {
+      const { rows } = await pool.query(
+        `SELECT * FROM admin_users WHERE LOWER(email) = $1 LIMIT 1`,
+        [email]
+      );
 
-    res.json({ token });
+      if (rows && rows.length > 0) {
+        const user = rows[0];
+
+        if (!user.is_active) {
+          return res.status(403).json({
+            error: "Your account has been deactivated. Please contact administrator.",
+          });
+        }
+
+        const match = await bcrypt.compare(password, user.password_hash);
+        if (match) {
+          // Update last login timestamp asynchronously
+          pool.query(
+            `UPDATE admin_users SET last_login_at = CURRENT_TIMESTAMP WHERE id = $1`,
+            [user.id]
+          ).catch(() => {});
+
+          let sections = [];
+          try {
+            sections = Array.isArray(user.sections)
+              ? user.sections
+              : JSON.parse(user.sections || "[]");
+          } catch {
+            sections = [];
+          }
+
+          const token = jwt.sign(
+            {
+              id: user.id,
+              email: user.email,
+              username: user.email,
+              role: user.role,
+              isSuperAdmin: false,
+              sections,
+            },
+            getJwtSecret(),
+            { expiresIn: "1d" }
+          );
+
+          return res.json({
+            token,
+            user: {
+              id: user.id,
+              email: user.email,
+              role: user.role,
+              isSuperAdmin: false,
+              sections,
+            },
+          });
+        }
+      }
+    } catch (dbErr) {
+      console.error("[admin/login] DB check error:", dbErr?.message);
+    }
+
+    // 3. Invalid credentials
+    return res.status(401).json({ error: "Invalid email or password" });
   } catch (err) {
     console.error("admin/login:", err);
     res.status(500).json({ error: "Login failed" });

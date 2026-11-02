@@ -120,8 +120,8 @@ export default function ParentingArticlePage() {
       style={styles.body}
     >
       <SEO
-        title="Parenting Challenges & Guidance | WINGS Counselling Centre"
-        description="Discover practical parenting strategies, understand emotional and behavioral changes in children, and foster healthier family relationships."
+        title="Parenting counselling Singapore |  WINGS Counselling"
+        description="Explore parenting counselling in Singapore with WINGS Counselling Centre. Get professional support to overcome parenting challenges, improve communication, and build stronger family relationships."
         path="/ParentingArticlePage"
         ogImage="/assets/ihero1.jpeg"
         ogType="article"

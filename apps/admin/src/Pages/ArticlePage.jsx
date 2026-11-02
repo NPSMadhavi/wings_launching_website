@@ -113,8 +113,8 @@ export default function ArticlePage() {
     return (
         <div className="w-full flex flex-col min-h-screen bg-[#FAFAF5]">
             <SEO
-                title="Mental Health Articles & Insights | WINGS Counselling Centre"
-                description="Read evidence-based articles, coping strategies, grounding techniques, and clinical insights on mental health, parenting, and relationships from WINGS."
+                title="Mental health articles WINGS Counselling Centre"
+                description="Recent articles from WINGS Counselling Centre share expert advice on life’s challenges, emotional health, and finding the right support.Read insights today."
                 path="/articles"
                 ogImage="/assets/articlesection.jpeg"
             />
@@ -205,7 +205,7 @@ export default function ArticlePage() {
                             {t("articles.listing.title")}
                         </h2>
 
-                        <div className="relative dropdown-container">
+                        <div className="relative dropdown-container ml-auto sm:ml-0">
                             <button
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                 className="flex items-center justify-between bg-white text-left gap-3"
@@ -244,7 +244,7 @@ export default function ArticlePage() {
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
-                                    className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-100 z-50 w-max min-w-[200px] max-w-[340px] max-h-[300px] overflow-y-auto"
+                                    className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-100 z-50 w-max min-w-[200px] max-w-[calc(100vw-32px)] sm:max-w-[340px] max-h-[300px] overflow-y-auto"
                                 >
                                     {articleFilterOptions.map((option) => (
                                         <button

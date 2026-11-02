@@ -472,8 +472,8 @@ export default function EventsPage() {
     return (
         <div className="w-full flex flex-col min-h-screen items-center bg-[#FAFAF5]">
             <SEO
-                title="Events & Workshops | WINGS Counselling Centre"
-                description="Discover upcoming mental health events, community workshops, parenting talks, and clinical training sessions hosted by WINGS Counselling Centre."
+                title="Events and workshops at WINGS Counselling Centre"
+                description="Explore events and workshops at WINGS Counselling Centre, with practical support, helpful tools and space to connect. Find a session that fits you"
                 path="/events"
                 ogImage="/assets/EventsHeroImage.jpg"
             />

@@ -47,8 +47,8 @@ export default function AboutUs() {
   return (
     <div className="w-full flex flex-col min-h-screen">
       <SEO
-        title="About Us | WINGS Counselling Centre"
-        description="Learn about WINGS Counselling Centre, our mission, vision, clinical history, and commitment to providing accessible mental health care and therapy in Singapore."
+        title="Guidance and counselling centre Singapore | WINGS Counselling"
+        description="Looking for a guidance and counselling centre in Singapore? WINGS Counselling offers caring support for children, youth and families facing life’s challenges."
         path="/about-us"
         ogImage="/assets/aboutusimage.png"
       />

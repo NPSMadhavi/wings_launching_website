@@ -409,5 +409,29 @@ export const api = {
   fetchVisitorStats: async () => {
     return apiFetch("/visitors/stats");
   },
+
+  // System User Management & Roles
+  getMe: () => apiFetch("/admin/me"),
+  getSystemUsers: () => apiFetch("/admin/system-users"),
+  createSystemUser: (data) =>
+    apiFetch("/admin/system-users", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateSystemUser: (id, data) =>
+    apiFetch(`/admin/system-users/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  toggleSystemUserStatus: (id, isActive) =>
+    apiFetch(`/admin/system-users/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ isActive }),
+    }),
+  deleteSystemUser: (id) =>
+    apiFetch(`/admin/system-users/${id}`, {
+      method: "DELETE",
+    }),
+  getSystemSections: () => apiFetch("/admin/system-sections"),
 };
 
